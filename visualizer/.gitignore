@@ -1,0 +1,15 @@
+.idea/
+*.iml
+
+.settings/
+.classpath
+.project
+
+target/
+
+upload/
+json/
+solutionOutputs/
+generated/
+statespace/
+externalClasses/

@@ -1,0 +1,30 @@
+﻿STATE:
+
+STATE_ATTRIBUTES:
+Attr0 is set of number
+Attr1 is set of number
+Attr2 is set of number
+
+STATE_START:
+$0 = {1, 2, 3, inf}
+$1 = {inf}
+$2 = {inf}
+
+STATE_GOAL:
+$2 == {1, 2, 3, inf}
+
+OPERATORS:
+
+OPERATOR_DESCRIPTION:
+cost 1
+param i from 0 to 2 by 1
+param j from 0 to 2 by 1
+
+OPERATOR_PRECONDITION:
+i!=j and
+card($i) != 1 and
+min($i)<min($j)
+
+OPERATOR_EFFECT:
+$j = add($j, min($i))
+$i = remove($i, min($i))

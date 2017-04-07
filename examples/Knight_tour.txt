@@ -1,0 +1,160 @@
+STATE:
+
+STATE_ATTRIBUTES:
+Attr0 is matrix[5][5] of number
+Attr1 is matrix[1][1] of number
+Attr2 is matrix[1][1] of number
+
+STATE_START:
+$0[2][2] = 1
+$1[0][0] = 2
+$2[0][0] = 2
+
+STATE_GOAL:
+sum($0) == 25
+
+OPERATORS:
+
+OPERATOR_DESCRIPTION:
+cost 1
+param i from 0 to 1 by 1
+
+OPERATOR_PRECONDITION:
+var number x = $1[0][0] + 1
+var number y = $2[0][0] - 2
+x <= 4 and
+y >= 0 and
+$0[x][y] == 0
+
+OPERATOR_EFFECT:
+var number x = $1[0][0] + 1
+var number y = $2[0][0] - 2
+$0[x][y] = 1
+$1[0][0] = $1[0][0] + 1
+$2[0][0] = $2[0][0] - 2
+
+OPERATOR_DESCRIPTION:
+cost 1
+param i from 0 to 1 by 1
+
+OPERATOR_PRECONDITION:
+var number x = $1[0][0] + 2
+var number y = $2[0][0] - 1
+x <= 4 and
+y >= 0 and
+$0[x][y] == 0
+
+OPERATOR_EFFECT:
+var number x = $1[0][0] + 2
+var number y = $2[0][0] - 1
+$0[x][y] = 1
+$1[0][0] = $1[0][0] + 2
+$2[0][0] = $2[0][0] - 1
+
+OPERATOR_DESCRIPTION:
+cost 1
+param i from 0 to 1 by 1
+
+OPERATOR_PRECONDITION:
+var number x = $1[0][0] + 2
+var number y = $2[0][0] + 1
+x <= 4 and
+y <= 4 and
+$0[x][y] == 0
+
+OPERATOR_EFFECT:
+var number x = $1[0][0] + 2
+var number y = $2[0][0] + 1
+$0[x][y] = 1
+$1[0][0] = $1[0][0] + 2
+$2[0][0] = $2[0][0] + 1
+
+OPERATOR_DESCRIPTION:
+cost 1
+param i from 0 to 1 by 1
+
+OPERATOR_PRECONDITION:
+var number x = $1[0][0] + 1
+var number y = $2[0][0] + 2
+x <= 4 and
+y <= 4 and
+$0[x][y] == 0
+
+OPERATOR_EFFECT:
+var number x = $1[0][0] + 1
+var number y = $2[0][0] + 2
+$0[x][y] = 1
+$1[0][0] = $1[0][0] + 1
+$2[0][0] = $2[0][0] + 2
+
+OPERATOR_DESCRIPTION:
+cost 1
+param i from 0 to 1 by 1
+
+OPERATOR_PRECONDITION:
+var number x = $1[0][0] - 1
+var number y = $2[0][0] + 2
+x >= 0 and
+y <= 4 and
+$0[x][y] == 0
+
+OPERATOR_EFFECT:
+var number x = $1[0][0] - 1
+var number y = $2[0][0] + 2
+$0[x][y] = 1
+$1[0][0] = $1[0][0] - 1
+$2[0][0] = $2[0][0] + 2
+
+OPERATOR_DESCRIPTION:
+cost 1
+param i from 0 to 1 by 1
+
+OPERATOR_PRECONDITION:
+var number x = $1[0][0] - 2
+var number y = $2[0][0] + 1
+x >= 0 and
+y <= 4 and
+$0[x][y] == 0
+
+OPERATOR_EFFECT:
+var number x = $1[0][0] - 2
+var number y = $2[0][0] + 1
+$0[x][y] = 1
+$1[0][0] = $1[0][0] - 2
+$2[0][0] = $2[0][0] + 1
+
+OPERATOR_DESCRIPTION:
+cost 1
+param i from 0 to 1 by 1
+
+OPERATOR_PRECONDITION:
+var number x = $1[0][0] - 2
+var number y = $2[0][0] - 1
+x >= 0 and
+y >= 0 and
+$0[x][y] == 0
+
+OPERATOR_EFFECT:
+var number x = $1[0][0] - 2
+var number y = $2[0][0] - 1
+$0[x][y] = 1
+$1[0][0] = $1[0][0] - 2
+$2[0][0] = $2[0][0] - 1
+
+OPERATOR_DESCRIPTION:
+cost 1
+param i from 0 to 1 by 1
+
+OPERATOR_PRECONDITION:
+var number x = $1[0][0] - 1
+var number y = $2[0][0] - 2
+x >= 0 and
+y >= 0 and
+$0[x][y] == 0
+
+OPERATOR_EFFECT:
+var number x = $1[0][0] - 1
+var number y = $2[0][0] - 2
+$0[x][y] = 1
+$1[0][0] = $1[0][0] - 1
+$2[0][0] = $2[0][0] - 2

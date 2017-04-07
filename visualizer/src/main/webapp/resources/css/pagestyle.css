@@ -1,0 +1,115 @@
+/** BODY */
+
+body{
+	background: #fff;
+}
+
+/** HEADER */
+
+.headerNavbar{
+	border: none;
+	border-radius: 0;
+	margin-bottom: 0;
+}
+
+#headerCarousel{
+	margin-top: 0;
+}
+
+.headerBrand{
+	font-size: 25px;
+}
+
+#headerCarousel .item img{
+	max-height: 200px;
+	width: 100%;
+	object-fit: cover;
+}
+
+#headerCarousel .item h3{
+	font-size: 40px;
+}
+
+/** PAGE CONTAINER */
+
+.pageContainer .row{
+	margin-top: 30px;
+	margin-bottom: 30px;
+	padding: 20px;
+	background: #eee;
+	/*border: 2px solid black;*/
+}
+
+/** GRAPH PAGE */
+
+.response{
+	margin-top: 30px;
+}
+
+/** UPLOAD PAGE (maybe not) */
+
+.formDiv{
+	margin-top: 30px;
+	margin-bottom: 30px;
+}
+
+/** VIEW PAGE */
+
+svg{
+	background-color: white;
+	display: block;
+	margin: 30px auto;
+	box-shadow: 10px 10px 5px #888888;
+}
+
+#operatorDescription {
+	position: absolute;
+	border: 2px solid black;
+	background-color: cornflowerblue;
+	color: white;
+	font-size: larger;
+	padding: 15px;
+	text-align: center;
+	border-radius: 10px;
+	opacity: 0;
+	pointer-events: none;
+}
+
+#nodeDescription {
+	position: absolute;
+	border: 2px solid black;
+	background-color: cornflowerblue;
+	color: white;
+	font-size: larger;
+	padding: 15px;
+	text-align: center;
+	border-radius: 10px;
+	opacity: 0;
+	pointer-events: none;
+}
+
+/** PROBLEM PAGE */
+
+.problemTable{
+	width: 60%;
+	margin: 30px auto;
+}
+
+.problemTable tbody tr td{
+	vertical-align: middle;
+	padding: auto;
+}
+
+.problemTextarea{
+	resize: none;
+}
+
+.problemSubmitButton{
+	display: block;
+	margin: auto;
+	width: 100px;
+}
+
+.problemTable tbody tr td input[type="checkbox"]{
+	margin-right: 5px;
+}

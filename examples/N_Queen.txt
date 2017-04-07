@@ -1,0 +1,35 @@
+STATE:
+
+STATE_ATTRIBUTES:
+Attr0 is matrix[8][8] of number
+
+STATE_START:
+
+STATE_GOAL:
+sum($0) == 72
+
+OPERATORS:
+
+OPERATOR_DESCRIPTION:
+cost 1
+param i from 0 to 7 by 1
+param j from 0 to 7 by 1
+
+OPERATOR_PRECONDITION:
+$0[i][j] == 0
+
+OPERATOR_EFFECT:
+for k from 0 to 7 by 1
+{
+    $0[k][j] = 1
+    $0[i][k] = 1
+}
+for k from 1 to min(i, j) by 1
+{
+    $0[i-k][j-k] = 1
+}
+for k from 1 to 7 - max(i, j) by 1
+{
+    $0[i+k][j+k] = 1
+}
+$0[i][j] = 2
