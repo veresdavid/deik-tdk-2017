@@ -72,12 +72,11 @@
       <version>5.4.0.Final</version>
     </dependency>
 
-    <!-- MYSQL -->
+    <!-- POSTGRESQL -->
     <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-      <version>6.0.5</version>
-      <scope>runtime</scope>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>42.0.0</version>
     </dependency>
 
     <!-- COMMONS -->
