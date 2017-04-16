@@ -1,9 +1,9 @@
 ﻿STATE:
 
 STATE_ATTRIBUTES:
-Attr0 is set of number
-Attr1 is set of number
-Attr2 is set of number
+attr0 is set of number
+attr1 is set of number
+attr2 is set of number
 
 STATE_START:
 $0 = {1, 2, 3, inf}

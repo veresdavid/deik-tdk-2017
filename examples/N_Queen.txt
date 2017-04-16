@@ -1,7 +1,7 @@
 STATE:
 
 STATE_ATTRIBUTES:
-Attr0 is matrix[8][8] of number
+attr0 is matrix[8][8] of number
 
 STATE_START:
 
