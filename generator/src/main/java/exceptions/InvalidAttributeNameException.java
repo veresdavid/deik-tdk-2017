@@ -1,7 +1,7 @@
 package exceptions;
 
 
-public class InvalidAttributeName extends RuntimeException {
+public class InvalidAttributeNameException extends RuntimeException {
 
   private static final String BASE_ERROR_MESSAGE = "Incorrect attribute name: ";
 
@@ -11,7 +11,7 @@ public class InvalidAttributeName extends RuntimeException {
 
   private final String attributeName;
 
-  public InvalidAttributeName(int line, int charPositionInLine, String attributeName) {
+  public InvalidAttributeNameException(int line, int charPositionInLine, String attributeName) {
     this.line = line;
     this.charPositionInLine = charPositionInLine;
     this.attributeName = attributeName;

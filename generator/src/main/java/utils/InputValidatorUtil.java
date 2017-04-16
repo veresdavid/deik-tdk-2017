@@ -6,7 +6,7 @@ import antlr.SMLParser.State_description_lineContext;
 import antlr.SMLParser.Var_defining_expressionContext;
 import antlr.SMLVisitor;
 import enums.ExpressionType;
-import exceptions.InvalidAttributeName;
+import exceptions.InvalidAttributeNameException;
 import exceptions.VarNameAlreadyInUseException;
 import exceptions.WrongExpressionTypeException;
 import interfaces.Expression;
@@ -23,7 +23,7 @@ public class InputValidatorUtil {
     String attrName = ctx.attr_name().getText();
 
     if (!isCorrectAttributeName(attrName, attributes)) {
-      throw new InvalidAttributeName(ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine(), attrName);
+      throw new InvalidAttributeNameException(ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine(), attrName);
     }
   }
 
