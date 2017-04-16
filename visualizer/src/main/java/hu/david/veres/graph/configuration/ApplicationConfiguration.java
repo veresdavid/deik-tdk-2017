@@ -18,9 +18,6 @@ import java.io.File;
 @ComponentScan("hu.david.veres.graph")
 public class ApplicationConfiguration {
 
-    @Value("${file.upload.folder}")
-    private String fileUploadFolderName;
-
     @Value("${file.json.folder}")
     private String jsonFolderName;
 
@@ -29,16 +26,8 @@ public class ApplicationConfiguration {
 
     @PostConstruct
     private void init() {
-        createFileUploadFolder();
         createJsonFolder();
         createStateSpaceFolder();
-    }
-
-    private void createFileUploadFolder() {
-        File fileUploadFolder = new File(fileUploadFolderName);
-        if (!fileUploadFolder.exists()) {
-            fileUploadFolder.mkdir();
-        }
     }
 
     private void createJsonFolder() {

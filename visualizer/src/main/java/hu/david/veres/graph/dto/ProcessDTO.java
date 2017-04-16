@@ -15,5 +15,8 @@ public class ProcessDTO {
     private boolean done;
     private boolean error;
     private String errorMessage;
+    private String stateSpaceFileName;
+    private String solutionFileName;
+    private String javaPackageName;
 
 }

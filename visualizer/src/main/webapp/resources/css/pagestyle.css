@@ -46,8 +46,6 @@ body{
 	margin-top: 30px;
 }
 
-/** UPLOAD PAGE (maybe not) */
-
 .formDiv{
 	margin-top: 30px;
 	margin-bottom: 30px;
@@ -88,16 +86,38 @@ svg{
 	pointer-events: none;
 }
 
+.informationTable{
+	width: 80%;
+	margin: 50px auto;
+}
+
+.informationTable tbody tr td{
+	vertical-align: middle;
+	padding: auto;
+}
+
+.graphControl{
+	margin-top: 20px;
+}
+
+.graphControlButton{
+	width: 80px;
+}
+
 /** PROBLEM PAGE */
 
 .problemTable{
-	width: 60%;
+	width: 80%;
 	margin: 30px auto;
 }
 
 .problemTable tbody tr td{
 	vertical-align: middle;
 	padding: auto;
+}
+
+.problemTable tbody tr td:first-child{
+	width: 25%;
 }
 
 .problemTextarea{
@@ -112,4 +132,18 @@ svg{
 
 .problemTable tbody tr td input[type="checkbox"]{
 	margin-right: 5px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.problemTable tbody tr td input[type="number"]{
+	width: 100px;
+	height: 30px;
+	display: inline-block;
+}
+
+.formInformation{
+	text-align: right;
+	color: red;
+	font-style: italic;
 }

@@ -3,7 +3,7 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
 
-<html lang="hu">
+<html>
 
 <head>
 
@@ -29,7 +29,7 @@
 <div class="container pageContainer">
 	<div class="row">
 		
-		<h1>Error!</h1>
+		<h1>Error! Page not found!</h1>
 		
 	</div>
 </div>

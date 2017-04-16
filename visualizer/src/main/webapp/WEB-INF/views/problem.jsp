@@ -4,7 +4,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <!DOCTYPE html>
 
-<html lang="hu">
+<html>
 
 <head>
 
@@ -12,14 +12,18 @@
 	<c:url value="/resources/css/bootstrap.min.css" var="bootstrapCss" />
 	<c:url value="/resources/js/bootstrap.min.js" var="bootstrapJs" />
 	<c:url value="/resources/css/pagestyle.css" var="pageStyle" />
+	<c:url value="/resources/js/form.js" var="formJs" />
+	<c:url value="/resources/demo/demos.json" var="demosJson" />
 
 	<link rel="stylesheet" type="text/css" href="${bootstrapCss}" />
 	<link rel="stylesheet" type="text/css" href="${pageStyle}" />
 	<script src="${jQuery}"></script>
 	<script src="${bootstrapJs}"></script>
+	<script>var demosJson = "${demosJson}";</script>
+	<script src="${formJs}"></script>
 
 	<meta charset="UTF-8">
-	<title><spring:message code="title.new.graph" /></title>
+	<title>New problem</title>
 
 </head>
 
@@ -29,31 +33,45 @@
 
 <div class="container pageContainer">
 	<div class="row">
-	
-		<h1>Új probléma</h1>
 		
 		<c:choose>
-			<c:when test="${errorMessage != null}">
+			<c:when test="${errorMessages != null}">
 				<div class="panel panel-danger response">
-					<div class="panel-heading">Hiba!</div>
-					<div class="panel-body">${errorMessage}</div>
+					<div class="panel-heading">Error!</div>
+					<div class="panel-body">
+						<c:forEach var="errorMessage" items="${errorMessages}">
+							${errorMessage}<br/>
+						</c:forEach>
+					</div>
 				</div>
 			</c:when>
 		</c:choose>
 		
 		<form:form method="POST" modelAttribute="problemForm" action="">
 		<table class="table table-responsive problemTable">
+			<!-- <tr>
+				<td colspan="2"><h1>New problem</h1></td>
+			</tr> -->
 			<tr>
-				<td>Állapottér :</td>
-				<td><form:textarea path="stateSpace" rows="10" cols="60" class="form-control problemTextarea" resizeable="false" /></td>
+				<td>Demos:</td>
+				<td>
+					<span class="btn btn-primary" id="demoHanoi">Hanoi towers</span>
+					<span class="btn btn-primary" id="demoKnight">Knight's tour</span>
+					<span class="btn btn-primary" id="demoQueens">N-queens</span>
+					<span class="btn btn-primary" id="demoJugs">Three jugs</span>
+				</td>
 			</tr>
 			<tr>
-				<td>Keresők :</td>
+				<td>State-space: *</td>
+				<td><form:textarea path="stateSpace" rows="20" cols="60" class="form-control problemTextarea" resizeable="false" id="stateSpace" /></td>
+			</tr>
+			<tr>
+				<td>Search algorithms: *</td>
 				<td>
 					<form:checkbox path="algorithms" value="BackTrackSimple" />Backtrack<br/>
 					<form:checkbox path="algorithms" value="BackTrackCircle" />Backtrack with cycle detection<br/>
-					<form:checkbox path="algorithms" value="BackTrackPathLengthLimitation" />Backtrack with pathlength limitation<br/>
-					<form:checkbox path="algorithms" value="BackTrackOptimal" />Backtrack branch and bound<br/>
+					<form:checkbox path="algorithms" value="BackTrackPathLengthLimitation" />Backtrack with pathlength limitation , Limit: <form:input type="number" min="1" path="backTrackPathLengthLimitationLimit" class="form-control" id="backTrackPathLengthLimitationLimit" /><br/>
+					<form:checkbox path="algorithms" value="BackTrackOptimal" />Backtrack branch and bound , Limit: <form:input type="number" min="1" path="backTrackOptimalLimit" class="form-control" id="backTrackOptimalLimit" /><br/>
 					<form:checkbox path="algorithms" value="BreadthFirst" />Breadth-first<br/>
 					<form:checkbox path="algorithms" value="DepthFirst" />Depth-first<br/>
 					<form:checkbox path="algorithms" value="Optimal" />Optimal<br/>
@@ -62,11 +80,22 @@
 				</td>
 			</tr>
 			<tr>
-				<td>Heurisztika :</td>
-				<td><form:textarea path="heuristic" rows="10" cols="60" class="form-control problemTextarea" /></td>
+				<td>Visualize the traversed state-space tree:</td>
+				<td><form:checkbox path="doTree" value="true" /></td>
 			</tr>
 			<tr>
-				<td colspan="2"><button type="submit" class="btn btn-primary problemSubmitButton">Küldés</button></td>
+				<td>Heuristic:</td>
+				<td><form:textarea path="heuristic" rows="2" cols="60" class="form-control problemTextarea" /></td>
+			</tr>
+			<tr>
+				<td>Variables in heuristic function:</td>
+				<td><form:textarea path="variablesInHeuristicFunction" rows="2" cols="60" class="form-control problemTextarea" /></td>
+			</tr>
+			<tr>
+				<td colspan="2" class="formInformation">* Denotes required field</td>
+			</tr>
+			<tr>
+				<td colspan="2"><button type="submit" class="btn btn-primary problemSubmitButton">Submit</button></td>
 			</tr>
 		</table>
 		</form:form>

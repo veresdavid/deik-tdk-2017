@@ -1,9 +1,7 @@
 package hu.david.veres.graph.form;
 
 import lombok.*;
-import org.hibernate.validator.constraints.NotEmpty;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @AllArgsConstructor
@@ -14,15 +12,18 @@ import java.util.List;
 @ToString
 public class ProblemForm {
 
-    @NotNull
-    @NotEmpty
     private String stateSpace;
 
-    @NotNull
-    @NotEmpty
     private List<String> algorithms;
 
-    @NotNull
+    private Integer backTrackPathLengthLimitationLimit;
+
+    private Integer backTrackOptimalLimit;
+
+    private boolean doTree;
+
     private String heuristic;
+
+    private String variablesInHeuristicFunction;
 
 }

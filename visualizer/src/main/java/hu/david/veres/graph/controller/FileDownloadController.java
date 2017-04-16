@@ -18,12 +18,12 @@ public class FileDownloadController {
     @Autowired
     private StorageService storageService;
 
-    @RequestMapping(path = "/uploaded/{fileName}", method = RequestMethod.GET)
-    public void donwloadUploadedFile(@PathVariable("fileName") String fileName, HttpServletResponse response) {
+    @RequestMapping(path = "/json/{fileName}", method = RequestMethod.GET)
+    public void downloadJsonFile(HttpServletResponse response, @PathVariable("fileName") String fileName) {
 
         try {
 
-            File file = storageService.getUploadedFile(fileName);
+            File file = storageService.getJsonFile(fileName);
 
             response.setContentType("text/plain");
 
@@ -43,12 +43,62 @@ public class FileDownloadController {
 
     }
 
-    @RequestMapping(path = "/json/{fileName}", method = RequestMethod.GET)
-    public void downloadJsonFile(HttpServletResponse response, @PathVariable("fileName") String fileName) {
+    @RequestMapping(path = "/solution/{fileName}", method = RequestMethod.GET)
+    public void downloadSolutionFile(HttpServletResponse response, @PathVariable("fileName") String fileName) {
 
         try {
 
-            File file = storageService.getJsonFile(fileName);
+            File file = storageService.getSolutionFile(fileName);
+
+            response.setContentType("text/plain");
+
+            response.setHeader("Content-Disposition", String.format("inline; filename=\"" + file.getName() + "\""));
+
+            response.setContentLength((int) file.length());
+
+            InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+
+            FileCopyUtils.copy(inputStream, response.getOutputStream());
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @RequestMapping(path = "/java/{packageName}/{fileName}", method = RequestMethod.GET)
+    public void downloadJavaFile(HttpServletResponse response, @PathVariable("packageName") String packageName, @PathVariable("fileName") String fileName) {
+
+        try {
+
+            File file = storageService.getJavaFile(packageName, fileName);
+
+            response.setContentType("text/plain");
+
+            response.setHeader("Content-Disposition", String.format("inline; filename=\"" + file.getName() + "\""));
+
+            response.setContentLength((int) file.length());
+
+            InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+
+            FileCopyUtils.copy(inputStream, response.getOutputStream());
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @RequestMapping(path = "/statespace/{fileName}", method = RequestMethod.GET)
+    public void downloadStateSpaceFile(HttpServletResponse response, @PathVariable("fileName") String fileName) {
+
+        try {
+
+            File file = storageService.getStateSpaceFile(fileName);
 
             response.setContentType("text/plain");
 

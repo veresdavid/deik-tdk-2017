@@ -28,6 +28,8 @@ var steps;
 var nodes;
 var operators;
 var solutions;
+var info;
+var connections;
 
 var stepIndex;
 var drag;
@@ -181,6 +183,8 @@ function initGraph(jsonUrl){
 		nodes = graph.nodes;
 		operators = graph.operators;
 		solutions = graph.solutions;
+		info = graph.info;
+		connections = graph.connections;
 		
 		stepIndex = 0;
 		drag = false;
@@ -209,6 +213,9 @@ function initGraph(jsonUrl){
 		
 		d3.select("#solutionButton")
 			.on("click", showSolution);
+			
+		// fill the page with informations
+		fillPageWithInformations();
 		
 	});
 
@@ -352,6 +359,9 @@ function step(){
 		}
 		
 		stepIndex++;
+		
+		// update graph control
+		updateGraphControl();
 	
 	}
 	
@@ -439,13 +449,19 @@ function back(){
 		
 		stepIndex--;
 		
+		// update graph control
+		updateGraphControl();
+		
 	}
 	
 }
 
 function showSolution(){
 	
-	if(solutionVisible){
+	if(solutions.length == 0){
+		alert("No solution.");
+	}
+	else if(solutionVisible){
 		
 		d3.select("#solution")
 			.transition()
@@ -464,6 +480,38 @@ function showSolution(){
 		solutionVisible = true;
 		
 	}
+	
+}
+
+function fillPageWithInformations(){
+	
+	// number of all steps
+	$("#allStepsNumber").html(steps.length);
+	
+	// search algorithm
+	$("#searchAlgorithm").html(info.searchAlgorithmName);
+	
+	// solution
+	if(solutions.length == 0){
+		$("#solutionInformation").html("No");
+	}else{
+		$("#solutionInformation").html("Yes");
+	}
+	
+	// number of nodes
+	$("#numberOfNodes").html(nodes.length);
+	
+	// number of edges
+	$("#numberOfEdges").html(connections.length);
+	
+	// number of steps
+	$("#numberOfSteps").html(steps.length);
+	
+}
+
+function updateGraphControl(){
+	
+	$("#actualStepNumber").html(stepIndex);
 	
 }
 

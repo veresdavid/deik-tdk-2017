@@ -1,6 +1,9 @@
 package hu.david.veres.graph.thread;
 
+import exceptions.InvalidVariableException;
+import exceptions.TypeMismatchException;
 import hu.david.veres.graph.dto.ProcessDTO;
+import hu.david.veres.graph.form.ProblemForm;
 import hu.david.veres.graph.generator.ResultGenerator;
 import hu.david.veres.graph.model.Result;
 import hu.david.veres.graph.service.ProcessService;
@@ -15,6 +18,10 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @Scope("prototype")
@@ -23,13 +30,12 @@ import java.io.IOException;
 @NoArgsConstructor
 public class ProcessThread implements Runnable {
 
-    private static final String ERROR_MESSAGE_IOEXCEPTION = "IOException";
-    private static final String ERROR_MESSAGE_FILE_NOT_EXISTS = "File not exists";
+    private static final String ERROR_MESSAGE_SERVER_SIDE = "Server-side error! Please try again!";
 
     private String processIdentifier;
     private SolutionManager solutionManager;
-    private String algorithmName;
-    private String heuristicFunction;
+    private ProblemForm problemForm;
+    private int algorithmIndex;
 
     @Autowired
     private ProcessService processService;
@@ -44,33 +50,85 @@ public class ProcessThread implements Runnable {
 
         // Generate and get solution output file name
         String absoluteFileName = "";
-        switch (algorithmName) {
+        switch (problemForm.getAlgorithms().get(algorithmIndex)) {
             case "BackTrackSimple":
-                absoluteFileName = solutionManager.doBackTrackSimple(heuristicFunction);
+                absoluteFileName = solutionManager.doBackTrackSimple(problemForm.isDoTree());
                 break;
             case "BackTrackCircle":
-                absoluteFileName = solutionManager.doBackTrackCircle(heuristicFunction);
+                absoluteFileName = solutionManager.doBackTrackCircle(problemForm.isDoTree());
                 break;
             case "BackTrackPathLengthLimitation":
-                absoluteFileName = solutionManager.doBackTrackPathLengthLimitation(heuristicFunction);
+                absoluteFileName = solutionManager.doBackTrackPathLengthLimitation(problemForm.isDoTree(), problemForm.getBackTrackPathLengthLimitationLimit());
                 break;
             case "BackTrackOptimal":
-                absoluteFileName = solutionManager.doBackTrackOptimal(heuristicFunction);
+                absoluteFileName = solutionManager.doBackTrackOptimal(problemForm.isDoTree(), problemForm.getBackTrackOptimalLimit());
                 break;
             case "BreadthFirst":
-                absoluteFileName = solutionManager.doBreadthFirst(heuristicFunction);
+                absoluteFileName = solutionManager.doBreadthFirst(problemForm.isDoTree());
                 break;
             case "DepthFirst":
-                absoluteFileName = solutionManager.doDepthFirst(heuristicFunction);
+                absoluteFileName = solutionManager.doDepthFirst(problemForm.isDoTree());
                 break;
             case "Optimal":
-                absoluteFileName = solutionManager.doOptimal(heuristicFunction);
+                absoluteFileName = solutionManager.doOptimal(problemForm.isDoTree());
                 break;
             case "BestFirst":
-                absoluteFileName = solutionManager.doBestFirst(heuristicFunction);
+                try {
+                    absoluteFileName = solutionManager.doBestFirst(problemForm.getHeuristic(), convertInputToSet(problemForm.getVariablesInHeuristicFunction()), problemForm.isDoTree());
+                } catch (ClassNotFoundException e) {
+                    finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
+                    e.printStackTrace();
+                    return;
+                } catch (NoSuchFieldException e) {
+                    finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
+                    e.printStackTrace();
+                    return;
+                } catch (IllegalAccessException e) {
+                    finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
+                    e.printStackTrace();
+                    return;
+                } catch (InstantiationException e) {
+                    finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
+                    e.printStackTrace();
+                    return;
+                } catch (InvalidVariableException e) {
+                    finishAndUpdateProcess(processIdentifier, true, e.getMessage(), null);
+                    e.printStackTrace();
+                    return;
+                } catch (TypeMismatchException e) {
+                    finishAndUpdateProcess(processIdentifier, true, e.getMessage(), null);
+                    e.printStackTrace();
+                    return;
+                }
                 break;
             case "A":
-                absoluteFileName = solutionManager.doA(heuristicFunction);
+                try {
+                    absoluteFileName = solutionManager.doA(problemForm.getHeuristic(), convertInputToSet(problemForm.getVariablesInHeuristicFunction()), problemForm.isDoTree());
+                } catch (ClassNotFoundException e) {
+                    finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
+                    e.printStackTrace();
+                    return;
+                } catch (NoSuchFieldException e) {
+                    finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
+                    e.printStackTrace();
+                    return;
+                } catch (IllegalAccessException e) {
+                    finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
+                    e.printStackTrace();
+                    return;
+                } catch (InstantiationException e) {
+                    finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
+                    e.printStackTrace();
+                    return;
+                } catch (InvalidVariableException e) {
+                    finishAndUpdateProcess(processIdentifier, true, e.getMessage(), null);
+                    e.printStackTrace();
+                    return;
+                } catch (TypeMismatchException e) {
+                    finishAndUpdateProcess(processIdentifier, true, e.getMessage(), null);
+                    e.printStackTrace();
+                    return;
+                }
                 break;
         }
 
@@ -79,7 +137,7 @@ public class ProcessThread implements Runnable {
         // Check if file exists
         File file = new File(absoluteFileName);
         if (!file.exists()) {
-            finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_FILE_NOT_EXISTS);
+            finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
             return;
         }
 
@@ -89,7 +147,7 @@ public class ProcessThread implements Runnable {
             ResultGenerator resultGenerator = new ResultGenerator();
             result = resultGenerator.generate(file);
         } catch (IOException e) {
-            finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_IOEXCEPTION);
+            finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
             e.printStackTrace();
             return;
         }
@@ -98,23 +156,37 @@ public class ProcessThread implements Runnable {
         try {
             storageService.storeResultInJsonFile(result, processIdentifier);
         } catch (IOException e) {
-            finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_IOEXCEPTION);
+            finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
             e.printStackTrace();
             return;
         }
 
         // Update database
-        finishAndUpdateProcess(processIdentifier, false, null);
+        String solutionFileName = file.getName().substring(0, file.getName().indexOf('.'));
+        finishAndUpdateProcess(processIdentifier, false, null, solutionFileName);
 
     }
 
-    private void finishAndUpdateProcess(String processIdentifier, boolean error, String errorMessage) {
+    private void finishAndUpdateProcess(String processIdentifier, boolean error, String errorMessage, String solutionFileName) {
 
         ProcessDTO processDTO = processService.getProcessByIdentifier(processIdentifier);
         processDTO.setDone(true);
         processDTO.setError(error);
         processDTO.setErrorMessage(errorMessage);
+        processDTO.setSolutionFileName(solutionFileName);
         processService.save(processDTO);
+
+    }
+
+    private Set<String> convertInputToSet(String input) {
+
+        if (input.isEmpty()) {
+            return new HashSet<>();
+        }
+
+        String[] parts = input.split(", ");
+
+        return Arrays.stream(parts).collect(Collectors.toSet());
 
     }
 

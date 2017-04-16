@@ -9,16 +9,16 @@ import java.io.IOException;
 
 public interface StorageService {
 
-    File storeUploadedFile(MultipartFile file, String newFileName) throws IOException;
-
-    File getUploadedFile(String fileName) throws FileNotFoundException;
-
-    void deleteUploadedFile(String fileName);
-
     void storeResultInJsonFile(Result result, String newFileName) throws IOException;
 
     File getJsonFile(String fileName) throws FileNotFoundException;
 
-    File storeStateSpace(String stateSpace, String fileName) throws IOException;
+    File storeStateSpaceFile(String stateSpace, String fileName) throws IOException;
+
+    File getStateSpaceFile(String fileName) throws FileNotFoundException;
+
+    File getSolutionFile(String fileName) throws FileNotFoundException;
+
+    File getJavaFile(String packageName, String fileName) throws FileNotFoundException;
 
 }

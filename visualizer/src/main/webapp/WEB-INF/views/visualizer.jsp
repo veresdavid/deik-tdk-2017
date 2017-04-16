@@ -3,7 +3,7 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
 
-<html lang="hu">
+<html>
 
 <head>
 
@@ -20,7 +20,7 @@
 	<script src="${d3js}"></script>
 
 	<meta charset="UTF-8">
-	<title><spring:message code="title.graphs" /></title>
+	<title>Results</title>
 
 </head>
 
@@ -31,21 +31,13 @@
 <div class="container pageContainer">
 	<div class="row">
 		
-		<h1>Eredmények</h1>
+		<h1>Results</h1>
 		
 		<c:if test="${processIdentifiers != null}">
-
-		<!--
-		<ul>
-			<c:forEach var="processIdentifier" items="${processIdentifiers}">
-				<li><a href="${pageContext.request.contextPath}/graph/view/${processIdentifier}">${processIdentifier}</a></li>
-			</c:forEach>
-		</ul>
-		-->
 		
 		<ul>
 			<c:forEach var="processIdentifier" items="${processIdentifiers}" varStatus="status">
-				<li>${algorithms[status.index]} : <a href="${pageContext.request.contextPath}/graph/view/${processIdentifier}">${processIdentifier}</a></li>
+				<li>${algorithms[status.index]} : <a href="${pageContext.request.contextPath}/graph/view/${processIdentifier}" target="_blank">${processIdentifier}</a></li>
 			</c:forEach>
 		</ul>
 
