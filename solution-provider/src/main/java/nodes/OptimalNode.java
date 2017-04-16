@@ -8,10 +8,10 @@ public class OptimalNode extends Node{
 	private double pathCost;
 
 	public OptimalNode(StateInterface state, OptimalNode parent, OperatorInterface operator, int id, double pathCost) {
-		setState(state);
-		setParent(parent);
-		setOperator(operator);
-		setId(id);
+		this.state = state;
+		this.parent = parent;
+		this.operator = operator;
+		this.id = id;
 		this.pathCost = pathCost;
 	}
 

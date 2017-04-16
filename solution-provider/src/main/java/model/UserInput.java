@@ -1,8 +1,11 @@
 package model;
 
+import java.util.Set;
+
 public class UserInput {
 
 	private String heuristicFunction;
+	private Set<String> variablesInHeuristicFunction;
 	private boolean doBackTrackSimple;
 	private boolean doBackTrackCircle;
 	private boolean doBackTrackPathLengthLimitation;
@@ -12,11 +15,16 @@ public class UserInput {
 	private boolean doOptimal;
 	private boolean doBestFirst;
 	private boolean doA;
+	private boolean doTree;
+	private int backTrackPathLengthLimitationLimit;
+	private int backTrackOptimalLimit;
 
-	public UserInput(String heuristicFunction, boolean doBackTrackSimple, boolean doBackTrackCircle,
-			boolean doBackTrackPathLengthLimitation, boolean doBackTrackOptimal, boolean doBreadthFirst,
-			boolean doDepthFirst, boolean doOptimal, boolean doBestFirst, boolean doA) {
+	public UserInput(String heuristicFunction, Set<String> variablesInHeuristicFunction, boolean doBackTrackSimple,
+			boolean doBackTrackCircle, boolean doBackTrackPathLengthLimitation, boolean doBackTrackOptimal,
+			boolean doBreadthFirst, boolean doDepthFirst, boolean doOptimal, boolean doBestFirst, boolean doA,
+			boolean doTree, int backTrackPathLengthLimitationLimit, int backTrackOptimalLimit) {
 		this.heuristicFunction = heuristicFunction;
+		this.variablesInHeuristicFunction = variablesInHeuristicFunction;
 		this.doBackTrackSimple = doBackTrackSimple;
 		this.doBackTrackCircle = doBackTrackCircle;
 		this.doBackTrackPathLengthLimitation = doBackTrackPathLengthLimitation;
@@ -26,6 +34,9 @@ public class UserInput {
 		this.doOptimal = doOptimal;
 		this.doBestFirst = doBestFirst;
 		this.doA = doA;
+		this.doTree = doTree;
+		this.backTrackPathLengthLimitationLimit = backTrackPathLengthLimitationLimit;
+		this.backTrackOptimalLimit = backTrackOptimalLimit;
 	}
 
 	public String getHeuristicFunction() {
@@ -34,6 +45,14 @@ public class UserInput {
 
 	public void setHeuristicFunction(String heuristicFunction) {
 		this.heuristicFunction = heuristicFunction;
+	}
+
+	public Set<String> getVariablesInHeuristicFunction() {
+		return variablesInHeuristicFunction;
+	}
+
+	public void setVariablesInHeuristicFunction(Set<String> variablesInHeuristicFunction) {
+		this.variablesInHeuristicFunction = variablesInHeuristicFunction;
 	}
 
 	public boolean isDoBackTrackSimple() {
@@ -106,5 +125,29 @@ public class UserInput {
 
 	public void setDoA(boolean doA) {
 		this.doA = doA;
+	}
+
+	public boolean isDoTree() {
+		return doTree;
+	}
+
+	public void setDoTree(boolean doTree) {
+		this.doTree = doTree;
+	}
+
+	public int getBackTrackPathLengthLimitationLimit() {
+		return backTrackPathLengthLimitationLimit;
+	}
+
+	public void setBackTrackPathLengthLimitationLimit(int backTrackPathLengthLimitationLimit) {
+		this.backTrackPathLengthLimitationLimit = backTrackPathLengthLimitationLimit;
+	}
+
+	public int getBackTrackOptimalLimit() {
+		return backTrackOptimalLimit;
+	}
+
+	public void setBackTrackOptimalLimit(int backTrackOptimalLimit) {
+		this.backTrackOptimalLimit = backTrackOptimalLimit;
 	}
 }

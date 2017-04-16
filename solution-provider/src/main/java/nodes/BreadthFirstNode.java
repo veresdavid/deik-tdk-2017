@@ -8,10 +8,10 @@ public class BreadthFirstNode extends Node{
 	private int depth;
 	
 	public BreadthFirstNode(StateInterface state, BreadthFirstNode parent, OperatorInterface operator, int id, int depth){
-		setState(state);
-		setParent(parent);
-		setOperator(operator);
-		setId(id);
+		this.state = state;
+		this.parent = parent;
+		this.operator = operator;
+		this.id = id;
 		this.depth = depth;
 	}
 

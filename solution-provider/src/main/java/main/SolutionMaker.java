@@ -44,10 +44,8 @@ public class SolutionMaker {
 	public SolutionMaker(List<String> filePaths) throws TemporaryFolderCreationException, MalformedURLException{
 		this.filePaths = filePaths;
 		classDestinationFile = new File("externalClasses/" + UUID.randomUUID().toString() + "/");
-		System.out.println(classDestinationFile);
 		makeTemporaryFolderForClasses();
 		classDestinationURL = classDestinationFile.toURI().toURL();
-		System.out.println(classDestinationURL);
 		loadableClasses = new ArrayList<>();
 		operatorClasses = new ArrayList<>();
 		if(loader == null){
@@ -124,7 +122,6 @@ public class SolutionMaker {
 		boolean isOperatorClassFound = false;
 		
 		for (File classFile : loadableClasses) {
-			System.out.println(classFile);
 			String classNameAndPackage = classFile.getAbsolutePath()
 					.replace(classDestinationFile.getAbsolutePath() + "\\", "").replace("\\", ".");
 

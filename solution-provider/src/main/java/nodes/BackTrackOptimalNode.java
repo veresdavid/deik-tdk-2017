@@ -11,10 +11,10 @@ public class BackTrackOptimalNode extends Node{
 	private int depth;
 
 	public BackTrackOptimalNode(StateInterface state, BackTrackOptimalNode parent, OperatorInterface operator, int id, List<OperatorInterface> tried, int depth) {
-		setState(state);
-		setParent(parent);
-		setOperator(operator);
-		setId(id);
+		this.state = state;
+		this.parent = parent;
+		this.operator = operator;
+		this.id = id;
 		this.tried = tried;
 		this.depth = depth;
 	}

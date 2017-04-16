@@ -10,6 +10,8 @@ import java.util.Set;
 
 import org.nfunk.jep.JEP;
 
+import exceptions.InvalidVariableException;
+import exceptions.TypeMismatchException;
 import nodes.Node;
 
 public class HeuristicParser {
@@ -18,20 +20,18 @@ public class HeuristicParser {
 	private Set<String> variables;
 	private Map<String, Double> variableNamesAndValues;
 	private Node node;
-	private List<Field> fieldsOfNode;
 	
 	public HeuristicParser(String heuristic, Set<String> variables, Node node) {
 		this.expression = heuristic;
 		this.variables = variables;
 		variableNamesAndValues = new HashMap<>();
 		this.node = node;
-		fieldsOfNode = getFieldsOfNode(this.node);
 	}
 	
 	public List<Field> getFieldsOfNode(Node node){
 		List<Field> fields = new ArrayList<>(Arrays.asList(node.getClass().getDeclaredFields()));
 		
-		Class superClass = node.getClass().getSuperclass();
+		Class<?> superClass = node.getClass().getSuperclass();
 		while(nodes.Node.class.isAssignableFrom(superClass)){
 			fields.addAll(Arrays.asList(superClass.getDeclaredFields()));
 			superClass = superClass.getSuperclass();
@@ -40,9 +40,11 @@ public class HeuristicParser {
 		return fields;
 	}
 	
-	public double Parse(){
-		
+	public double Parse() throws InvalidVariableException, ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, TypeMismatchException{
 		for(String variable : variables){
+			if(!variable.startsWith("Node.")){
+				throw new InvalidVariableException("Invalid variable name: " + variable);
+			}
 			String variableWithOutBrackets = removeBrackets(variable);
 			variableWithOutBrackets = variableWithOutBrackets.replace(".", "");
 			
@@ -65,40 +67,18 @@ public class HeuristicParser {
 			expression = expression.replace(variable, newVariableNamesWithComma);
 		}
 		
-		System.out.println(expression + " " + variableNamesAndValues);
-		
 		JEP myParser = new JEP();
 	    myParser.addStandardFunctions();
 	    myParser.addStandardConstants();
+	    myParser.addFunction("min", new Min());
+	    myParser.addFunction("max", new Max());
+	    myParser.addFunction("avg", new Avg());
 		for(String key : variableNamesAndValues.keySet()){
-	    	System.out.println(key + " " + variableNamesAndValues.get(key));
 	    	myParser.addVariable(key, variableNamesAndValues.get(key));
 	    }
 		myParser.parseExpression(expression);
 		return myParser.getValue();
-		//return 1;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	private String removeBrackets(String string){
 		int bracketPosition = string.indexOf("[");
@@ -120,31 +100,24 @@ public class HeuristicParser {
 		return elementList;
 	}
 	
-	private Object getVariable(String packageName, String className, String fieldName, String fieldNameListElement, List<String> innerFields, List<String> innerFieldsListElement) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException{
-		Class classByName = Class.forName(packageName + "." + className);
+	private Object getVariable(String fieldName, String fieldNameListElement, List<String> innerFields, List<String> innerFieldsListElement) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, TypeMismatchException{
+		Class<?> nodeClass = node.getClass();
 		
+		/*Check if the actual node contains the field or the superclass*/
 		boolean isClassByNameContainsField = false;
-		
-		for(Field field : Arrays.asList(classByName.getDeclaredFields())){
+		for(Field field : Arrays.asList(nodeClass.getDeclaredFields())){
 			if(field.getName() == fieldName){
 				isClassByNameContainsField = true;
 			}
 		}
 		
 		if(!isClassByNameContainsField){
-			classByName = classByName.getSuperclass();
+			nodeClass = nodeClass.getSuperclass();
 		}
 		
-		Field fieldByName = classByName.getDeclaredField(fieldName);
+		Field fieldByName = nodeClass.getDeclaredField(fieldName);
 		fieldByName.setAccessible(true);
-		Object object = null;
-		if(nodes.Node.class.isAssignableFrom(classByName))
-		{
-			object = fieldByName.get(node);
-		} else {
-			object = fieldByName.get(classByName.newInstance());
-		}
-		
+		Object object = fieldByName.get(node);
 
 		if(!fieldNameListElement.isEmpty()){
 			if(java.util.List.class.isAssignableFrom(object.getClass())){
@@ -153,12 +126,12 @@ public class HeuristicParser {
 					object = ((List<?>)object).get(element);
 				}
 			} else {
-				System.out.println("nem nyert");
+				throw new TypeMismatchException(fieldName + " is not type of List.");
 			}
 		}
 		
 		for(String innerField : innerFields){
-			Class innerClass = object.getClass();
+			Class<?> innerClass = object.getClass();
 			
 			List<Field> fields = Arrays.asList(innerClass.getDeclaredFields());
 			boolean isCointains = false;
@@ -171,7 +144,6 @@ public class HeuristicParser {
 			if(!isCointains){
 				innerClass = innerClass.getSuperclass();
 			}
-			//System.out.println(innerClass);
 			fieldByName = innerClass.getDeclaredField(innerField);
 			fieldByName.setAccessible(true);
 			object = fieldByName.get(object);
@@ -193,15 +165,16 @@ public class HeuristicParser {
 		return object;
 	}
 
-	private List<Object> processVariableName(String variableName){
+	// Csak a Node-dal kezdődőeket fogadjuk el.
+		// igy nem kell package név, mindig a Node-ot használjuk.
+	
+	private List<Object> processVariableName(String variableName) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, TypeMismatchException{
 		List<Object> processedValues = new ArrayList<>();
-		
+		System.out.println(variableName);
 		int pointPosition = variableName.indexOf(".");
-		String packageName = variableName.substring(0, pointPosition);
-		variableName = variableName.substring(pointPosition + 1);
+		System.out.println(pointPosition);
 		
 		pointPosition = variableName.indexOf(".");
-		String className = variableName.substring(0, pointPosition);
 		variableName = variableName.substring(pointPosition + 1);
 		
 		pointPosition = variableName.indexOf(".");
@@ -245,22 +218,25 @@ public class HeuristicParser {
 			innerFieldsListElement.add(innerFieldNameListElement);
 		}
 		
-		//System.out.println(packageName + " " + className + " " + fieldName + " " + fieldNameListElement + " " + innerFields + " " + innerFieldsListElement) ;
-		Object object = null;
-		try {
-			object = getVariable(packageName, className, fieldName, fieldNameListElement, innerFields, innerFieldsListElement);
-			//System.out.println(object);
-			
-		} catch (ClassNotFoundException | NoSuchFieldException | SecurityException | IllegalArgumentException
-				| IllegalAccessException | InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Object object = getVariable(fieldName, fieldNameListElement, innerFields, innerFieldsListElement);
 		
 		if(Set.class.isAssignableFrom(object.getClass())){
-			Set<?> set = (Set)object;
+			Set<?> set = (Set<?>)object;
 			for(Object setElement : set){
 				processedValues.add(setElement);
+			}
+		} else if(List.class.isAssignableFrom(object.getClass())){
+			List<?> list = (List<?>)object;
+			if(List.class.isAssignableFrom(list.get(0).getClass())){
+				for(Object listInList : list){
+					for(Object listElement : (List<?>)listInList){
+						processedValues.add(listElement);
+					}
+				}
+			} else {
+				for(Object listElement : list){
+					processedValues.add(listElement);
+				}
 			}
 		} else {
 			processedValues.add(object);

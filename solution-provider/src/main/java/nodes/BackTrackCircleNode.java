@@ -10,10 +10,10 @@ public class BackTrackCircleNode extends Node{
 	private List<OperatorInterface> tried;
 
 	public BackTrackCircleNode(StateInterface state, BackTrackCircleNode parent, OperatorInterface operator, int id, List<OperatorInterface> tried) {
-		setState(state);
-		setParent(parent);
-		setOperator(operator);
-		setId(id);
+		this.state = state;
+		this.parent = parent;
+		this.operator = operator;
+		this.id = id;
 		this.tried = tried;
 	}
 	

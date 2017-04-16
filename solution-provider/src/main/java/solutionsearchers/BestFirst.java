@@ -1,26 +1,18 @@
 package solutionsearchers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import exceptions.InvalidVariableException;
+import exceptions.TypeMismatchException;
 import interfaces.OperatorInterface;
 import interfaces.StateInterface;
 import nodes.BestFirstNode;
-import nodes.Node;
+import solutionsearchers.helpers.InformationCollector;
+import solutionsearchers.helpers.SolutionHelper;
 
 public class BestFirst {
-
-	private List<Node> reachedBestFirstNodes;
-	private List<Node> listForTree;
-	private StringBuilder steps;
-	private List<String> activateNodes;
-	private List<String> inactivateNodes;
-	private List<String> stepOnNodes;
-	private List<String> closeNodes;
-	private List<String> activateEdges;
-	private List<String> inactivateEdges;
 	
 	private List<OperatorInterface> OPERATORS;
 	private BestFirstNode actual;
@@ -31,40 +23,18 @@ public class BestFirst {
 	private List<BestFirstNode> closedNodes = new ArrayList<>();
 	private int maxId;
 	private int treeId;
+	private InformationCollector informationCollector;
 	
-	private void appendSteps(){
-		steps.append("Activated nodes: " + activateNodes);
-		activateNodes.clear();
-		steps.append(" Inactivated nodes: " + inactivateNodes);
-		inactivateNodes.clear();
-		steps.append(" Stepped on nodes: " + stepOnNodes);
-		stepOnNodes.clear();
-		steps.append(" Closed nodes: " + closeNodes);
-		closeNodes.clear();
-		steps.append(" Activated edges: " + activateEdges);
-		activateEdges.clear();
-		steps.append(" Inactivated edges: " + inactivateEdges + "\n");
-		inactivateEdges.clear();
-	}
-	
-	public BestFirst(BestFirstNode start, String heuristicFunction, Set<String> variablesInHeuristicFunction, List<OperatorInterface> OPERATORS){
-		reachedBestFirstNodes = new ArrayList<>();
-		listForTree = new ArrayList<>();
-		steps = new StringBuilder();
-		activateNodes = new ArrayList<>();
-		inactivateNodes = new ArrayList<>();
-		stepOnNodes = new ArrayList<>();
-		closeNodes = new ArrayList<>();
-		activateEdges = new ArrayList<>();
-		inactivateEdges = new ArrayList<>();
+	public BestFirst(BestFirstNode start, String heuristicFunction, Set<String> variablesInHeuristicFunction, List<OperatorInterface> OPERATORS, InformationCollector informationCollector) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvalidVariableException, TypeMismatchException{
 		treeId = -1;
 		this.heuristicFunction = heuristicFunction;
 		this.variablesInHeuristicFunction = variablesInHeuristicFunction;
 		this.OPERATORS = OPERATORS;
+		this.informationCollector = informationCollector;
 		openNodes.add(start);
-		activateNodes.add(String.valueOf(start.getId()));
-		activateNodes.add(String.valueOf(treeId));
-		appendSteps();
+		informationCollector.addGraphNodeToActivateNodes(start);
+		informationCollector.addTreeNodeToActivateNodes(new BestFirstNode(start.getState(), (BestFirstNode) start.getParent(), start.getOperator(), treeId, heuristicFunction, variablesInHeuristicFunction));
+		informationCollector.appendSteps();
 		maxId = start.getId();
 	}
 	
@@ -77,7 +47,7 @@ public class BestFirst {
 		return null;
 	}
 	
-	private void extend(BestFirstNode node){
+	private void expand(BestFirstNode node) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvalidVariableException, TypeMismatchException{
 		//List<Integer> newOpenNodeIdList = new ArrayList<>();
 		//List<String> operatorIdList = new ArrayList<>();
 		
@@ -89,7 +59,7 @@ public class BestFirst {
 				BestFirstNode closedNodesContains = isContains(closedNodes, newState);
 				
 				if(openNodesContains == null && closedNodesContains == null){
-					int nodeId = SolutionHelper.getNodeId(newState, maxId, reachedBestFirstNodes);
+					int nodeId = SolutionHelper.getNodeId(newState, maxId, informationCollector.getListForGraph());
 					
 					if(maxId < nodeId)
 						maxId = nodeId;
@@ -98,17 +68,17 @@ public class BestFirst {
 					openNodes.add(newNode);
 					
 					BestFirstNode newTreeNode = new BestFirstNode(newNode.getState(), treeActual, operator, treeId, heuristicFunction, variablesInHeuristicFunction);
-					listForTree.add(newTreeNode);
+					informationCollector.getListForTree().add(newTreeNode);
 					treeId--;
 					
-					if(!reachedBestFirstNodes.contains(newNode)){
-						reachedBestFirstNodes.add(newNode);
+					if(!informationCollector.getListForGraph().contains(newNode)){
+						informationCollector.getListForGraph().add(newNode);
 					}
 					
-					activateNodes.add(String.valueOf(newNode.getId()));
-					activateNodes.add(String.valueOf(newTreeNode.getId()));
-					activateEdges.add(newNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newNode.getOperator()) + "-" + newNode.getId());
-					activateEdges.add(newTreeNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
+					informationCollector.addGraphNodeToActivateNodes(newNode);
+					informationCollector.addTreeNodeToActivateNodes(newTreeNode);
+					informationCollector.addGraphEdgeToActivateEdges(newNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newNode.getOperator()) + "-" + newNode.getId());
+					informationCollector.addTreeEdgeToActivateEdges(newTreeNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
 					//newOpenNodeIdList.add(newNode.getId());
 					//operatorIdList.add("OP" + OPERATORS.indexOf(operator));
 				}
@@ -116,17 +86,15 @@ public class BestFirst {
 		}
 		openNodes.remove(node);
 		closedNodes.add(node);
-		appendSteps();
-		closeNodes.add(String.valueOf(node.getId()));
-		closeNodes.add(String.valueOf(treeActual.getId()));
+		informationCollector.appendSteps();
+		informationCollector.addGraphNodeToCloseNodes(node);
+		informationCollector.addTreeNodeToCloseNodes(treeActual);
 		//steps.append(operatorIdList + "|" + newOpenNodeIdList + "|");
 	}
 	
-	public String search(){
+	public String search() throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvalidVariableException, TypeMismatchException{
 		while(true){
 			if(openNodes.isEmpty()){
-				if(steps.charAt(steps.length() - 1) == '\n')
-					steps.setLength(steps.length() - 1);
 				break;
 			}
 			
@@ -138,19 +106,19 @@ public class BestFirst {
 				}
 			}
 			
-			if(!listForTree.contains(actual)){
+			if(!informationCollector.getListForTree().contains(actual)){
 				treeActual = new BestFirstNode(actual.getState(), (BestFirstNode) actual.getParent(), actual.getOperator(), treeId, heuristicFunction, variablesInHeuristicFunction);
 				treeId--;
-				listForTree.add(treeActual);
+				informationCollector.getListForTree().add(treeActual);
 			} else {
-				treeActual = (BestFirstNode) listForTree.get(listForTree.indexOf(actual));
+				treeActual = (BestFirstNode) informationCollector.getListForTree().get(informationCollector.getListForTree().indexOf(actual));
 			}
 			
-			stepOnNodes.add(String.valueOf(actual.getId()));
-			stepOnNodes.add(String.valueOf(treeActual.getId()));
+			informationCollector.addGraphNodeToStepOnNodes(actual);
+			informationCollector.addTreeNodeToStepOnNodes(treeActual);
 			
-			if(!reachedBestFirstNodes.contains(actual)){
-				reachedBestFirstNodes.add(actual);
+			if(!informationCollector.getListForGraph().contains(actual)){
+				informationCollector.getListForGraph().add(actual);
 			}
 			
 			/*if(actual.getOperator() != null){
@@ -160,19 +128,16 @@ public class BestFirst {
 			}*/
 			
 			if(actual.getState().isGoal()){
-				appendSteps();
-				if(steps.charAt(steps.length() - 1) == '\n')
-					steps.setLength(steps.length() - 1);
+				informationCollector.appendSteps();
 				break;
 			}
 			
-			extend(actual);
+			expand(actual);
 		}
 		if(!openNodes.isEmpty()){
-			return SolutionHelper.writeOutputForGraphic(getClass(), reachedBestFirstNodes, listForTree, Arrays.asList(actual, treeActual), steps.toString(), OPERATORS);
+			return informationCollector.writeOutputSolution(getClass(), actual, treeActual, OPERATORS);
 		} else {
-			System.out.println("No solution.");
-			return null;
+			return informationCollector.writeOutputNoSolution(getClass(), OPERATORS);
 		}
 	}
 }

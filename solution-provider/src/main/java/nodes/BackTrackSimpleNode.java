@@ -10,10 +10,10 @@ public class BackTrackSimpleNode extends Node{
 	private List<OperatorInterface> tried;
 
 	public BackTrackSimpleNode(StateInterface state, BackTrackSimpleNode parent, OperatorInterface operator, int id, List<OperatorInterface> tried) {
-		setState(state);
-		setParent(parent);
-		setOperator(operator);
-		setId(id);
+		this.state = state;
+		this.parent = parent;
+		this.operator = operator;
+		this.id = id;
 		this.tried = tried;
 	}
 	public List<OperatorInterface> getTried() {

@@ -8,10 +8,10 @@ public class DepthFirstNode extends Node{
 	private int depth;
 	
 	public DepthFirstNode(StateInterface state, DepthFirstNode parent, OperatorInterface operator, int id, int depth){
-		setState(state);
-		setParent(parent);
-		setOperator(operator);
-		setId(id);
+		this.state = state;
+		this.parent = parent;
+		this.operator = operator;
+		this.id = id;
 		this.depth = depth;
 	}
 

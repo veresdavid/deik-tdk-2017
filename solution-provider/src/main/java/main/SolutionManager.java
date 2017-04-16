@@ -3,9 +3,12 @@ package main;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import exceptions.InvalidVariableException;
 import exceptions.OperatorInitializationException;
 import exceptions.StateInitializationException;
+import exceptions.TypeMismatchException;
 import interfaces.OperatorInterface;
 import interfaces.StateInterface;
 import nodes.ANode;
@@ -26,6 +29,8 @@ import solutionsearchers.BestFirst;
 import solutionsearchers.BreadthFirst;
 import solutionsearchers.DepthFirst;
 import solutionsearchers.Optimal;
+import solutionsearchers.helpers.ExtendedInformationCollector;
+import solutionsearchers.helpers.InformationCollector;
 
 public class SolutionManager{
 	private List<OperatorInterface> OPERATORS;
@@ -42,58 +47,112 @@ public class SolutionManager{
 		}
 	}
 	
-	public String doBackTrackSimple(String heuristicFunction){
+	public String doBackTrackSimple(boolean doTree){
+		InformationCollector informationCollector;
+		if(doTree){
+			informationCollector = new ExtendedInformationCollector();
+		} else {
+			informationCollector = new InformationCollector();
+		}
 		BackTrackSimpleNode backTrackSimpleNodeStart = new BackTrackSimpleNode(state.getStart(), null, null, 0, new ArrayList<>());
-		BackTrackSimple backTrackSimple = new BackTrackSimple(backTrackSimpleNodeStart, OPERATORS);
+		BackTrackSimple backTrackSimple = new BackTrackSimple(backTrackSimpleNodeStart, OPERATORS, informationCollector);
 		return backTrackSimple.search();
 	}
 	
-	public String doBackTrackCircle(String heuristicFunction) {
+	public String doBackTrackCircle(boolean doTree) {
+		InformationCollector informationCollector;
+		if(doTree){
+			informationCollector = new ExtendedInformationCollector();
+		} else {
+			informationCollector = new InformationCollector();
+		}
 		BackTrackCircleNode backTrackCircleNodeStart = new BackTrackCircleNode(state.getStart(), null, null, 0, new ArrayList<>());
-		BackTrackCircle backTrackCircle = new BackTrackCircle(backTrackCircleNodeStart, OPERATORS);
+		BackTrackCircle backTrackCircle = new BackTrackCircle(backTrackCircleNodeStart, OPERATORS, informationCollector);
 		return backTrackCircle.search();
 	}
 
-	public String doBackTrackPathLengthLimitation(String heuristicFunction) {
+	public String doBackTrackPathLengthLimitation(boolean doTree, int backTrackPathLengthLimitationLimit) {
+		InformationCollector informationCollector;
+		if(doTree){
+			informationCollector = new ExtendedInformationCollector();
+		} else {
+			informationCollector = new InformationCollector();
+		}
 		BackTrackPathLengthLimitationNode backTrackPathLengthLimitationNode = new BackTrackPathLengthLimitationNode(state.getStart(), null, null, 0, new ArrayList<>(), 0);
-		BackTrackPathLengthLimitation backTrackPathLengthLimitation = new BackTrackPathLengthLimitation(backTrackPathLengthLimitationNode, 10, OPERATORS);
+		BackTrackPathLengthLimitation backTrackPathLengthLimitation = new BackTrackPathLengthLimitation(backTrackPathLengthLimitationNode, backTrackPathLengthLimitationLimit, OPERATORS, informationCollector);
 		return backTrackPathLengthLimitation.search();
 	}
 
-	public String doBackTrackOptimal(String heuristicFunction) {
+	public String doBackTrackOptimal(boolean doTree, int backTrackOptimalLimit) {
+		InformationCollector informationCollector;
+		if(doTree){
+			informationCollector = new ExtendedInformationCollector();
+		} else {
+			informationCollector = new InformationCollector();
+		}
 		BackTrackOptimalNode backTrackOptimalNode = new BackTrackOptimalNode(state.getStart(), null, null, 0, new ArrayList<>(), 0);
-		BackTrackOptimal backTrackOptimal = new BackTrackOptimal(backTrackOptimalNode, 10, OPERATORS);
+		BackTrackOptimal backTrackOptimal = new BackTrackOptimal(backTrackOptimalNode, backTrackOptimalLimit, OPERATORS, informationCollector);
 		return backTrackOptimal.search();
 	}
 
-	public String doBreadthFirst(String heuristicFunction) {
+	public String doBreadthFirst(boolean doTree) {
+		InformationCollector informationCollector;
+		if(doTree){
+			informationCollector = new ExtendedInformationCollector();
+		} else {
+			informationCollector = new InformationCollector();
+		}
 		BreadthFirstNode breadthFirstNode = new BreadthFirstNode(state.getStart(), null, null, 0, 0);
-		BreadthFirst breadthFirst = new BreadthFirst(breadthFirstNode, OPERATORS);
+		BreadthFirst breadthFirst = new BreadthFirst(breadthFirstNode, OPERATORS, informationCollector);
 		return breadthFirst.search();
 	}
 
-	public String doDepthFirst(String heuristicFunction) {
+	public String doDepthFirst(boolean doTree) {
+		InformationCollector informationCollector;
+		if(doTree){
+			informationCollector = new ExtendedInformationCollector();
+		} else {
+			informationCollector = new InformationCollector();
+		}
 		DepthFirstNode depthFirstNode = new DepthFirstNode(state.getStart(), null, null, 0, 0);
-		DepthFirst depthFirst = new DepthFirst(depthFirstNode, OPERATORS);
+		DepthFirst depthFirst = new DepthFirst(depthFirstNode, OPERATORS, informationCollector);
 		return depthFirst.search();
 	}
 
-	public String doOptimal(String heuristicFunction) {
+	public String doOptimal(boolean doTree) {
+		InformationCollector informationCollector;
+		if(doTree){
+			informationCollector = new ExtendedInformationCollector();
+		} else {
+			informationCollector = new InformationCollector();
+		}
 		OptimalNode optimalNode = new OptimalNode(state.getStart(), null, null, 0, 0);
-		Optimal optimal = new Optimal(optimalNode, OPERATORS);
+		Optimal optimal = new Optimal(optimalNode, OPERATORS, informationCollector);
 		return optimal.search();
 	}
 	
 	
-	public String doBestFirst(String heuristicFunction){
-		BestFirstNode bestFirstNode = new BestFirstNode(state.getStart(), null, null, 0, "", null);
-		BestFirst bestFirst = new BestFirst(bestFirstNode, "", null, OPERATORS);
+	public String doBestFirst(String heuristicFunction, Set<String> variablesInHeuristicFunction, boolean doTree) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvalidVariableException, TypeMismatchException{
+		InformationCollector informationCollector;
+		if(doTree){
+			informationCollector = new ExtendedInformationCollector();
+		} else {
+			informationCollector = new InformationCollector();
+		}
+		BestFirstNode bestFirstNode = new BestFirstNode(state.getStart(), null, null, 0, heuristicFunction, variablesInHeuristicFunction);
+		BestFirst bestFirst = new BestFirst(bestFirstNode, heuristicFunction, variablesInHeuristicFunction, OPERATORS, informationCollector);
 		return bestFirst.search();
 	}
 	
-	public String doA(String heuristicFunction) {
-		ANode aNode = new ANode(state.getStart(), null, null, 0, 0, "", null);
-		A a = new A(aNode, "", null, OPERATORS);
+	public String doA(String heuristicFunction, Set<String> variablesInHeuristicFunction, boolean doTree) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvalidVariableException, TypeMismatchException {
+		InformationCollector informationCollector;
+		if(doTree){
+			informationCollector = new ExtendedInformationCollector();
+		} else {
+			informationCollector = new InformationCollector();
+		}
+		ANode aNode = new ANode(state.getStart(), null, null, 0, 0, heuristicFunction, variablesInHeuristicFunction);
+		A a = new A(aNode, heuristicFunction, variablesInHeuristicFunction, OPERATORS, informationCollector);
 		return a.search();
 	}
 }

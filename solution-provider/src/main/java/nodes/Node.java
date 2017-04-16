@@ -5,10 +5,10 @@ import interfaces.StateInterface;
 
 public abstract class Node {
 	
-	private StateInterface state;
-	private Node parent;
-	private OperatorInterface operator;
-	private int id;
+	protected StateInterface state;
+	protected Node parent;
+	protected OperatorInterface operator;
+	protected int id;
 	private int numOfNodeStepOns;
 	private int numOfEdgeStepOns;
 

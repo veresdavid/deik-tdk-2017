@@ -11,10 +11,10 @@ public class BackTrackPathLengthLimitationNode extends Node{
 	private int depth;
 
 	public BackTrackPathLengthLimitationNode(StateInterface state, BackTrackPathLengthLimitationNode parent, OperatorInterface operator, int id, List<OperatorInterface> tried, int depth) {
-		setState(state);
-		setParent(parent);
-		setOperator(operator);
-		setId(id);
+		this.state = state;
+		this.parent = parent;
+		this.operator = operator;
+		this.id = id;
 		this.tried = tried;
 		this.depth = depth;
 	}

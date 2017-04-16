@@ -1,27 +1,20 @@
 package solutionsearchers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import exceptions.InvalidVariableException;
+import exceptions.TypeMismatchException;
 import interfaces.OperatorInterface;
 import interfaces.StateInterface;
 import nodes.ANode;
 import nodes.Node;
+import solutionsearchers.helpers.InformationCollector;
+import solutionsearchers.helpers.SolutionHelper;
 
 public class A {
 
-	private List<Node> reachedANodes;
-	private List<Node> listForTree;
-	private StringBuilder steps;
-	private List<String> activateNodes;
-	private List<String> inactivateNodes;
-	private List<String> stepOnNodes;
-	private List<String> closeNodes;
-	private List<String> activateEdges;
-	private List<String> inactivateEdges;
-	
 	private List<OperatorInterface> OPERATORS;
 	private ANode actual;
 	private ANode treeActual;
@@ -31,40 +24,18 @@ public class A {
 	private List<ANode> closedNodes = new ArrayList<>();
 	private int maxId;
 	private int treeId;
+	private InformationCollector informationCollector;
 	
-	private void appendSteps(){
-		steps.append("Activated nodes: " + activateNodes);
-		activateNodes.clear();
-		steps.append(" Inactivated nodes: " + inactivateNodes);
-		inactivateNodes.clear();
-		steps.append(" Stepped on nodes: " + stepOnNodes);
-		stepOnNodes.clear();
-		steps.append(" Closed nodes: " + closeNodes);
-		closeNodes.clear();
-		steps.append(" Activated edges: " + activateEdges);
-		activateEdges.clear();
-		steps.append(" Inactivated edges: " + inactivateEdges + "\n");
-		inactivateEdges.clear();
-	}
-	
-	public A(ANode start, String heuristicFunction, Set<String> variablesInHeuristicFunction, List<OperatorInterface> OPERATORS){
-		reachedANodes = new ArrayList<>();
-		listForTree = new ArrayList<>();
-		steps = new StringBuilder();
-		activateNodes = new ArrayList<>();
-		inactivateNodes = new ArrayList<>();
-		stepOnNodes = new ArrayList<>();
-		closeNodes = new ArrayList<>();
-		activateEdges = new ArrayList<>();
-		inactivateEdges = new ArrayList<>();
+	public A(ANode start, String heuristicFunction, Set<String> variablesInHeuristicFunction, List<OperatorInterface> OPERATORS, InformationCollector informationCollector) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvalidVariableException, TypeMismatchException{
 		treeId = -1;
 		this.heuristicFunction = heuristicFunction;
 		this.variablesInHeuristicFunction = variablesInHeuristicFunction;
 		this.OPERATORS = OPERATORS;
+		this.informationCollector = informationCollector;
 		openNodes.add(start);
-		activateNodes.add(String.valueOf(start.getId()));
-		activateNodes.add(String.valueOf(treeId));
-		appendSteps();
+		informationCollector.addGraphNodeToActivateNodes(start);
+		informationCollector.addTreeNodeToActivateNodes(new ANode(start.getState(), (ANode) start.getParent(), start.getOperator(), treeId, start.getPathCost(), heuristicFunction, variablesInHeuristicFunction));
+		informationCollector.appendSteps();
 		maxId = start.getId();
 	}
 	
@@ -77,7 +48,7 @@ public class A {
 		return null;
 	}
 	
-	private void extend(ANode node){
+	private void expand(ANode node) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvalidVariableException, TypeMismatchException{
 		//List<Integer> newOpenNodeIdList = new ArrayList<>();
 		//List<String> operatorIdList = new ArrayList<>();
 		
@@ -89,7 +60,7 @@ public class A {
 				ANode closedNodesContains = isContains(closedNodes, newState);
 				
 				if(openNodesContains == null && closedNodesContains == null){
-					int nodeId = SolutionHelper.getNodeId(newState, maxId, reachedANodes);
+					int nodeId = SolutionHelper.getNodeId(newState, maxId, informationCollector.getListForGraph());
 					
 					if(maxId < nodeId)
 						maxId = nodeId;
@@ -98,17 +69,17 @@ public class A {
 					openNodes.add(newNode);
 					
 					ANode newTreeNode = new ANode(newNode.getState(), treeActual, operator, treeId, newNode.getPathCost(), heuristicFunction, variablesInHeuristicFunction);
-					listForTree.add(newTreeNode);
+					informationCollector.getListForTree().add(newTreeNode);
 					treeId--;
 					
-					if(!reachedANodes.contains(newNode)){
-						reachedANodes.add(newNode);
+					if(!informationCollector.getListForGraph().contains(newNode)){
+						informationCollector.getListForGraph().add(newNode);
 					}
 					
-					activateNodes.add(String.valueOf(newNode.getId()));
-					activateNodes.add(String.valueOf(newTreeNode.getId()));
-					activateEdges.add(newNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newNode.getOperator()) + "-" + newNode.getId());
-					activateEdges.add(newTreeNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
+					informationCollector.addGraphNodeToActivateNodes(newNode);
+					informationCollector.addTreeNodeToActivateNodes(newTreeNode);
+					informationCollector.addGraphEdgeToActivateEdges(newNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newNode.getOperator()) + "-" + newNode.getId());
+					informationCollector.addTreeEdgeToActivateEdges(newTreeNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
 					//newOpenNodeIdList.add(newNode.getId());
 					//operatorIdList.add("OP" + OPERATORS.indexOf(operator));
 				} else {
@@ -116,36 +87,35 @@ public class A {
 					
 					if (openNodesContains != null){
 						if(newPathCost < openNodesContains.getPathCost()){
-							Node openNodeInTree = listForTree.get(listForTree.indexOf(openNodesContains));
+							Node openNodeInTree = informationCollector.getListForTree().get(informationCollector.getListForTree().indexOf(openNodesContains));
 							
-							inactivateEdges.add(openNodesContains.getParent().getId() + "-OP" + OPERATORS.indexOf(openNodesContains.getOperator()) + "-" + openNodesContains.getId());
-							inactivateEdges.add(openNodeInTree.getParent().getId() + "-OP" + OPERATORS.indexOf(openNodeInTree.getOperator()) + "-" + openNodeInTree.getId());
+							informationCollector.addGraphEdgeToInactivateEdges(openNodesContains.getParent().getId() + "-OP" + OPERATORS.indexOf(openNodesContains.getOperator()) + "-" + openNodesContains.getId());
+							informationCollector.addTreeEdgeToInactivateEdges(openNodeInTree.getParent().getId() + "-OP" + OPERATORS.indexOf(openNodeInTree.getOperator()) + "-" + openNodeInTree.getId());
 							
 							openNodesContains.setParent(node);
 							openNodesContains.setOperator(operator);
 							openNodesContains.setPathCost(newPathCost);
 							
 							ANode newTreeNode = new ANode(openNodesContains.getState(), treeActual, operator, treeId, openNodesContains.getPathCost(), heuristicFunction, variablesInHeuristicFunction);
-							listForTree.add(newTreeNode);
+							informationCollector.getListForTree().add(newTreeNode);
 							treeId--;
 							
-							if(!reachedANodes.contains(openNodesContains)){
-								reachedANodes.add(openNodesContains);
+							if(!informationCollector.getListForGraph().contains(openNodesContains)){
+								informationCollector.getListForGraph().add(openNodesContains);
 							}
 							
-							//activateNodes.add(String.valueOf(openNodesContains.getId()));
-							activateNodes.add(String.valueOf(newTreeNode.getId()));
-							activateEdges.add(openNodesContains.getParent().getId() + "-OP" + OPERATORS.indexOf(openNodesContains.getOperator()) + "-" + openNodesContains.getId());
-							activateEdges.add(newTreeNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
+							informationCollector.addTreeNodeToActivateNodes(newTreeNode);
+							informationCollector.addGraphEdgeToActivateEdges(openNodesContains.getParent().getId() + "-OP" + OPERATORS.indexOf(openNodesContains.getOperator()) + "-" + openNodesContains.getId());
+							informationCollector.addTreeEdgeToActivateEdges(newTreeNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
 							//newOpenNodeIdList.add(openNodesContains.getId());
 							//operatorIdList.add("OP" + OPERATORS.indexOf(operator));
 						}
 					} else {
 						if(newPathCost < closedNodesContains.getPathCost()){
-							Node openNodeInTree = listForTree.get(listForTree.indexOf(closedNodesContains));
+							Node openNodeInTree = informationCollector.getListForTree().get(informationCollector.getListForTree().indexOf(closedNodesContains));
 							
-							inactivateEdges.add(closedNodesContains.getParent().getId() + "-OP" + OPERATORS.indexOf(closedNodesContains.getOperator()) + "-" + closedNodesContains.getId());
-							inactivateEdges.add(openNodeInTree.getParent().getId() + "-OP" + OPERATORS.indexOf(openNodeInTree.getOperator()) + "-" + openNodeInTree.getId());
+							informationCollector.addGraphEdgeToInactivateEdges(closedNodesContains.getParent().getId() + "-OP" + OPERATORS.indexOf(closedNodesContains.getOperator()) + "-" + closedNodesContains.getId());
+							informationCollector.addTreeEdgeToInactivateEdges(openNodeInTree.getParent().getId() + "-OP" + OPERATORS.indexOf(openNodeInTree.getOperator()) + "-" + openNodeInTree.getId());
 							
 							closedNodesContains.setParent(node);
 							closedNodesContains.setOperator(operator);
@@ -154,17 +124,17 @@ public class A {
 							openNodes.add(closedNodesContains);
 							
 							ANode newTreeNode = new ANode(closedNodesContains.getState(), treeActual, operator, treeId, closedNodesContains.getPathCost(), heuristicFunction, variablesInHeuristicFunction);
-							listForTree.add(newTreeNode);
+							informationCollector.getListForTree().add(newTreeNode);
 							treeId--;
 							
-							if(!reachedANodes.contains(closedNodesContains)){
-								reachedANodes.add(closedNodesContains);
+							if(!informationCollector.getListForGraph().contains(closedNodesContains)){
+								informationCollector.getListForGraph().add(closedNodesContains);
 							}
 							
-							activateNodes.add(String.valueOf(closedNodesContains.getId()));
-							activateNodes.add(String.valueOf(newTreeNode.getId()));
-							activateEdges.add(closedNodesContains.getParent().getId() + "-OP" + OPERATORS.indexOf(closedNodesContains.getOperator()) + "-" + closedNodesContains.getId());
-							activateEdges.add(newTreeNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
+							informationCollector.addGraphNodeToActivateNodes(closedNodesContains);
+							informationCollector.addTreeNodeToActivateNodes(newTreeNode);
+							informationCollector.addGraphEdgeToActivateEdges(closedNodesContains.getParent().getId() + "-OP" + OPERATORS.indexOf(closedNodesContains.getOperator()) + "-" + closedNodesContains.getId());
+							informationCollector.addTreeEdgeToActivateEdges(newTreeNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
 							//newOpenNodeIdList.add(closedNodesContains.getId());
 							//operatorIdList.add("OP" + OPERATORS.indexOf(operator));
 						}
@@ -174,17 +144,15 @@ public class A {
 		}
 		openNodes.remove(node);
 		closedNodes.add(node);
-		appendSteps();
-		closeNodes.add(String.valueOf(node.getId()));
-		closeNodes.add(String.valueOf(treeActual.getId()));
+		informationCollector.appendSteps();
+		informationCollector.addGraphNodeToCloseNodes(node);
+		informationCollector.addTreeNodeToCloseNodes(treeActual);
 		//steps.append(operatorIdList + "|" + newOpenNodeIdList + "|");
 	}
 	
-	public String search(){
+	public String search() throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvalidVariableException, TypeMismatchException{
 		while(true){
 			if(openNodes.isEmpty()){
-				if(steps.charAt(steps.length() - 1) == '\n')
-					steps.setLength(steps.length() - 1);
 				break;
 			}
 			
@@ -196,19 +164,19 @@ public class A {
 				}
 			}
 			
-			if(!listForTree.contains(actual)){
+			if(!informationCollector.getListForTree().contains(actual)){
 				treeActual = new ANode(actual.getState(), (ANode) actual.getParent(), actual.getOperator(), treeId, actual.getPathCost(), heuristicFunction, variablesInHeuristicFunction);
 				treeId--;
-				listForTree.add(treeActual);
+				informationCollector.getListForTree().add(treeActual);
 			} else {
-				treeActual = (ANode) listForTree.get(listForTree.indexOf(actual));
+				treeActual = (ANode) informationCollector.getListForTree().get(informationCollector.getListForTree().indexOf(actual));
 			}
 			
-			stepOnNodes.add(String.valueOf(actual.getId()));
-			stepOnNodes.add(String.valueOf(treeActual.getId()));
+			informationCollector.addGraphNodeToStepOnNodes(actual);
+			informationCollector.addTreeNodeToStepOnNodes(treeActual);
 			
-			if(!reachedANodes.contains(actual)){
-				reachedANodes.add(actual);
+			if(!informationCollector.getListForGraph().contains(actual)){
+				informationCollector.getListForGraph().add(actual);
 			}
 			
 			/*if(actual.getOperator() != null){
@@ -218,20 +186,16 @@ public class A {
 			}*/
 			
 			if(actual.getState().isGoal()){
-				appendSteps();
-				if(steps.charAt(steps.length() - 1) == '\n')
-					steps.setLength(steps.length() - 1);
+				informationCollector.appendSteps();
 				break;
 			}
 			
-			extend(actual);
+			expand(actual);
 		}
 		if(!openNodes.isEmpty()){
-			return SolutionHelper.writeOutputForGraphic(getClass(), reachedANodes, listForTree, Arrays.asList(actual, treeActual), steps.toString(), OPERATORS);
+			return informationCollector.writeOutputSolution(getClass(), actual, treeActual, OPERATORS);
 		} else {
-			System.out.println("No solution.");
-			// TODO
-			return null;
+			return informationCollector.writeOutputNoSolution(getClass(), OPERATORS);
 		}
 	}
 }
