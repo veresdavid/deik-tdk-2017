@@ -1,4 +1,4 @@
-package representation;
+package representation.expression;
 
 import enums.ExpressionType;
 import interfaces.Expression;
@@ -14,8 +14,8 @@ public class ForExpressionRepresentation implements Expression {
   private String by;
   private List<Expression> expressions = new ArrayList<>();
 
-  public ForExpressionRepresentation(String variable, String from, String to, String by,
-      List<Expression> expressions) {
+  public ForExpressionRepresentation(String variable, String from, String to,
+      String by, List<Expression> expressions) {
     this.variable = variable;
     this.from = from;
     this.to = to;

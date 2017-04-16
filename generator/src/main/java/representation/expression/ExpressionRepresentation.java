@@ -1,4 +1,4 @@
-package representation;
+package representation.expression;
 
 import enums.ExpressionType;
 import interfaces.Expression;

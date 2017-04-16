@@ -60,6 +60,10 @@ public class GeneratedUtils {
     return set.stream().mapToDouble(Double::doubleValue).average().getAsDouble();
   }
 
+  public static Double abs(Double number) {
+    return Math.abs(number);
+  }
+
   public static <T extends Object> Set<T> union(Set<T> setA, Set<T> setB) {
     Set<T> result = new HashSet<>();
     result.addAll(setA);
@@ -105,5 +109,13 @@ public class GeneratedUtils {
 
   public static <T extends Object> Double card(List<List<T>> list) {
     return list.stream().mapToDouble(List::size).sum();
+  }
+
+  public static Double length(String word) {
+    return Double.valueOf(word.length());
+  }
+
+  public static String charAt(String word, Double position) {
+    return String.valueOf(word.charAt(position.intValue()));
   }
 }

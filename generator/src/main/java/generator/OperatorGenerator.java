@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.Map;
 import javax.lang.model.element.Modifier;
 import representation.ClassRepresentation;
-import representation.ParameterRepresentation;
 import representation.operator.OperatorRepresentation;
+import representation.operator.ParameterRepresentation;
 import utils.GeneratorUtil;
 
 public class OperatorGenerator {
@@ -35,37 +35,38 @@ public class OperatorGenerator {
       String directoryName, String packageName, String fileName, boolean keepTogetherGettersAndSetters)
       throws IOException {
 
-    //TODO: Handle error
-    if (operatorRepresentation == null || stateClass == null) {
-      System.out.println("Error");
-    }
-
     fillNamedArguments(operatorRepresentation, stateClass);
 
     ClassName className = ClassName.get(packageName, fileName);
     List<ParameterRepresentation> parameters = operatorRepresentation.getParameters();
     List<FieldSpec> fields = GeneratorUtil.generateFieldsFromParameters(parameters);
 
-    TypeSpec operator = TypeSpec.classBuilder(fileName)
+    TypeSpec.Builder builder = TypeSpec.classBuilder(fileName)
         .addModifiers(Modifier.PUBLIC)
         .addSuperinterface(OperatorInterface.class)
         .addAnnotation(generateSuppressWarningsAnnotation())
         .addFields(fields)
         .addField(generateCostField(operatorRepresentation))
-        .addMethod(generateInitOperatorsMethod(parameters, className))
-        .addMethod(GeneratorUtil.generateEmptyConstructor())
-        .addMethod(GeneratorUtil.generateConstructor(fields))
-        .addMethods(
-            GeneratorUtil.generateGettersAndSetters(fields, keepTogetherGettersAndSetters))
-        .addMethod(GeneratorUtil.generateEqualsMethod(fields, className, fileName.toLowerCase()))
+        .addMethod(GeneratorUtil.generateEmptyConstructor());
+
+    if (!fields.isEmpty()) {
+      builder.addMethod(GeneratorUtil.generateConstructor(fields));
+    }
+
+    builder.addMethods(GeneratorUtil.generateGettersAndSetters(fields, keepTogetherGettersAndSetters));
+
+    fields.add(generateCostField(operatorRepresentation));
+
+    builder.addMethod(GeneratorUtil.generateEqualsMethod(fields, className, fileName.toLowerCase()))
         .addMethod(GeneratorUtil.generateHashCodeMethod(fields))
         .addMethod(GeneratorUtil.generateToStringMethod(fields, className))
+        .addMethod(generateInitOperatorsMethod(parameters, className))
         .addMethod(generateIsApplicableMethod(operatorRepresentation, stateClass))
         .addMethod(generateApplyMethod(operatorRepresentation, stateClass))
         .addMethod(generateGetCostMethod())
         .build();
 
-    JavaFile javaFile = JavaFile.builder(packageName, operator)
+    JavaFile javaFile = JavaFile.builder(packageName, builder.build())
         .skipJavaLangImports(true)
         .build();
 
@@ -105,11 +106,10 @@ public class OperatorGenerator {
       String by = parameter.getBy().toString();
 
       builder
-          .beginControlFlow(GeneratorUtil.generateForStatement(parameterName, from, to, by), int.class);
+          .beginControlFlow(GeneratorUtil.generateForStatement(Double.class, parameterName, from, to, by));
     }
 
-    builder.addStatement("$T $L = new $T($L)", className, lowerCaseClassName,
-        className, parameterNames)
+    builder.addStatement("$1T $2L = new $1T($3L)", className, lowerCaseClassName, parameterNames)
         .addStatement("result.add($L)", lowerCaseClassName);
 
     for (ParameterRepresentation parameter : parameters) {
@@ -153,15 +153,11 @@ public class OperatorGenerator {
         .addStatement("$1T $2L = (($1T) $3L)", stateClass.getClassName(), "original", parameterName)
         .addStatement("$1T $2L = original.copy()", stateClass.getClassName(), "state");
 
-//    builder.addStatement("System.out.println(\"before: \" + state)");
-
     builder.addCode("\n");
 
     builder.addCode(GeneratorUtil.generateStatements(operatorRepresentation.getEffectExpressions(), namedArguments));
 
     builder.addCode("\n");
-
-//    builder.addStatement("System.out.println(GeneratedUtils.sum(state))");
 
     builder.addStatement("return state");
 
@@ -199,9 +195,9 @@ public class OperatorGenerator {
 
       boolean containsError = false;
 
-      Integer from = parameter.getFrom();
-      Integer to = parameter.getTo();
-      Integer by = parameter.getBy();
+      Integer from = parameter.getFrom().intValue();
+      Integer to = parameter.getTo().intValue();
+      Integer by = parameter.getBy().intValue();
 
       TypeName typeName = stateClass.getFields().get(from).type;
 

@@ -1,19 +1,12 @@
-package representation;
+package representation.operator;
 
 public class ParameterRepresentation {
   private String parameterName;
-  private Integer from;
-  private Integer to;
-  private Integer by;
+  private Double from;
+  private Double to;
+  private Double by;
 
   public ParameterRepresentation() {
-  }
-
-  public ParameterRepresentation(String parameterName, Integer from, Integer to, Integer by) {
-    this.parameterName = parameterName;
-    this.from = from;
-    this.to = to;
-    this.by = by;
   }
 
   public String getParameterName() {
@@ -24,27 +17,27 @@ public class ParameterRepresentation {
     this.parameterName = parameterName;
   }
 
-  public Integer getFrom() {
+  public Double getFrom() {
     return from;
   }
 
-  public void setFrom(Integer from) {
+  public void setFrom(Double from) {
     this.from = from;
   }
 
-  public Integer getTo() {
+  public Double getTo() {
     return to;
   }
 
-  public void setTo(Integer to) {
+  public void setTo(Double to) {
     this.to = to;
   }
 
-  public Integer getBy() {
+  public Double getBy() {
     return by;
   }
 
-  public void setBy(Integer by) {
+  public void setBy(Double by) {
     this.by = by;
   }
 
@@ -59,8 +52,7 @@ public class ParameterRepresentation {
 
     ParameterRepresentation that = (ParameterRepresentation) o;
 
-    if (parameterName != null ? !parameterName.equals(that.parameterName)
-        : that.parameterName != null) {
+    if (parameterName != null ? !parameterName.equals(that.parameterName) : that.parameterName != null) {
       return false;
     }
     if (from != null ? !from.equals(that.from) : that.from != null) {
@@ -69,11 +61,7 @@ public class ParameterRepresentation {
     if (to != null ? !to.equals(that.to) : that.to != null) {
       return false;
     }
-    if (by != null ? !by.equals(that.by) : that.by != null) {
-      return false;
-    }
-
-    return true;
+    return by != null ? by.equals(that.by) : that.by == null;
   }
 
   @Override

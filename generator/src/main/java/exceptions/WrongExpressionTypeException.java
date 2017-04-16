@@ -5,13 +5,13 @@ import enums.ExpressionType;
 
 public class WrongExpressionTypeException extends RuntimeException {
 
+  private static final String BASE_ERROR_MESSAGE = "Expression type %s not allowed here!";
+
   private final int line;
 
   private final int charPositionInLine;
 
   private final ExpressionType expressionType;
-
-  private final String msg = "Expression type %s not allowed here!";
 
   public WrongExpressionTypeException(int line, int charPositionInLine, ExpressionType expressionType) {
     this.line = line;
@@ -19,20 +19,8 @@ public class WrongExpressionTypeException extends RuntimeException {
     this.expressionType = expressionType;
   }
 
-  public int getLine() {
-    return line;
+  @Override
+  public String getMessage() {
+    return line + " : " + charPositionInLine + " " + StringFormatter.format(BASE_ERROR_MESSAGE, expressionType).getValue();
   }
-
-  public int getCharPositionInLine() {
-    return charPositionInLine;
-  }
-
-  public ExpressionType getExpressionType() {
-    return expressionType;
-  }
-
-  public String getMsg() {
-    return line + " : " + charPositionInLine + " " + StringFormatter.format(msg, expressionType);
-  }
-
 }

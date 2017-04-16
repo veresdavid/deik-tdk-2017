@@ -7,7 +7,6 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
-import enums.VarStruct;
 import enums.VarType;
 import interfaces.StateInterface;
 import java.io.IOException;
@@ -24,7 +23,6 @@ import representation.state.AttributeRepresentation;
 import representation.state.StateRepresentation;
 import utils.GeneratorUtil;
 
-//TODO: Review set functions
 public class StateGenerator {
 
   private Map<String, Object> namedArguments = new HashMap<>();
@@ -35,13 +33,7 @@ public class StateGenerator {
   public ClassRepresentation generate(StateRepresentation stateRepresentation, String directoryName, String packageName,
       String fileName, boolean keepTogetherGettersAndSetters) throws IOException {
 
-    //TODO: Handle error
-    if (stateRepresentation == null) {
-      System.out.println("Error");
-    }
-
     fillNamedArguments(stateRepresentation);
-
     ClassName className = ClassName.get(packageName, fileName);
     List<AttributeRepresentation> attributes = stateRepresentation.getAttributes();
     List<FieldSpec> fields = GeneratorUtil.generateFieldsFromAttributes(attributes);
@@ -82,7 +74,6 @@ public class StateGenerator {
 
     for (AttributeRepresentation currentAttribute : stateRepresentation.getAttributes()) {
       builder.addCode(generateInitializer(currentAttribute));
-      builder.addCode("\n");
     }
 
     return builder.build();
@@ -90,27 +81,30 @@ public class StateGenerator {
 
   private CodeBlock generateInitializer(AttributeRepresentation attribute) {
     CodeBlock.Builder builder = CodeBlock.builder();
-    String attributeName = attribute.getAttributeName();
+    String upperCaseAttributeName = GeneratorUtil.getUpperCaseName(attribute.getAttributeName());
 
-    if (attribute.getVarStruct().equals(VarStruct.SET)) {
-      builder
-          .addStatement("this.set" + attributeName + "(new $T<>())", HashSet.class);
-    } else {
-      String dimensionN = attribute.getDimension().getDimensionN();
-      String dimensionM = attribute.getDimension().getDimensionM();
-      TypeName attributeType = GeneratorUtil.getAttributeType(attribute);
-      TypeName innerAttributeType = GeneratorUtil.getInnerAttributeType(attribute);
+    switch (attribute.getVarStruct()) {
+      case SET:
+        builder.addStatement("this.set" + upperCaseAttributeName + "(new $T<>())", HashSet.class);
+        break;
 
-      builder
-          .addStatement("$T init" + attributeName + "= new $T<>()", attributeType, ArrayList.class)
-          .beginControlFlow("for(int i = 0; i<$L; i++)", dimensionN)
-          .addStatement("$1T tmpList = new $2T<>()", innerAttributeType, ArrayList.class)
-          .beginControlFlow("for(int j = 0; j<$L; j++)", dimensionM)
-          .add(getMatrixStart(attribute))
-          .endControlFlow()
-          .addStatement("init" + attributeName + ".add(tmpList)")
-          .endControlFlow()
-          .addStatement("this.set" + attributeName + "(init" + attributeName + ")");
+      case MATRIX:
+        String dimensionN = attribute.getDimension().getDimensionN();
+        String dimensionM = attribute.getDimension().getDimensionM();
+        TypeName attributeType = GeneratorUtil.getAttributeType(attribute);
+        TypeName innerAttributeType = GeneratorUtil.getInnerAttributeType(attribute);
+
+        builder
+            .addStatement("$T init" + upperCaseAttributeName + "= new $T<>()", attributeType, ArrayList.class)
+            .beginControlFlow("for(int i = 0; i<$L; i++)", dimensionN)
+            .addStatement("$1T tmpList = new $2T<>()", innerAttributeType, ArrayList.class)
+            .beginControlFlow("for(int j = 0; j<$L; j++)", dimensionM)
+            .add(getMatrixStart(attribute))
+            .endControlFlow()
+            .addStatement("init" + upperCaseAttributeName + ".add(tmpList)")
+            .endControlFlow()
+            .addStatement("this.set" + upperCaseAttributeName + "(init" + upperCaseAttributeName + ")");
+        break;
     }
 
     return builder.build();
@@ -166,29 +160,33 @@ public class StateGenerator {
     builder.addStatement("$1T $2L = new $1T()", className, resultName);
 
     for (AttributeRepresentation attribute : stateRepresentation.getAttributes()) {
-      Class typeClass =
-          attribute.getVarType().equals(VarType.NUMBER) ? Double.class : String.class;
-      String lowerCaseAttributeName = attribute.getAttributeName().toLowerCase();
+      Class typeClass = attribute.getVarType().equals(VarType.NUMBER) ? Double.class : String.class;
+      String attributeName = attribute.getAttributeName();
+      String uppercaseAttributeName = GeneratorUtil.getUpperCaseName(attributeName);
 
-      if (attribute.getVarStruct().equals(VarStruct.SET)) {
-        builder.beginControlFlow("for ($1T element : $2L)", typeClass, lowerCaseAttributeName)
-            .addStatement("$1L.get$2L().add(element)", resultName, attribute.getAttributeName())
-            .endControlFlow();
+      switch (attribute.getVarStruct()) {
+        case SIMPLE:
+          builder.addStatement("$1L.set$2L($3L)", resultName, uppercaseAttributeName, attributeName);
+          break;
 
-      } else {
-        builder.beginControlFlow("for ($1T i=0; i < $2L.size(); i++)", Integer.class, lowerCaseAttributeName)
-            .addStatement("$1T<$2T> tmpList = new $3T<>()", List.class, typeClass, ArrayList.class)
-            .beginControlFlow("for ($1T element : $2L.get(i))", typeClass, lowerCaseAttributeName)
-            .addStatement("tmpList.add(element)")
-            .endControlFlow()
-            .addStatement("$1L.get$2L().set(i, tmpList)", resultName,
-                attribute.getAttributeName())
-            .endControlFlow();
+        case SET:
+          builder.beginControlFlow("for ($1T element : $2L)", typeClass, attributeName)
+              .addStatement("$1L.get$2L().add(element)", resultName, uppercaseAttributeName)
+              .endControlFlow();
+          break;
+
+        case MATRIX:
+          builder.beginControlFlow("for ($1T i=0; i < $2L.size(); i++)", Integer.class, attributeName)
+              .addStatement("$1T<$2T> tmpList = new $3T<>()", List.class, typeClass, ArrayList.class)
+              .beginControlFlow("for ($1T element : $2L.get(i))", typeClass, attributeName)
+              .addStatement("tmpList.add(element)")
+              .endControlFlow()
+              .addStatement("$1L.get$2L().set(i, tmpList)", resultName, uppercaseAttributeName)
+              .endControlFlow();
+          break;
       }
     }
-
     builder.addStatement("return $L", resultName);
-
     return builder.build();
   }
 
@@ -196,10 +194,10 @@ public class StateGenerator {
     MethodSpec.Builder builder = MethodSpec.methodBuilder("getAttributeByNumber")
         .returns(Object.class)
         .addModifiers(Modifier.PUBLIC)
-        .addParameter(Integer.class, "number");
+        .addParameter(Double.class, "number");
 
     builder.beginControlFlow("try")
-        .addStatement("return this.getClass().getDeclaredFields()[number].get(this)")
+        .addStatement("return this.getClass().getDeclaredFields()[number.intValue()].get(this)")
         .endControlFlow()
         .beginControlFlow("catch($T e)", IllegalAccessException.class)
         .addStatement("e.printStackTrace()")
@@ -214,11 +212,11 @@ public class StateGenerator {
     MethodSpec.Builder builder = MethodSpec.methodBuilder("setAttributeByNumber")
         .returns(void.class)
         .addModifiers(Modifier.PUBLIC)
-        .addParameter(Integer.class, "number")
+        .addParameter(Double.class, "number")
         .addParameter(Object.class, "value");
 
     builder.beginControlFlow("try")
-        .addStatement("this.getClass().getDeclaredFields()[number].set(this, value)")
+        .addStatement("this.getClass().getDeclaredFields()[number.intValue()].set(this, value)")
         .endControlFlow()
         .beginControlFlow("catch($T e)", IllegalAccessException.class)
         .addStatement("e.printStackTrace()")

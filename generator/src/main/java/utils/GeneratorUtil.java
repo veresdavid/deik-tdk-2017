@@ -8,8 +8,8 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import enums.ExpressionType;
-import enums.VarStruct;
 import enums.VarType;
+import exceptions.UnexpectedSwitchClauseException;
 import interfaces.Expression;
 import java.io.File;
 import java.util.AbstractMap.SimpleEntry;
@@ -21,15 +21,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.lang.model.element.Modifier;
-import representation.ExpressionRepresentation;
-import representation.ForExpressionRepresentation;
-import representation.ParameterRepresentation;
-import representation.VarDefiningExpression;
+import representation.expression.ExpressionRepresentation;
+import representation.expression.ForExpressionRepresentation;
+import representation.expression.IfExpressionRepresentation;
+import representation.expression.VarDefiningExpressionRepresentation;
+import representation.operator.ParameterRepresentation;
 import representation.state.AttributeRepresentation;
 
 public final class GeneratorUtil {
-
-  //TODO: Refactor set assign method
 
   public static final Map.Entry<String, Object> hashSetEntry = new SimpleEntry<>("hash_set", HashSet.class);
   public static final Map.Entry<String, Object> arraysEntry = new SimpleEntry<>("arrays", Arrays.class);
@@ -40,7 +39,7 @@ public final class GeneratorUtil {
 
     for (AttributeRepresentation currentAttribute : attributes) {
       String attributeName = currentAttribute.getAttributeName().toLowerCase();
-      ParameterizedTypeName attributeType = getAttributeType(currentAttribute);
+      TypeName attributeType = getAttributeType(currentAttribute);
 
       FieldSpec currentField = FieldSpec
           .builder(attributeType, attributeName)
@@ -62,7 +61,7 @@ public final class GeneratorUtil {
       String parameterName = parameter.getParameterName();
 
       FieldSpec currentField = FieldSpec
-          .builder(Integer.class, parameterName)
+          .builder(Double.class, parameterName)
           .addModifiers(Modifier.PRIVATE)
           .build();
 
@@ -93,8 +92,7 @@ public final class GeneratorUtil {
 
   public static MethodSpec generateGetter(FieldSpec field) {
     String attributeName = field.name;
-    String upperCaseAttributeName =
-        attributeName.substring(0, 1).toUpperCase() + attributeName.substring(1);
+    String upperCaseAttributeName = getUpperCaseName(attributeName);
     TypeName attributeClass = field.type;
 
     MethodSpec.Builder builder = MethodSpec.methodBuilder("get" + upperCaseAttributeName)
@@ -107,8 +105,7 @@ public final class GeneratorUtil {
 
   public static MethodSpec generateSetter(FieldSpec field) {
     String attributeName = field.name;
-    String upperCaseAttributeName =
-        attributeName.substring(0, 1).toUpperCase() + attributeName.substring(1);
+    String upperCaseAttributeName = getUpperCaseName(attributeName);
     TypeName attributeClass = field.type;
 
     MethodSpec.Builder builder = MethodSpec.methodBuilder("set" + upperCaseAttributeName)
@@ -139,8 +136,7 @@ public final class GeneratorUtil {
     return gettersAndSetters;
   }
 
-  public static MethodSpec generateEqualsMethod(List<FieldSpec> fields, ClassName className,
-      String fieldName) {
+  public static MethodSpec generateEqualsMethod(List<FieldSpec> fields, ClassName className, String fieldName) {
     final String parameterName = "o";
 
     MethodSpec.Builder builder = MethodSpec.methodBuilder("equals")
@@ -228,19 +224,37 @@ public final class GeneratorUtil {
     CodeBlock.Builder builder = CodeBlock.builder();
 
     String variableName = forExpression.getVariable();
+
     String from = forExpression.getFrom();
     String to = forExpression.getTo();
     String by = forExpression.getBy();
 
-    builder.beginControlFlow(GeneratorUtil
-        .generateForStatement(variableName, from, to, by), Double.class)
+    builder.addNamed(generateForStatement(Double.class, variableName, from, to, by), namedArguments)
+        .beginControlFlow("")
         .add(generateStatements(forExpression.getExpressions(), namedArguments))
         .endControlFlow();
 
     return builder.build();
   }
 
-  //TODO: Throws missing argument exception
+  public static CodeBlock generateIfBlock(IfExpressionRepresentation ifExpression, Map<String, Object> namedArguments) {
+    CodeBlock.Builder builder = CodeBlock.builder();
+
+    String condition = ((ExpressionRepresentation) ifExpression.getCondition()).getValue();
+    builder.addNamed("if(" + condition + ")", namedArguments)
+        .beginControlFlow("")
+        .add(generateStatements(ifExpression.getIfExpressions(), namedArguments))
+        .endControlFlow();
+
+    if (ifExpression.containsElse()) {
+      builder.beginControlFlow("else")
+          .add(generateStatements(ifExpression.getElseExpressions(), namedArguments))
+          .endControlFlow();
+    }
+
+    return builder.build();
+  }
+
   public static CodeBlock generateStatements(List<Expression> expressions, Map<String, Object> namedArguments) {
     CodeBlock.Builder builder = CodeBlock.builder();
 
@@ -252,11 +266,15 @@ public final class GeneratorUtil {
           builder.add(generateForBlock(((ForExpressionRepresentation) expression), namedArguments));
           break;
 
+        case IF_EXPR:
+          builder.add(generateIfBlock(((IfExpressionRepresentation) expression), namedArguments));
+          break;
+
         case VAR_DEFINING_EXPR:
-          VarDefiningExpression varDefiningExpression = ((VarDefiningExpression) expression);
-          ClassName className = varDefiningExpression.getClassName();
-          String varName = varDefiningExpression.getVarName();
-          String value = varDefiningExpression.getValue();
+          VarDefiningExpressionRepresentation varDefiningExpressionRepresentation = ((VarDefiningExpressionRepresentation) expression);
+          ClassName className = varDefiningExpressionRepresentation.getClassName();
+          String varName = varDefiningExpressionRepresentation.getVarName();
+          String value = varDefiningExpressionRepresentation.getValue();
 
           builder.add("$1T $2L = ", className, varName);
 
@@ -279,20 +297,39 @@ public final class GeneratorUtil {
     return builder.build();
   }
 
-  public static ParameterizedTypeName getAttributeType(AttributeRepresentation attribute) {
+  public static TypeName getAttributeType(AttributeRepresentation attribute) {
     TypeName innerType = getInnerAttributeType(attribute);
-    return attribute.getVarStruct().equals(VarStruct.SET) ? ParameterizedTypeName
-        .get(ClassName.get(Set.class), innerType)
-        : ParameterizedTypeName.get(ClassName.get(List.class), innerType);
+    switch (attribute.getVarStruct()) {
+
+      case SIMPLE:
+        return innerType;
+
+      case SET:
+        return ParameterizedTypeName.get(ClassName.get(Set.class), innerType);
+
+      case MATRIX:
+        return ParameterizedTypeName.get(ClassName.get(List.class), innerType);
+
+      default:
+        throw new UnexpectedSwitchClauseException(attribute.getVarStruct().toString());
+
+    }
+
   }
 
   public static TypeName getInnerAttributeType(AttributeRepresentation attribute) {
-    if (attribute.getVarStruct().equals(VarStruct.SET)) {
-      return attribute.getVarType().equals(VarType.NUMBER) ? TypeName.get(Double.class)
-          : TypeName.get(String.class);
-    } else {
-      return attribute.getVarType().equals(VarType.NUMBER) ? ParameterizedTypeName
-          .get(List.class, Double.class) : ParameterizedTypeName.get(List.class, String.class);
+    switch (attribute.getVarStruct()) {
+      case SIMPLE:
+      case SET:
+        return attribute.getVarType().equals(VarType.NUMBER) ? TypeName.get(Double.class)
+            : TypeName.get(String.class);
+
+      case MATRIX:
+        return attribute.getVarType().equals(VarType.NUMBER) ? ParameterizedTypeName
+            .get(List.class, Double.class) : ParameterizedTypeName.get(List.class, String.class);
+
+      default:
+        throw new RuntimeException("Unexpected var struct!");
     }
   }
 
@@ -300,9 +337,9 @@ public final class GeneratorUtil {
       Parameter_description_lineContext parameter) {
 
     String paramName = parameter.PARAM_NAME().getText();
-    Integer from = Integer.parseInt(parameter.INT(0).getText());
-    Integer to = Integer.parseInt(parameter.INT(1).getText());
-    Integer by = parameter.INT(2) == null ? 1 : Integer.parseInt(parameter.INT(2).getText());
+    Double from = Double.parseDouble(parameter.INT(0).getText());
+    Double to = Double.parseDouble(parameter.INT(1).getText());
+    Double by = parameter.INT(2) == null ? 1 : Double.parseDouble(parameter.INT(2).getText());
 
     ParameterRepresentation parameterRepresentation = new ParameterRepresentation();
     parameterRepresentation.setParameterName(paramName);
@@ -313,10 +350,14 @@ public final class GeneratorUtil {
     return parameterRepresentation;
   }
 
-  public static String generateForStatement(String variable, String from, String to, String by) {
-    return "for($1T " + variable + " = " + from + "; " + variable + "<=" + to + "; " + variable + " += " + by + ")";
+  public static String getUpperCaseName(String attributeName) {
+    return attributeName.substring(0, 1).toUpperCase() + attributeName.substring(1);
   }
 
+  public static String generateForStatement(Class type, String variable, String from, String to, String by) {
+    return "for(" + type.getSimpleName() + " " + variable + " = " + from + "; " + variable + " <= " + to + "; "
+        + variable + " += " + by + ")";
+  }
 
   public static String getParameterNamesAsString(List<ParameterRepresentation> parameters) {
     return parameters.stream().map(ParameterRepresentation::getParameterName)
@@ -324,8 +365,8 @@ public final class GeneratorUtil {
   }
 
   public static String getFilePath(String directoryName, String packageName, String fileName) {
-    return new File(
-        directoryName + "\\" + packageName.replace(".", "\\") + "\\" + fileName + ".java")
-        .getAbsolutePath();
+    return new File(directoryName + File.separatorChar
+        + packageName.replace('.', File.separatorChar) + File.separatorChar
+        + fileName + ".java").getAbsolutePath();
   }
 }

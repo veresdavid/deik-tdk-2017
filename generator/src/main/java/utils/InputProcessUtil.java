@@ -2,12 +2,14 @@ package utils;
 
 import antlr.SMLParser.DimensionContext;
 import antlr.SMLParser.ExpressionContext;
-import antlr.SMLParser.Set_init_exprContext;
 import antlr.SMLVisitor;
 import enums.ExpressionType;
 import interfaces.Expression;
+import java.util.ArrayList;
+import java.util.List;
 import misc.Dimension;
-import representation.ExpressionRepresentation;
+import representation.expression.ExpressionRepresentation;
+import representation.expression.VarDefiningExpressionRepresentation;
 
 public final class InputProcessUtil {
 
@@ -15,36 +17,33 @@ public final class InputProcessUtil {
   }
 
   public static Dimension getDimensionFromContext(DimensionContext dimension, SMLVisitor<Expression> visitor) {
-    String dimensionN = getExpressionValue(dimension.dimensionN, visitor);
+    String dimensionN = getExpressionContextValue(dimension.dimensionN, visitor);
     dimensionN = "Double.valueOf(" + dimensionN + ").intValue()";
 
-    String dimensionM = getExpressionValue(dimension.dimensionM, visitor);
+    String dimensionM = getExpressionContextValue(dimension.dimensionM, visitor);
     dimensionM = "Double.valueOf(" + dimensionM + ").intValue()";
 
     return new Dimension(dimensionN, dimensionM);
   }
 
-  public static String getSetInitExpressionValue(Set_init_exprContext exprContext, SMLVisitor<Expression> visitor) {
-    String result = "new $hash_set:T<>($arrays:T.asList(";
-
-    for (ExpressionContext expression : exprContext.expression()) {
-      result += ((ExpressionRepresentation) visitor.visit(expression)).getValue();
-
-      if (exprContext.expression().indexOf(expression) < exprContext.expression().size() - 1) {
-        result += ", ";
-      }
-    }
-
-    result += "))";
-    return result;
-  }
-
-  public static String getExpressionValue(ExpressionContext expressionContext, SMLVisitor<Expression> visitor) {
-    TypeUtil.ensureExpressionTypeIsNot(expressionContext, visitor, ExpressionType.FOR_EXPR,
-        ExpressionType.VAR_DEFINING_EXPR);
+  public static String getExpressionContextValue(ExpressionContext expressionContext, SMLVisitor<Expression> visitor) {
+    InputValidatorUtil.ensureExpressionContextTypeIsNot(expressionContext, visitor,
+        ExpressionType.FOR_EXPR, ExpressionType.IF_EXPR, ExpressionType.VAR_DEFINING_EXPR);
 
     return ((ExpressionRepresentation) visitor.visit(expressionContext)).getValue();
   }
 
-}
 
+  public static List<String> getVarNames(List<Expression> expressions) {
+    List<String> result = new ArrayList<>();
+
+    for (Expression expression : expressions) {
+      if (expression.getExpressionType().equals(ExpressionType.VAR_DEFINING_EXPR)) {
+        String varName = ((VarDefiningExpressionRepresentation) expression).getVarName();
+        result.add(varName);
+      }
+    }
+
+    return result;
+  }
+}

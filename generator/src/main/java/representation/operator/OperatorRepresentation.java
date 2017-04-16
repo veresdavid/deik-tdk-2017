@@ -3,7 +3,6 @@ package representation.operator;
 import interfaces.Expression;
 import java.util.ArrayList;
 import java.util.List;
-import representation.ParameterRepresentation;
 
 
 public class OperatorRepresentation {

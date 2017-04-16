@@ -23,6 +23,11 @@ public class IncorrectInputException extends RuntimeException {
   }
 
   public String getMsg() {
+    return msg;
+  }
+
+  @Override
+  public String getMessage() {
     return line + " : " + charPositionInLine + " " + msg;
   }
 }
