@@ -73,6 +73,7 @@ public class HeuristicParser {
 	    myParser.addFunction("min", new Min());
 	    myParser.addFunction("max", new Max());
 	    myParser.addFunction("avg", new Avg());
+	    myParser.addFunction("card", new Card());
 		for(String key : variableNamesAndValues.keySet()){
 	    	myParser.addVariable(key, variableNamesAndValues.get(key));
 	    }
@@ -164,15 +165,10 @@ public class HeuristicParser {
 		
 		return object;
 	}
-
-	// Csak a Node-dal kezdődőeket fogadjuk el.
-		// igy nem kell package név, mindig a Node-ot használjuk.
 	
 	private List<Object> processVariableName(String variableName) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, TypeMismatchException{
 		List<Object> processedValues = new ArrayList<>();
-		System.out.println(variableName);
 		int pointPosition = variableName.indexOf(".");
-		System.out.println(pointPosition);
 		
 		pointPosition = variableName.indexOf(".");
 		variableName = variableName.substring(pointPosition + 1);
