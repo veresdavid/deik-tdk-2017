@@ -1,0 +1,8 @@
+Three jugs:
+abs(4-Node.state.attr0[0][0])
+
+8 queens:
+abs(72-sum(Node.state.attr0))
+
+Hanoi towers:
+4-card(Node.state.attr2)
