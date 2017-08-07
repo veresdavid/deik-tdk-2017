@@ -42,8 +42,8 @@ public class SolutionHelper {
 	}
 	
 	public static String writeOutput(Class<?> solutionSearcher, List<Node> nodes, List<Node> treeNodes, List<Node> solutions, String steps, List<OperatorInterface> operators){
-		File outputFolder = new File("solutionOutputs");
-		File output = new File("solutionOutputs/" + solutionSearcher.getSimpleName() + LocalDateTime.now().format(DateTimeFormatter.ofPattern("YYYY-MM-dd-hh-mm-ss")) + UUID.randomUUID().toString() + ".txt");
+		File outputFolder = new File("/srv/tomcat-persistent/graph/solutionOutputs");
+		File output = new File("/srv/tomcat-persistent/graph/solutionOutputs/" + solutionSearcher.getSimpleName() + LocalDateTime.now().format(DateTimeFormatter.ofPattern("YYYY-MM-dd-hh-mm-ss")) + UUID.randomUUID().toString() + ".txt");
 		if(!outputFolder.exists())
 			outputFolder.mkdirs();
 			
