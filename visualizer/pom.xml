@@ -79,6 +79,13 @@
       <version>42.0.0</version>
     </dependency>
 
+    <!-- FLYWAY -->
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-core</artifactId>
+      <version>4.2.0</version>
+    </dependency>
+
     <!-- COMMONS -->
     <dependency>
       <groupId>commons-fileupload</groupId>
