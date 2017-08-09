@@ -3,6 +3,7 @@ package hu.david.veres.graph.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "processes")
@@ -36,5 +37,13 @@ public class ProcessEntity {
 
     @Column(name = "java_package_name")
     private String javaPackageName;
+
+    private String name;
+
+    @Column(name = "creation_date")
+    private Date creationDate;
+
+    @Column(name = "user_id")
+    private Long userId;
 
 }

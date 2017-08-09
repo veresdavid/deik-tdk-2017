@@ -2,6 +2,8 @@ package hu.david.veres.graph.dto;
 
 import lombok.*;
 
+import java.util.Date;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -18,5 +20,8 @@ public class ProcessDTO {
     private String stateSpaceFileName;
     private String solutionFileName;
     private String javaPackageName;
+    private String name;
+    private Date creationDate;
+    private Long userId;
 
 }

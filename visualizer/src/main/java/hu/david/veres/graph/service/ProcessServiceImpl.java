@@ -4,43 +4,90 @@ import hu.david.veres.graph.dto.ProcessDTO;
 import hu.david.veres.graph.entity.ProcessEntity;
 import hu.david.veres.graph.repository.ProcessRepository;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.lang.reflect.Type;
+import java.util.List;
 
 @Service
 public class ProcessServiceImpl implements ProcessService {
 
-    @Autowired
-    private ProcessRepository processRepository;
+	@Autowired
+	private ProcessRepository processRepository;
 
-    @Autowired
-    private ModelMapper modelMapper;
+	@Autowired
+	private ModelMapper modelMapper;
 
-    @Transactional(readOnly = true)
-    @Override
-    public ProcessDTO getProcessByIdentifier(String processIdentifier) {
+	@Autowired
+	private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
-        ProcessEntity processEntity = processRepository.findByProcessIdentifier(processIdentifier);
+	@Transactional(readOnly = true)
+	@Override
+	public ProcessDTO getProcessByIdentifier(String processIdentifier) {
 
-        if (processEntity == null) {
-            return null;
-        }
+		ProcessEntity processEntity = processRepository.findByProcessIdentifier(processIdentifier);
 
-        return modelMapper.map(processEntity, ProcessDTO.class);
+		if (processEntity == null) {
+			return null;
+		}
 
-    }
+		return modelMapper.map(processEntity, ProcessDTO.class);
 
-    @Transactional
-    @Override
-    public ProcessDTO save(ProcessDTO processDTO) {
+	}
 
-        ProcessEntity processEntity = modelMapper.map(processDTO, ProcessEntity.class);
+	@Transactional(readOnly = true)
+	@Override
+	public List<ProcessDTO> getProcessesByUserId(Long id) {
 
-        ProcessEntity savedEntity = processRepository.save(processEntity);
+		if (id == null) {
+			return null;
+		}
 
-        return modelMapper.map(savedEntity, ProcessDTO.class);
+		List<ProcessEntity> processEntities = processRepository.findByUserId(id);
 
-    }
+		if (processEntities == null) {
+			return null;
+		}
+
+		Type listType = new TypeToken<List<ProcessDTO>>() {
+		}.getType();
+
+		return modelMapper.map(processEntities, listType);
+
+	}
+
+	@Transactional
+	@Override
+	public ProcessDTO save(ProcessDTO processDTO) {
+
+		ProcessEntity processEntity = modelMapper.map(processDTO, ProcessEntity.class);
+
+		ProcessEntity savedEntity = processRepository.save(processEntity);
+
+		return modelMapper.map(savedEntity, ProcessDTO.class);
+
+	}
+
+	@Transactional
+	@Override
+	public void delete(ProcessDTO processDTO) {
+
+		if (processDTO == null) {
+			return;
+		}
+
+		// TODO: stop thread if running?
+
+		// TODO: delete files
+
+		ProcessEntity processEntity = modelMapper.map(processDTO, ProcessEntity.class);
+
+		processRepository.delete(processEntity);
+
+	}
 
 }
