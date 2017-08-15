@@ -147,3 +147,54 @@ svg{
 	color: red;
 	font-style: italic;
 }
+
+/** REGISTRATION PAGE */
+
+#registrationHeader{
+    width: 40%;
+    margin: 0 auto;
+    padding-left: 10px;
+}
+
+.registrationTable{
+	width: 40%;
+	margin: 30px auto;
+}
+
+.registrationSubmitButton{
+	display: block;
+	margin: 10px auto 0 auto;
+	width: 150px;
+}
+
+.passwordField{
+    margin-bottom: 10px;
+}
+
+.fieldErrors{
+    padding: 5px;
+    margin: 10px auto 5px auto;
+    display: none;
+}
+
+/** LOGIN PAGE */
+
+#loginHeader{
+    width: 40%;
+    margin: 0 auto;
+}
+
+#loginDiv{
+    width: 40%;
+    margin: 0 auto;
+}
+
+.loginButton{
+    display: block;
+    width: 150px;
+    margin: 0 auto;
+}
+
+.loginElement{
+    margin: 20px auto;
+}

@@ -3,7 +3,6 @@ package hu.david.veres.graph.service;
 import hu.david.veres.graph.dto.UserDTO;
 import org.springframework.stereotype.Service;
 
-@Service
 public interface UserService {
 
 	UserDTO getUserById(Long id);

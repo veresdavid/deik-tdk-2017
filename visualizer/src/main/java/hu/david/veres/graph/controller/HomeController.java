@@ -10,7 +10,7 @@ public class HomeController {
 
     @RequestMapping(path = "/", method = RequestMethod.GET)
     public String loadPage(){
-        return "redirect:./problem";
+        return "home";
     }
 
 }
