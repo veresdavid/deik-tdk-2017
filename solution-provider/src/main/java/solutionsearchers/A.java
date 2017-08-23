@@ -10,12 +10,10 @@ import interfaces.OperatorInterface;
 import interfaces.StateInterface;
 import nodes.ANode;
 import nodes.Node;
-import solutionsearchers.helpers.InformationCollector;
 import solutionsearchers.helpers.SolutionHelper;
 
-public class A {
+public class A extends SolutionSearcher {
 
-	private List<OperatorInterface> OPERATORS;
 	private ANode actual;
 	private ANode treeActual;
 	private String heuristicFunction;
@@ -24,14 +22,12 @@ public class A {
 	private List<ANode> closedNodes = new ArrayList<>();
 	private int maxId;
 	private int treeId;
-	private InformationCollector informationCollector;
 	
-	public A(ANode start, String heuristicFunction, Set<String> variablesInHeuristicFunction, List<OperatorInterface> OPERATORS, InformationCollector informationCollector) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvalidVariableException, TypeMismatchException{
+	public A(StateInterface state, String heuristicFunction, Set<String> variablesInHeuristicFunction) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvalidVariableException, TypeMismatchException{
+		ANode start = new ANode(state.getStart(), null, null, 0, 0, heuristicFunction, variablesInHeuristicFunction);
 		treeId = -1;
 		this.heuristicFunction = heuristicFunction;
 		this.variablesInHeuristicFunction = variablesInHeuristicFunction;
-		this.OPERATORS = OPERATORS;
-		this.informationCollector = informationCollector;
 		openNodes.add(start);
 		informationCollector.addGraphNodeToActivateNodes(start);
 		informationCollector.addTreeNodeToActivateNodes(new ANode(start.getState(), (ANode) start.getParent(), start.getOperator(), treeId, start.getPathCost(), heuristicFunction, variablesInHeuristicFunction));
@@ -49,10 +45,7 @@ public class A {
 	}
 	
 	private void expand(ANode node) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvalidVariableException, TypeMismatchException{
-		//List<Integer> newOpenNodeIdList = new ArrayList<>();
-		//List<String> operatorIdList = new ArrayList<>();
-		
-		for (OperatorInterface operator : OPERATORS) {
+		for (OperatorInterface operator : operators) {
 			if(operator.isApplicable(node.getState())){
 				StateInterface newState = operator.apply(node.getState());
 				
@@ -78,10 +71,8 @@ public class A {
 					
 					informationCollector.addGraphNodeToActivateNodes(newNode);
 					informationCollector.addTreeNodeToActivateNodes(newTreeNode);
-					informationCollector.addGraphEdgeToActivateEdges(newNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newNode.getOperator()) + "-" + newNode.getId());
-					informationCollector.addTreeEdgeToActivateEdges(newTreeNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
-					//newOpenNodeIdList.add(newNode.getId());
-					//operatorIdList.add("OP" + OPERATORS.indexOf(operator));
+					informationCollector.addGraphEdgeToActivateEdges(newNode.getParent().getId() + "-OP" + operators.indexOf(newNode.getOperator()) + "-" + newNode.getId());
+					informationCollector.addTreeEdgeToActivateEdges(newTreeNode.getParent().getId() + "-OP" + operators.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
 				} else {
 					double newPathCost = node.getPathCost() + operator.getCost();
 					
@@ -89,8 +80,8 @@ public class A {
 						if(newPathCost < openNodesContains.getPathCost()){
 							Node openNodeInTree = informationCollector.getListForTree().get(informationCollector.getListForTree().indexOf(openNodesContains));
 							
-							informationCollector.addGraphEdgeToInactivateEdges(openNodesContains.getParent().getId() + "-OP" + OPERATORS.indexOf(openNodesContains.getOperator()) + "-" + openNodesContains.getId());
-							informationCollector.addTreeEdgeToInactivateEdges(openNodeInTree.getParent().getId() + "-OP" + OPERATORS.indexOf(openNodeInTree.getOperator()) + "-" + openNodeInTree.getId());
+							informationCollector.addGraphEdgeToInactivateEdges(openNodesContains.getParent().getId() + "-OP" + operators.indexOf(openNodesContains.getOperator()) + "-" + openNodesContains.getId());
+							informationCollector.addTreeEdgeToInactivateEdges(openNodeInTree.getParent().getId() + "-OP" + operators.indexOf(openNodeInTree.getOperator()) + "-" + openNodeInTree.getId());
 							
 							openNodesContains.setParent(node);
 							openNodesContains.setOperator(operator);
@@ -105,17 +96,15 @@ public class A {
 							}
 							
 							informationCollector.addTreeNodeToActivateNodes(newTreeNode);
-							informationCollector.addGraphEdgeToActivateEdges(openNodesContains.getParent().getId() + "-OP" + OPERATORS.indexOf(openNodesContains.getOperator()) + "-" + openNodesContains.getId());
-							informationCollector.addTreeEdgeToActivateEdges(newTreeNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
-							//newOpenNodeIdList.add(openNodesContains.getId());
-							//operatorIdList.add("OP" + OPERATORS.indexOf(operator));
+							informationCollector.addGraphEdgeToActivateEdges(openNodesContains.getParent().getId() + "-OP" + operators.indexOf(openNodesContains.getOperator()) + "-" + openNodesContains.getId());
+							informationCollector.addTreeEdgeToActivateEdges(newTreeNode.getParent().getId() + "-OP" + operators.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
 						}
 					} else {
 						if(newPathCost < closedNodesContains.getPathCost()){
 							Node openNodeInTree = informationCollector.getListForTree().get(informationCollector.getListForTree().indexOf(closedNodesContains));
 							
-							informationCollector.addGraphEdgeToInactivateEdges(closedNodesContains.getParent().getId() + "-OP" + OPERATORS.indexOf(closedNodesContains.getOperator()) + "-" + closedNodesContains.getId());
-							informationCollector.addTreeEdgeToInactivateEdges(openNodeInTree.getParent().getId() + "-OP" + OPERATORS.indexOf(openNodeInTree.getOperator()) + "-" + openNodeInTree.getId());
+							informationCollector.addGraphEdgeToInactivateEdges(closedNodesContains.getParent().getId() + "-OP" + operators.indexOf(closedNodesContains.getOperator()) + "-" + closedNodesContains.getId());
+							informationCollector.addTreeEdgeToInactivateEdges(openNodeInTree.getParent().getId() + "-OP" + operators.indexOf(openNodeInTree.getOperator()) + "-" + openNodeInTree.getId());
 							
 							closedNodesContains.setParent(node);
 							closedNodesContains.setOperator(operator);
@@ -133,10 +122,8 @@ public class A {
 							
 							informationCollector.addGraphNodeToActivateNodes(closedNodesContains);
 							informationCollector.addTreeNodeToActivateNodes(newTreeNode);
-							informationCollector.addGraphEdgeToActivateEdges(closedNodesContains.getParent().getId() + "-OP" + OPERATORS.indexOf(closedNodesContains.getOperator()) + "-" + closedNodesContains.getId());
-							informationCollector.addTreeEdgeToActivateEdges(newTreeNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
-							//newOpenNodeIdList.add(closedNodesContains.getId());
-							//operatorIdList.add("OP" + OPERATORS.indexOf(operator));
+							informationCollector.addGraphEdgeToActivateEdges(closedNodesContains.getParent().getId() + "-OP" + operators.indexOf(closedNodesContains.getOperator()) + "-" + closedNodesContains.getId());
+							informationCollector.addTreeEdgeToActivateEdges(newTreeNode.getParent().getId() + "-OP" + operators.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
 						}
 					}
 				}
@@ -147,7 +134,6 @@ public class A {
 		informationCollector.appendSteps();
 		informationCollector.addGraphNodeToCloseNodes(node);
 		informationCollector.addTreeNodeToCloseNodes(treeActual);
-		//steps.append(operatorIdList + "|" + newOpenNodeIdList + "|");
 	}
 	
 	public String search() throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvalidVariableException, TypeMismatchException{
@@ -178,13 +164,7 @@ public class A {
 			if(!informationCollector.getListForGraph().contains(actual)){
 				informationCollector.getListForGraph().add(actual);
 			}
-			
-			/*if(actual.getOperator() != null){
-				steps.append("OP" + OPERATORS.indexOf(actual.getOperator()) + "|" + actual.getId() + "\n");
-			} else {
-				steps.append(actual.getId() + "\n");
-			}*/
-			
+
 			if(actual.getState().isGoal()){
 				informationCollector.appendSteps();
 				break;
@@ -193,9 +173,9 @@ public class A {
 			expand(actual);
 		}
 		if(!openNodes.isEmpty()){
-			return informationCollector.writeOutputSolution(getClass(), actual, treeActual, OPERATORS);
+			return informationCollector.writeOutputSolution(getClass(), actual, treeActual, operators);
 		} else {
-			return informationCollector.writeOutputNoSolution(getClass(), OPERATORS);
+			return informationCollector.writeOutputNoSolution(getClass(), operators);
 		}
 	}
 }

@@ -6,21 +6,17 @@ import java.util.List;
 import interfaces.OperatorInterface;
 import interfaces.StateInterface;
 import nodes.BreadthFirstNode;
-import solutionsearchers.helpers.InformationCollector;
 import solutionsearchers.helpers.SolutionHelper;
 
-public class BreadthFirst {
+public class BreadthFirst extends SolutionSearcher {
 	
-	private List<OperatorInterface> OPERATORS;
 	private BreadthFirstNode actual;
 	private LinkedList<BreadthFirstNode> openNodes = new LinkedList<>();
 	private LinkedList<BreadthFirstNode> closedNodes = new LinkedList<>();
 	private int maxId;
-	private InformationCollector informationCollector;
 	
-	public BreadthFirst(BreadthFirstNode start, List<OperatorInterface> OPERATORS, InformationCollector informationCollector){
-		this.OPERATORS = OPERATORS;
-		this.informationCollector = informationCollector;
+	public BreadthFirst(StateInterface state){
+		BreadthFirstNode start = new BreadthFirstNode(state.getStart(), null, null, 0, 0);
 		openNodes.add(start);
 		informationCollector.addGraphNodeToActivateNodes(start);
 		informationCollector.appendSteps();
@@ -37,10 +33,7 @@ public class BreadthFirst {
 	}
 	
 	private void expand(BreadthFirstNode node){
-		//List<Integer> newOpenNodeIdList = new ArrayList<>();
-		//List<String> operatorIdList = new ArrayList<>();
-		
-		for (OperatorInterface operator : OPERATORS) {
+		for (OperatorInterface operator : operators) {
 			if(operator.isApplicable(node.getState())){
 				StateInterface newState = operator.apply(node.getState());
 				
@@ -61,9 +54,7 @@ public class BreadthFirst {
 					}
 					
 					informationCollector.addGraphNodeToActivateNodes(newNode);
-					informationCollector.addGraphEdgeToActivateEdges(newNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newNode.getOperator()) + "-" + newNode.getId());
-					//newOpenNodeIdList.add(newNode.getId());
-					//operatorIdList.add("OP" + OPERATORS.indexOf(operator));
+					informationCollector.addGraphEdgeToActivateEdges(newNode.getParent().getId() + "-OP" + operators.indexOf(newNode.getOperator()) + "-" + newNode.getId());
 				}
 			}
 		}
@@ -71,7 +62,6 @@ public class BreadthFirst {
 		closedNodes.add(node);
 		informationCollector.appendSteps();
 		informationCollector.addGraphNodeToCloseNodes(node);
-		//steps.append(operatorIdList + "|" + newOpenNodeIdList + "|");
 	}
 	
 	public String search(){
@@ -86,13 +76,6 @@ public class BreadthFirst {
 				informationCollector.getListForGraph().add(actual);
 			}
 
-			
-			/*if(actual.getOperator() != null){
-				//steps.append("OP" + OPERATORS.indexOf(actual.getOperator()) + "|" + actual.getId() + "\n");
-			} else {
-				//steps.append(actual.getId() + "\n");
-			}*/
-			
 			if(actual.getState().isGoal()){
 				informationCollector.appendSteps();
 				break;
@@ -101,9 +84,9 @@ public class BreadthFirst {
 			expand(actual);
 		}
 		if(!openNodes.isEmpty()){
-			return informationCollector.writeOutputSolution(getClass(), actual, null, OPERATORS);
+			return informationCollector.writeOutputSolution(getClass(), actual, null, operators);
 		} else {
-			return informationCollector.writeOutputNoSolution(getClass(), OPERATORS);
+			return informationCollector.writeOutputNoSolution(getClass(), operators);
 		}
 	}
 }

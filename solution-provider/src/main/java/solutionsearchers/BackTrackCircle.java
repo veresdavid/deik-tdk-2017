@@ -6,18 +6,15 @@ import java.util.List;
 import interfaces.OperatorInterface;
 import interfaces.StateInterface;
 import nodes.BackTrackCircleNode;
-import solutionsearchers.helpers.InformationCollector;
 import solutionsearchers.helpers.SolutionHelper;
 
-public class BackTrackCircle {
+public class BackTrackCircle extends SolutionSearcher {
 	
-	private List<OperatorInterface> OPERATORS;
 	private BackTrackCircleNode actual;
 	private BackTrackCircleNode treeActual;
 	private List<BackTrackCircleNode> reachedNodes;
 	private int maxId;
 	private int treeId;
-	private InformationCollector informationCollector;
 	
 	private boolean isReached(BackTrackCircleNode node){
 		for(BackTrackCircleNode reachedNode : reachedNodes){
@@ -28,22 +25,19 @@ public class BackTrackCircle {
 		return false;
 	}
 	
-	public BackTrackCircle(BackTrackCircleNode start, List<OperatorInterface> OPERATORS, InformationCollector informationCollector){
-		actual = start;
+	public BackTrackCircle(StateInterface state){
+		actual = new BackTrackCircleNode(state.getStart(), null, null, 0, new ArrayList<>());
 		actual.setNumOfNodeStepOns(1);
 		treeId = -1;
 		treeActual = new BackTrackCircleNode(actual.getState(), (BackTrackCircleNode) actual.getParent(), actual.getOperator(), treeId, actual.getTried());
 		treeId--;
-		this.OPERATORS = OPERATORS;
-		this.informationCollector = informationCollector;
 		informationCollector.addGraphNodeToActivateNodes(actual);
 		informationCollector.addTreeNodeToActivateNodes(treeActual);
 		informationCollector.addGraphNodeToStepOnNodes(actual);
 		informationCollector.addTreeNodeToStepOnNodes(treeActual);
 		informationCollector.appendSteps();
-		//steps.append(actual.getId() + "\n");
 		reachedNodes = new ArrayList<>();
-		maxId = start.getId();
+		maxId = actual.getId();
 	}
 	
 	public String search(){
@@ -69,9 +63,8 @@ public class BackTrackCircle {
 			}
 			
 			if(isReached(actual)){
-				//OperatorInterface operator = actual.getOperator();
-				String operatorId = actual.getParent().getId() + "-OP" + OPERATORS.indexOf(actual.getOperator()) + "-" + actual.getId();
-				String treeOperatorId = treeActual.getParent().getId() + "-OP" + OPERATORS.indexOf(treeActual.getOperator()) + "-" + treeActual.getId();
+				String operatorId = actual.getParent().getId() + "-OP" + operators.indexOf(actual.getOperator()) + "-" + actual.getId();
+				String treeOperatorId = treeActual.getParent().getId() + "-OP" + operators.indexOf(treeActual.getOperator()) + "-" + treeActual.getId();
 				informationCollector.addGraphEdgeToInactivateEdges(operatorId);
 				informationCollector.addTreeEdgeToInactivateEdges(treeOperatorId);
 				if(actual.getNumOfNodeStepOns() == 1){
@@ -88,14 +81,13 @@ public class BackTrackCircle {
 				informationCollector.addGraphNodeToStepOnNodes(actual);
 				informationCollector.addTreeNodeToStepOnNodes(treeActual);
 				informationCollector.appendSteps();
-				//steps.append("BACK OP" + OPERATORS.indexOf(operator) + " " + actual.getId() + "\n");
 			} else {
 				reachedNodes.add(actual);
 			}
 			
 			boolean wasOperatorUsed = false;
 			
-			for (OperatorInterface operator : OPERATORS) {
+			for (OperatorInterface operator : operators) {
 				if (operator.isApplicable(actual.getState()) && !actual.getTried().contains(operator)) {
 					actual.getTried().add(operator);
 					StateInterface newState = operator.apply(actual.getState());
@@ -119,10 +111,9 @@ public class BackTrackCircle {
 			}
 			
 			if (!wasOperatorUsed) {
-				//OperatorInterface operator = actual.getOperator();
 				if(actual.getParent() != null){
-					String operatorId = actual.getParent().getId() + "-OP" + OPERATORS.indexOf(actual.getOperator()) + "-" + actual.getId();
-					String treeOperatorId = treeActual.getParent().getId() + "-OP" + OPERATORS.indexOf(treeActual.getOperator()) + "-" + treeActual.getId();
+					String operatorId = actual.getParent().getId() + "-OP" + operators.indexOf(actual.getOperator()) + "-" + actual.getId();
+					String treeOperatorId = treeActual.getParent().getId() + "-OP" + operators.indexOf(treeActual.getOperator()) + "-" + treeActual.getId();
 					informationCollector.addGraphEdgeToInactivateEdges(operatorId);
 					informationCollector.addTreeEdgeToInactivateEdges(treeOperatorId);
 				}
@@ -141,11 +132,10 @@ public class BackTrackCircle {
 				if(actual != null){
 					informationCollector.addGraphNodeToStepOnNodes(actual);
 					informationCollector.addTreeNodeToStepOnNodes(treeActual);
-					//steps.append("BACK OP" + OPERATORS.indexOf(operator) + " " + actual.getId() + "\n");
 				}
 			} else {
-				String operatorId = actual.getParent().getId() + "-OP" + OPERATORS.indexOf(actual.getOperator()) + "-" + actual.getId();
-				String treeOperatorId = treeActual.getParent().getId() + "-OP" + OPERATORS.indexOf(treeActual.getOperator()) + "-" + treeActual.getId();
+				String operatorId = actual.getParent().getId() + "-OP" + operators.indexOf(actual.getOperator()) + "-" + actual.getId();
+				String treeOperatorId = treeActual.getParent().getId() + "-OP" + operators.indexOf(treeActual.getOperator()) + "-" + treeActual.getId();
 				if(informationCollector.getStepsOnStates().containsKey(actual.getState())){
 					actual.setNumOfNodeStepOns(informationCollector.getStepsOnStates().get(actual.getState()) + 1);
 					informationCollector.getStepsOnStates().put(actual.getState(), actual.getNumOfNodeStepOns());
@@ -159,15 +149,14 @@ public class BackTrackCircle {
 				informationCollector.addTreeNodeToStepOnNodes(treeActual);
 				informationCollector.addGraphNodeToCloseNodes(actual.getParent());
 				informationCollector.addTreeNodeToCloseNodes(treeActual.getParent());
-				//steps.append("OP" + OPERATORS.indexOf(actual.getOperator()) + " " + actual.getId() + "\n");
 			}
 			informationCollector.appendSteps();
 		}
 		
 		if(actual != null){
-			return informationCollector.writeOutputSolution(getClass(), actual, treeActual, OPERATORS);
+			return informationCollector.writeOutputSolution(getClass(), actual, treeActual, operators);
 		} else {
-			return informationCollector.writeOutputNoSolution(getClass(), OPERATORS);
+			return informationCollector.writeOutputNoSolution(getClass(), operators);
 		}
 	}
 }

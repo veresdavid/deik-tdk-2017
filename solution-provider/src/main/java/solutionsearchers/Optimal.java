@@ -7,24 +7,20 @@ import interfaces.OperatorInterface;
 import interfaces.StateInterface;
 import nodes.Node;
 import nodes.OptimalNode;
-import solutionsearchers.helpers.InformationCollector;
 import solutionsearchers.helpers.SolutionHelper;
 
-public class Optimal {
+public class Optimal extends SolutionSearcher {
 	
-	private List<OperatorInterface> OPERATORS;
 	private OptimalNode actual;
 	private OptimalNode treeActual;
 	private List<OptimalNode> openNodes = new ArrayList<>();
 	private List<OptimalNode> closedNodes = new ArrayList<>();
 	private int maxId;
 	private int treeId;
-	private InformationCollector informationCollector;
 	
-	public Optimal(OptimalNode start, List<OperatorInterface> OPERATORS, InformationCollector informationCollector){
+	public Optimal(StateInterface state){
+		OptimalNode start = new OptimalNode(state.getStart(), null, null, 0, 0);
 		treeId = -1;
-		this.OPERATORS = OPERATORS;
-		this.informationCollector = informationCollector;
 		openNodes.add(start);
 		informationCollector.addGraphNodeToActivateNodes(start);
 		informationCollector.addTreeNodeToActivateNodes(new OptimalNode(start.getState(), (OptimalNode) start.getParent(), start.getOperator(), treeId, start.getPathCost()));
@@ -42,10 +38,7 @@ public class Optimal {
 	}
 	
 	private void expand(OptimalNode node){
-		//List<Integer> newOpenNodeIdList = new ArrayList<>();
-		//List<String> operatorIdList = new ArrayList<>();
-		
-		for (OperatorInterface operator : OPERATORS) {
+		for (OperatorInterface operator : operators) {
 			if(operator.isApplicable(node.getState())){
 				StateInterface newState = operator.apply(node.getState());
 				
@@ -71,17 +64,15 @@ public class Optimal {
 					
 					informationCollector.addGraphNodeToActivateNodes(newNode);
 					informationCollector.addTreeNodeToActivateNodes(newTreeNode);
-					informationCollector.addGraphEdgeToActivateEdges(newNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newNode.getOperator()) + "-" + newNode.getId());
-					informationCollector.addTreeEdgeToActivateEdges(newTreeNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
-					//newOpenNodeIdList.add(newNode.getId());
-					//operatorIdList.add("OP" + OPERATORS.indexOf(operator));
+					informationCollector.addGraphEdgeToActivateEdges(newNode.getParent().getId() + "-OP" + operators.indexOf(newNode.getOperator()) + "-" + newNode.getId());
+					informationCollector.addTreeEdgeToActivateEdges(newTreeNode.getParent().getId() + "-OP" + operators.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
 				} else if (openNodesContains != null){
 					double newPathCost = node.getPathCost() + operator.getCost();
 					if(newPathCost < openNodesContains.getPathCost()){
 						Node openNodeInTree = informationCollector.getListForTree().get(informationCollector.getListForTree().indexOf(openNodesContains));
 
-						informationCollector.addGraphEdgeToInactivateEdges(openNodesContains.getParent().getId() + "-OP" + OPERATORS.indexOf(openNodesContains.getOperator()) + "-" + openNodesContains.getId());
-						informationCollector.addTreeEdgeToInactivateEdges(openNodeInTree.getParent().getId() + "-OP" + OPERATORS.indexOf(openNodeInTree.getOperator()) + "-" + openNodeInTree.getId());
+						informationCollector.addGraphEdgeToInactivateEdges(openNodesContains.getParent().getId() + "-OP" + operators.indexOf(openNodesContains.getOperator()) + "-" + openNodesContains.getId());
+						informationCollector.addTreeEdgeToInactivateEdges(openNodeInTree.getParent().getId() + "-OP" + operators.indexOf(openNodeInTree.getOperator()) + "-" + openNodeInTree.getId());
 						
 						openNodesContains.setParent(node);
 						openNodesContains.setOperator(operator);
@@ -96,10 +87,8 @@ public class Optimal {
 						}
 						
 						informationCollector.addTreeNodeToActivateNodes(newTreeNode);
-						informationCollector.addGraphEdgeToActivateEdges(openNodesContains.getParent().getId() + "-OP" + OPERATORS.indexOf(openNodesContains.getOperator()) + "-" + openNodesContains.getId());
-						informationCollector.addTreeEdgeToActivateEdges(newTreeNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
-						//newOpenNodeIdList.add(openNodesContains.getId());
-						//operatorIdList.add("OP" + OPERATORS.indexOf(operator));
+						informationCollector.addGraphEdgeToActivateEdges(openNodesContains.getParent().getId() + "-OP" + operators.indexOf(openNodesContains.getOperator()) + "-" + openNodesContains.getId());
+						informationCollector.addTreeEdgeToActivateEdges(newTreeNode.getParent().getId() + "-OP" + operators.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
 					}
 				}
 			}
@@ -109,7 +98,6 @@ public class Optimal {
 		informationCollector.appendSteps();
 		informationCollector.addGraphNodeToCloseNodes(node);
 		informationCollector.addTreeNodeToCloseNodes(treeActual);
-		//steps.append(operatorIdList + "|" + newOpenNodeIdList + "|");
 	}
 	
 	public String search(){
@@ -141,12 +129,6 @@ public class Optimal {
 				informationCollector.getListForGraph().add(actual);
 			}
 			
-			/*if(actual.getOperator() != null){
-				steps.append("OP" + OPERATORS.indexOf(actual.getOperator()) + "|" + actual.getId() + "\n");
-			} else {
-				steps.append(actual.getId() + "\n");
-			}*/
-			
 			if(actual.getState().isGoal()){
 				informationCollector.appendSteps();
 				break;
@@ -156,9 +138,9 @@ public class Optimal {
 		}
 		
 		if(!openNodes.isEmpty()){
-			return informationCollector.writeOutputSolution(getClass(), actual, treeActual, OPERATORS);
+			return informationCollector.writeOutputSolution(getClass(), actual, treeActual, operators);
 		} else {
-			return informationCollector.writeOutputNoSolution(getClass(), OPERATORS);
+			return informationCollector.writeOutputNoSolution(getClass(), operators);
 		}
 	}
 	

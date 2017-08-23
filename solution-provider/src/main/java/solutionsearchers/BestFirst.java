@@ -9,12 +9,10 @@ import exceptions.TypeMismatchException;
 import interfaces.OperatorInterface;
 import interfaces.StateInterface;
 import nodes.BestFirstNode;
-import solutionsearchers.helpers.InformationCollector;
 import solutionsearchers.helpers.SolutionHelper;
 
-public class BestFirst {
+public class BestFirst extends SolutionSearcher {
 	
-	private List<OperatorInterface> OPERATORS;
 	private BestFirstNode actual;
 	private BestFirstNode treeActual;
 	private String heuristicFunction;
@@ -23,14 +21,12 @@ public class BestFirst {
 	private List<BestFirstNode> closedNodes = new ArrayList<>();
 	private int maxId;
 	private int treeId;
-	private InformationCollector informationCollector;
 	
-	public BestFirst(BestFirstNode start, String heuristicFunction, Set<String> variablesInHeuristicFunction, List<OperatorInterface> OPERATORS, InformationCollector informationCollector) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvalidVariableException, TypeMismatchException{
+	public BestFirst(StateInterface state, String heuristicFunction, Set<String> variablesInHeuristicFunction) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvalidVariableException, TypeMismatchException{
+		BestFirstNode start = new BestFirstNode(state.getStart(), null, null, 0, heuristicFunction, variablesInHeuristicFunction);
 		treeId = -1;
 		this.heuristicFunction = heuristicFunction;
 		this.variablesInHeuristicFunction = variablesInHeuristicFunction;
-		this.OPERATORS = OPERATORS;
-		this.informationCollector = informationCollector;
 		openNodes.add(start);
 		informationCollector.addGraphNodeToActivateNodes(start);
 		informationCollector.addTreeNodeToActivateNodes(new BestFirstNode(start.getState(), (BestFirstNode) start.getParent(), start.getOperator(), treeId, heuristicFunction, variablesInHeuristicFunction));
@@ -48,10 +44,7 @@ public class BestFirst {
 	}
 	
 	private void expand(BestFirstNode node) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvalidVariableException, TypeMismatchException{
-		//List<Integer> newOpenNodeIdList = new ArrayList<>();
-		//List<String> operatorIdList = new ArrayList<>();
-		
-		for (OperatorInterface operator : OPERATORS) {
+		for (OperatorInterface operator : operators) {
 			if(operator.isApplicable(node.getState())){
 				StateInterface newState = operator.apply(node.getState());
 				
@@ -77,10 +70,8 @@ public class BestFirst {
 					
 					informationCollector.addGraphNodeToActivateNodes(newNode);
 					informationCollector.addTreeNodeToActivateNodes(newTreeNode);
-					informationCollector.addGraphEdgeToActivateEdges(newNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newNode.getOperator()) + "-" + newNode.getId());
-					informationCollector.addTreeEdgeToActivateEdges(newTreeNode.getParent().getId() + "-OP" + OPERATORS.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
-					//newOpenNodeIdList.add(newNode.getId());
-					//operatorIdList.add("OP" + OPERATORS.indexOf(operator));
+					informationCollector.addGraphEdgeToActivateEdges(newNode.getParent().getId() + "-OP" + operators.indexOf(newNode.getOperator()) + "-" + newNode.getId());
+					informationCollector.addTreeEdgeToActivateEdges(newTreeNode.getParent().getId() + "-OP" + operators.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
 				}
 			}
 		}
@@ -89,7 +80,6 @@ public class BestFirst {
 		informationCollector.appendSteps();
 		informationCollector.addGraphNodeToCloseNodes(node);
 		informationCollector.addTreeNodeToCloseNodes(treeActual);
-		//steps.append(operatorIdList + "|" + newOpenNodeIdList + "|");
 	}
 	
 	public String search() throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvalidVariableException, TypeMismatchException{
@@ -121,12 +111,6 @@ public class BestFirst {
 				informationCollector.getListForGraph().add(actual);
 			}
 			
-			/*if(actual.getOperator() != null){
-				steps.append("OP" + OPERATORS.indexOf(actual.getOperator()) + "|" + actual.getId() + "\n");
-			} else {
-				steps.append(actual.getId() + "\n");
-			}*/
-			
 			if(actual.getState().isGoal()){
 				informationCollector.appendSteps();
 				break;
@@ -135,9 +119,9 @@ public class BestFirst {
 			expand(actual);
 		}
 		if(!openNodes.isEmpty()){
-			return informationCollector.writeOutputSolution(getClass(), actual, treeActual, OPERATORS);
+			return informationCollector.writeOutputSolution(getClass(), actual, treeActual, operators);
 		} else {
-			return informationCollector.writeOutputNoSolution(getClass(), OPERATORS);
+			return informationCollector.writeOutputNoSolution(getClass(), operators);
 		}
 	}
 }
