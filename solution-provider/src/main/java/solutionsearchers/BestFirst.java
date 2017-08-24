@@ -82,7 +82,8 @@ public class BestFirst extends SolutionSearcher {
 		informationCollector.addTreeNodeToCloseNodes(treeActual);
 	}
 	
-	public String search() throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvalidVariableException, TypeMismatchException{
+	@Override
+	public void search() throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvalidVariableException, TypeMismatchException{
 		while(true){
 			if(openNodes.isEmpty()){
 				break;
@@ -119,9 +120,8 @@ public class BestFirst extends SolutionSearcher {
 			expand(actual);
 		}
 		if(!openNodes.isEmpty()){
-			return informationCollector.writeOutputSolution(getClass(), actual, treeActual, operators);
-		} else {
-			return informationCollector.writeOutputNoSolution(getClass(), operators);
+			solution = actual;
+			treeSolution = treeActual;
 		}
 	}
 }

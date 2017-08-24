@@ -28,7 +28,8 @@ public class BackTrackSimple extends SolutionSearcher{
 		maxId = actual.getId();
 	}
 	
-	public String search(){
+	@Override
+	public void search(){
 		int i = 0;
 		while(i < 2500){
 			i++;
@@ -124,9 +125,8 @@ public class BackTrackSimple extends SolutionSearcher{
 		}
 		
 		if(actual != null){
-			return informationCollector.writeOutputSolution(getClass(), actual, treeActual, operators);
-		} else {
-			return informationCollector.writeOutputNoSolution(getClass(), operators);
+			solution = actual;
+			treeSolution = treeActual;
 		}
 	}
 }

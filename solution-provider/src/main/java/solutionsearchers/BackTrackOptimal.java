@@ -11,9 +11,6 @@ public class BackTrackOptimal extends SolutionSearcher {
 	
 	private BackTrackOptimalNode actual;
 	private BackTrackOptimalNode treeActual;
-	private BackTrackOptimalNode solution;
-	private BackTrackOptimalNode treeSolution;
-	private boolean didFind;
 	private int pathLengthLimitation;
 	private int maxId;
 	private int treeId;
@@ -30,12 +27,11 @@ public class BackTrackOptimal extends SolutionSearcher {
 		informationCollector.addGraphNodeToStepOnNodes(actual);
 		informationCollector.addTreeNodeToStepOnNodes(treeActual);
 		informationCollector.appendSteps();
-		//steps.append(actual.getId() + "\n");
-		didFind = false;
 		maxId = actual.getId();
 	}
 	
-	public String search(){
+	@Override
+	public void search(){
 		while(true){	
 			if(actual == null){
 				break;
@@ -61,14 +57,12 @@ public class BackTrackOptimal extends SolutionSearcher {
 			}
 
 			if(actual.getState().isGoal()){
-				didFind = true;
 				solution = actual;
 				treeSolution = treeActual;
 				pathLengthLimitation = actual.getDepth();
 			}
 			
 			if(actual.getDepth() == pathLengthLimitation){
-				//OperatorInterface operator = actual.getOperator();
 				String operatorId = actual.getParent().getId() + "-OP" + operators.indexOf(actual.getOperator()) + "-" + actual.getId();
 				String treeOperatorId = treeActual.getParent().getId() + "-OP" + operators.indexOf(treeActual.getOperator()) + "-" + treeActual.getId();
 				if(actual.getNumOfEdgeStepOns() == 1){
@@ -91,7 +85,6 @@ public class BackTrackOptimal extends SolutionSearcher {
 				informationCollector.addGraphNodeToStepOnNodes(actual);
 				informationCollector.addTreeNodeToStepOnNodes(treeActual);
 				informationCollector.appendSteps();
-				//steps.append("BACK OP" + OPERATORS.indexOf(operator) + " " + actual.getId() + "\n");
 			}
 			
 			boolean wasOperatorUsed = false;
@@ -124,7 +117,6 @@ public class BackTrackOptimal extends SolutionSearcher {
 			}
 			
 			if (!wasOperatorUsed) {
-				//OperatorInterface operator = actual.getOperator();
 				if(actual.getParent() != null){
 					String operatorId = actual.getParent().getId() + "-OP" + operators.indexOf(actual.getOperator()) + "-" + actual.getId();
 					String treeOperatorId = treeActual.getParent().getId() + "-OP" + operators.indexOf(treeActual.getOperator()) + "-" + treeActual.getId();
@@ -149,7 +141,6 @@ public class BackTrackOptimal extends SolutionSearcher {
 				if(actual != null){
 					informationCollector.addGraphNodeToStepOnNodes(actual);
 					informationCollector.addTreeNodeToStepOnNodes(treeActual);
-					//steps.append("BACK OP" + OPERATORS.indexOf(operator) + " " + actual.getId() + "\n");
 				}
 			} else {
 				String operatorId = actual.getParent().getId() + "-OP" + operators.indexOf(actual.getOperator()) + "-" + actual.getId();
@@ -172,15 +163,8 @@ public class BackTrackOptimal extends SolutionSearcher {
 				informationCollector.addTreeNodeToStepOnNodes(treeActual);
 				informationCollector.addGraphNodeToCloseNodes(actual.getParent());
 				informationCollector.addTreeNodeToCloseNodes(treeActual.getParent());
-				//steps.append("OP" + OPERATORS.indexOf(actual.getOperator()) + " " + actual.getId() + "\n");
 			}
 			informationCollector.appendSteps();
-		}
-		
-		if(didFind){
-			return informationCollector.writeOutputSolution(getClass(), solution, treeSolution, operators);
-		} else {
-			return informationCollector.writeOutputNoSolution(getClass(), operators);
 		}
 	}
 }

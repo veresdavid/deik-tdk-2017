@@ -38,7 +38,7 @@ public class DatabaseConfiguration {
 		flyway.setBaselineOnMigrate(true);
 		flyway.setLocations("classpath:migration");
 		flyway.setDataSource(dataSource());
-		flyway.clean();
+		//flyway.clean();
 		return flyway;
 	}
 

@@ -46,7 +46,8 @@ public class SolutionManager{
 		
 		}
 		
-		return backTrackSimple.search();
+		backTrackSimple.search();
+		return backTrackSimple.searchFinished();
 	}
 	
 	public String doBackTrackCircle(boolean doTree) {
@@ -58,7 +59,8 @@ public class SolutionManager{
 			backTrackCircle.setInformationCollector(new ExtendedInformationCollector());
 		}
 		
-		return backTrackCircle.search();
+		backTrackCircle.search();
+		return backTrackCircle.searchFinished();
 	}
 
 	public String doBackTrackPathLengthLimitation(boolean doTree, int backTrackPathLengthLimitationLimit) {
@@ -70,7 +72,8 @@ public class SolutionManager{
 			backTrackPathLengthLimitation.setInformationCollector(new ExtendedInformationCollector());
 		}
 		
-		return backTrackPathLengthLimitation.search();
+		backTrackPathLengthLimitation.search();
+		return backTrackPathLengthLimitation.searchFinished();
 	}
 
 	public String doBackTrackOptimal(boolean doTree, int backTrackOptimalLimit) {
@@ -82,7 +85,8 @@ public class SolutionManager{
 			backTrackOptimal.setInformationCollector(new ExtendedInformationCollector());
 		} 
 		
-		return backTrackOptimal.search();
+		backTrackOptimal.search();
+		return backTrackOptimal.searchFinished();
 	}
 
 	public String doBreadthFirst(boolean doTree) {
@@ -94,7 +98,8 @@ public class SolutionManager{
 			breadthFirst.setInformationCollector(new ExtendedInformationCollector());
 		}
 		
-		return breadthFirst.search();
+		breadthFirst.search();
+		return breadthFirst.searchFinished();
 	}
 
 	public String doDepthFirst(boolean doTree) {
@@ -106,7 +111,8 @@ public class SolutionManager{
 			depthFirst.setInformationCollector(new ExtendedInformationCollector());
 		}
 		
-		return depthFirst.search();
+		depthFirst.search();
+		return depthFirst.searchFinished();
 	}
 
 	public String doOptimal(boolean doTree) {
@@ -118,7 +124,8 @@ public class SolutionManager{
 			optimal.setInformationCollector(new ExtendedInformationCollector());
 		}
 		
-		return optimal.search();
+		optimal.search();
+		return optimal.searchFinished();
 	}
 	
 	
@@ -131,7 +138,8 @@ public class SolutionManager{
 			bestFirst.setInformationCollector(new ExtendedInformationCollector());
 		}
 		
-		return bestFirst.search();
+		bestFirst.search();
+		return bestFirst.searchFinished();
 	}
 	
 	public String doA(String heuristicFunction, Set<String> variablesInHeuristicFunction, boolean doTree) throws ClassNotFoundException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvalidVariableException, TypeMismatchException {
@@ -143,6 +151,7 @@ public class SolutionManager{
 			a.setInformationCollector(new ExtendedInformationCollector());
 		}
 		
-		return a.search();
+		a.search();
+		return a.searchFinished();
 	}
 }

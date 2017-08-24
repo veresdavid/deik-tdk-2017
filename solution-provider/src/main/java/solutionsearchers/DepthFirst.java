@@ -64,7 +64,8 @@ public class DepthFirst extends SolutionSearcher {
 		informationCollector.addGraphNodeToCloseNodes(node);
 	}
 	
-	public String search(){
+	@Override
+	public void search(){
 		while(true){
 			if(openNodes.isEmpty()){
 				break;
@@ -85,9 +86,8 @@ public class DepthFirst extends SolutionSearcher {
 		}
 		
 		if(!openNodes.isEmpty()){
-			return informationCollector.writeOutputSolution(getClass(), actual, null, operators);
-		} else {
-			return informationCollector.writeOutputNoSolution(getClass(), operators);
+			solution = actual;
+			treeSolution = null;
 		}
 	}
 }

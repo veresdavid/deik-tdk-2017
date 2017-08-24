@@ -30,7 +30,8 @@ public class BackTrackPathLengthLimitation extends SolutionSearcher {
 		maxId = actual.getId();
 	}
 	
-	public String search(){
+	@Override
+	public void search(){
 		while(true){
 			if(actual == null){
 				break;
@@ -161,9 +162,8 @@ public class BackTrackPathLengthLimitation extends SolutionSearcher {
 		}
 		
 		if(actual != null){
-			return informationCollector.writeOutputSolution(getClass(), actual, treeActual, operators);
-		} else {
-			return informationCollector.writeOutputNoSolution(getClass(), operators);
+			solution = actual;
+			treeSolution = treeActual;
 		}
 	}
 }

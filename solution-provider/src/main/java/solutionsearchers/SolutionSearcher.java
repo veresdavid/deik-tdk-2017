@@ -3,12 +3,15 @@ package solutionsearchers;
 import java.util.List;
 
 import interfaces.OperatorInterface;
+import nodes.Node;
 import solutionsearchers.helpers.InformationCollector;
 
 public class SolutionSearcher {
 	
 	protected InformationCollector informationCollector;
 	protected List<OperatorInterface> operators;
+	protected Node solution;
+	protected Node treeSolution;
 	
 	protected SolutionSearcher( ) {
 		informationCollector = new InformationCollector();
@@ -28,5 +31,14 @@ public class SolutionSearcher {
 
 	public void setOperators(List<OperatorInterface> operators) {
 		this.operators = operators;
+	}
+	
+	public void search() throws Exception{
+		// exception kellesz
+		System.out.println("Search not implemented");
+	}
+	
+	public String searchFinished() {
+		return informationCollector.writeOutputSolution(getClass(), solution, treeSolution, operators);
 	}
 }

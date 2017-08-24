@@ -100,7 +100,8 @@ public class Optimal extends SolutionSearcher {
 		informationCollector.addTreeNodeToCloseNodes(treeActual);
 	}
 	
-	public String search(){
+	@Override
+	public void search(){
 		while(true){
 			if(openNodes.isEmpty()){
 				break;
@@ -138,10 +139,8 @@ public class Optimal extends SolutionSearcher {
 		}
 		
 		if(!openNodes.isEmpty()){
-			return informationCollector.writeOutputSolution(getClass(), actual, treeActual, operators);
-		} else {
-			return informationCollector.writeOutputNoSolution(getClass(), operators);
+			solution = actual;
+			treeSolution = treeActual;
 		}
 	}
-	
 }
