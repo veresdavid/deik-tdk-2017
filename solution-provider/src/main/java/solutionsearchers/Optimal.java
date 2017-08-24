@@ -64,15 +64,15 @@ public class Optimal extends SolutionSearcher {
 					
 					informationCollector.addGraphNodeToActivateNodes(newNode);
 					informationCollector.addTreeNodeToActivateNodes(newTreeNode);
-					informationCollector.addGraphEdgeToActivateEdges(newNode.getParent().getId() + "-OP" + operators.indexOf(newNode.getOperator()) + "-" + newNode.getId());
-					informationCollector.addTreeEdgeToActivateEdges(newTreeNode.getParent().getId() + "-OP" + operators.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
+					informationCollector.addGraphEdgeToActivateEdges(getEdgeId(newNode));
+					informationCollector.addTreeEdgeToActivateEdges(getEdgeId(newTreeNode));
 				} else if (openNodesContains != null){
 					double newPathCost = node.getPathCost() + operator.getCost();
 					if(newPathCost < openNodesContains.getPathCost()){
 						Node openNodeInTree = informationCollector.getListForTree().get(informationCollector.getListForTree().indexOf(openNodesContains));
 
-						informationCollector.addGraphEdgeToInactivateEdges(openNodesContains.getParent().getId() + "-OP" + operators.indexOf(openNodesContains.getOperator()) + "-" + openNodesContains.getId());
-						informationCollector.addTreeEdgeToInactivateEdges(openNodeInTree.getParent().getId() + "-OP" + operators.indexOf(openNodeInTree.getOperator()) + "-" + openNodeInTree.getId());
+						informationCollector.addGraphEdgeToInactivateEdges(getEdgeId(openNodesContains));
+						informationCollector.addTreeEdgeToInactivateEdges(getEdgeId(openNodeInTree));
 						
 						openNodesContains.setParent(node);
 						openNodesContains.setOperator(operator);
@@ -87,8 +87,8 @@ public class Optimal extends SolutionSearcher {
 						}
 						
 						informationCollector.addTreeNodeToActivateNodes(newTreeNode);
-						informationCollector.addGraphEdgeToActivateEdges(openNodesContains.getParent().getId() + "-OP" + operators.indexOf(openNodesContains.getOperator()) + "-" + openNodesContains.getId());
-						informationCollector.addTreeEdgeToActivateEdges(newTreeNode.getParent().getId() + "-OP" + operators.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
+						informationCollector.addGraphEdgeToActivateEdges(getEdgeId(openNodesContains));
+						informationCollector.addTreeEdgeToActivateEdges(getEdgeId(newTreeNode));
 					}
 				}
 			}

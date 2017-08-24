@@ -71,8 +71,8 @@ public class A extends SolutionSearcher {
 					
 					informationCollector.addGraphNodeToActivateNodes(newNode);
 					informationCollector.addTreeNodeToActivateNodes(newTreeNode);
-					informationCollector.addGraphEdgeToActivateEdges(newNode.getParent().getId() + "-OP" + operators.indexOf(newNode.getOperator()) + "-" + newNode.getId());
-					informationCollector.addTreeEdgeToActivateEdges(newTreeNode.getParent().getId() + "-OP" + operators.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
+					informationCollector.addGraphEdgeToActivateEdges(getEdgeId(newNode));
+					informationCollector.addTreeEdgeToActivateEdges(getEdgeId(newTreeNode));
 				} else {
 					double newPathCost = node.getPathCost() + operator.getCost();
 					
@@ -80,8 +80,8 @@ public class A extends SolutionSearcher {
 						if(newPathCost < openNodesContains.getPathCost()){
 							Node openNodeInTree = informationCollector.getListForTree().get(informationCollector.getListForTree().indexOf(openNodesContains));
 							
-							informationCollector.addGraphEdgeToInactivateEdges(openNodesContains.getParent().getId() + "-OP" + operators.indexOf(openNodesContains.getOperator()) + "-" + openNodesContains.getId());
-							informationCollector.addTreeEdgeToInactivateEdges(openNodeInTree.getParent().getId() + "-OP" + operators.indexOf(openNodeInTree.getOperator()) + "-" + openNodeInTree.getId());
+							informationCollector.addGraphEdgeToInactivateEdges(getEdgeId(openNodesContains));
+							informationCollector.addTreeEdgeToInactivateEdges(getEdgeId(openNodeInTree));
 							
 							openNodesContains.setParent(node);
 							openNodesContains.setOperator(operator);
@@ -96,15 +96,15 @@ public class A extends SolutionSearcher {
 							}
 							
 							informationCollector.addTreeNodeToActivateNodes(newTreeNode);
-							informationCollector.addGraphEdgeToActivateEdges(openNodesContains.getParent().getId() + "-OP" + operators.indexOf(openNodesContains.getOperator()) + "-" + openNodesContains.getId());
-							informationCollector.addTreeEdgeToActivateEdges(newTreeNode.getParent().getId() + "-OP" + operators.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
+							informationCollector.addGraphEdgeToActivateEdges(getEdgeId(openNodesContains));
+							informationCollector.addTreeEdgeToActivateEdges(getEdgeId(newTreeNode));
 						}
 					} else {
 						if(newPathCost < closedNodesContains.getPathCost()){
 							Node openNodeInTree = informationCollector.getListForTree().get(informationCollector.getListForTree().indexOf(closedNodesContains));
 							
-							informationCollector.addGraphEdgeToInactivateEdges(closedNodesContains.getParent().getId() + "-OP" + operators.indexOf(closedNodesContains.getOperator()) + "-" + closedNodesContains.getId());
-							informationCollector.addTreeEdgeToInactivateEdges(openNodeInTree.getParent().getId() + "-OP" + operators.indexOf(openNodeInTree.getOperator()) + "-" + openNodeInTree.getId());
+							informationCollector.addGraphEdgeToInactivateEdges(getEdgeId(closedNodesContains));
+							informationCollector.addTreeEdgeToInactivateEdges(getEdgeId(openNodeInTree));
 							
 							closedNodesContains.setParent(node);
 							closedNodesContains.setOperator(operator);
@@ -122,8 +122,8 @@ public class A extends SolutionSearcher {
 							
 							informationCollector.addGraphNodeToActivateNodes(closedNodesContains);
 							informationCollector.addTreeNodeToActivateNodes(newTreeNode);
-							informationCollector.addGraphEdgeToActivateEdges(closedNodesContains.getParent().getId() + "-OP" + operators.indexOf(closedNodesContains.getOperator()) + "-" + closedNodesContains.getId());
-							informationCollector.addTreeEdgeToActivateEdges(newTreeNode.getParent().getId() + "-OP" + operators.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
+							informationCollector.addGraphEdgeToActivateEdges(getEdgeId(closedNodesContains));
+							informationCollector.addTreeEdgeToActivateEdges(getEdgeId(newTreeNode));
 						}
 					}
 				}

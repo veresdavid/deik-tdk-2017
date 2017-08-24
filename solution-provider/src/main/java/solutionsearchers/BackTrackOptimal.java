@@ -50,9 +50,9 @@ public class BackTrackOptimal extends SolutionSearcher {
 			}
 			
 			if(actual.getOperator() != null){
-				String operatorId = actual.getParent().getId() + "-OP" + operators.indexOf(actual.getOperator()) + "-" + actual.getId();
-				if(!informationCollector.getStepsOnEdges().containsKey(operatorId)){
-					informationCollector.getStepsOnEdges().put(operatorId, actual.getNumOfEdgeStepOns());
+				String edgeId = getEdgeId(actual);
+				if(!informationCollector.getStepsOnEdges().containsKey(edgeId)){
+					informationCollector.getStepsOnEdges().put(edgeId, actual.getNumOfEdgeStepOns());
 				}
 			}
 
@@ -63,13 +63,12 @@ public class BackTrackOptimal extends SolutionSearcher {
 			}
 			
 			if(actual.getDepth() == pathLengthLimitation){
-				String operatorId = actual.getParent().getId() + "-OP" + operators.indexOf(actual.getOperator()) + "-" + actual.getId();
-				String treeOperatorId = treeActual.getParent().getId() + "-OP" + operators.indexOf(treeActual.getOperator()) + "-" + treeActual.getId();
+				String edgeId = getEdgeId(actual);
 				if(actual.getNumOfEdgeStepOns() == 1){
-					informationCollector.addGraphEdgeToInactivateEdges(operatorId);
+					informationCollector.addGraphEdgeToInactivateEdges(edgeId);
 				}
-				informationCollector.addTreeEdgeToInactivateEdges(treeOperatorId);
-				informationCollector.getStepsOnEdges().put(operatorId, actual.getNumOfEdgeStepOns() - 1);
+				informationCollector.addTreeEdgeToInactivateEdges(getEdgeId(treeActual));
+				informationCollector.getStepsOnEdges().put(edgeId, actual.getNumOfEdgeStepOns() - 1);
 
 				if(actual.getNumOfNodeStepOns() == 1){
 					informationCollector.addGraphNodeToInactivateNodes(actual);
@@ -118,13 +117,12 @@ public class BackTrackOptimal extends SolutionSearcher {
 			
 			if (!wasOperatorUsed) {
 				if(actual.getParent() != null){
-					String operatorId = actual.getParent().getId() + "-OP" + operators.indexOf(actual.getOperator()) + "-" + actual.getId();
-					String treeOperatorId = treeActual.getParent().getId() + "-OP" + operators.indexOf(treeActual.getOperator()) + "-" + treeActual.getId();
+					String edgeId = getEdgeId(actual);
 					if(actual.getNumOfEdgeStepOns() == 1){
-						informationCollector.addGraphEdgeToInactivateEdges(operatorId);
+						informationCollector.addGraphEdgeToInactivateEdges(edgeId);
 					}
-					informationCollector.addTreeEdgeToInactivateEdges(treeOperatorId);
-					informationCollector.getStepsOnEdges().put(operatorId, actual.getNumOfEdgeStepOns() - 1);
+					informationCollector.addTreeEdgeToInactivateEdges(getEdgeId(treeActual));
+					informationCollector.getStepsOnEdges().put(edgeId, actual.getNumOfEdgeStepOns() - 1);
 				}
 				
 				if(actual.getNumOfNodeStepOns() == 1){
@@ -143,11 +141,10 @@ public class BackTrackOptimal extends SolutionSearcher {
 					informationCollector.addTreeNodeToStepOnNodes(treeActual);
 				}
 			} else {
-				String operatorId = actual.getParent().getId() + "-OP" + operators.indexOf(actual.getOperator()) + "-" + actual.getId();
-				String treeOperatorId = treeActual.getParent().getId() + "-OP" + operators.indexOf(treeActual.getOperator()) + "-" + treeActual.getId();
-				if(informationCollector.getStepsOnEdges().containsKey(operatorId)){
-					actual.setNumOfEdgeStepOns(informationCollector.getStepsOnEdges().get(operatorId) + 1);
-					informationCollector.getStepsOnEdges().put(operatorId, actual.getNumOfEdgeStepOns());
+				String edgeId = getEdgeId(actual);
+				if(informationCollector.getStepsOnEdges().containsKey(edgeId)){
+					actual.setNumOfEdgeStepOns(informationCollector.getStepsOnEdges().get(edgeId) + 1);
+					informationCollector.getStepsOnEdges().put(edgeId, actual.getNumOfEdgeStepOns());
 				}
 				
 				if(informationCollector.getStepsOnStates().containsKey(actual.getState())){
@@ -155,8 +152,8 @@ public class BackTrackOptimal extends SolutionSearcher {
 					informationCollector.getStepsOnStates().put(actual.getState(), actual.getNumOfNodeStepOns());
 				}
 				
-				informationCollector.addGraphEdgeToActivateEdges(operatorId);
-				informationCollector.addTreeEdgeToActivateEdges(treeOperatorId);
+				informationCollector.addGraphEdgeToActivateEdges(edgeId);
+				informationCollector.addTreeEdgeToActivateEdges(getEdgeId(treeActual));
 				informationCollector.addGraphNodeToActivateNodes(actual);
 				informationCollector.addTreeNodeToActivateNodes(treeActual);
 				informationCollector.addGraphNodeToStepOnNodes(actual);

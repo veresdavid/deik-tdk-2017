@@ -54,7 +54,7 @@ public class DepthFirst extends SolutionSearcher {
 					}
 					
 					informationCollector.addGraphNodeToActivateNodes(newNode);
-					informationCollector.addGraphEdgeToActivateEdges(newNode.getParent().getId() + "-OP" + operators.indexOf(newNode.getOperator()) + "-" + newNode.getId());
+					informationCollector.addGraphEdgeToActivateEdges(getEdgeId(newNode));
 				}
 			}
 		}

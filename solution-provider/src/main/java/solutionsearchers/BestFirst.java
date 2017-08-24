@@ -70,8 +70,8 @@ public class BestFirst extends SolutionSearcher {
 					
 					informationCollector.addGraphNodeToActivateNodes(newNode);
 					informationCollector.addTreeNodeToActivateNodes(newTreeNode);
-					informationCollector.addGraphEdgeToActivateEdges(newNode.getParent().getId() + "-OP" + operators.indexOf(newNode.getOperator()) + "-" + newNode.getId());
-					informationCollector.addTreeEdgeToActivateEdges(newTreeNode.getParent().getId() + "-OP" + operators.indexOf(newTreeNode.getOperator()) + "-" + newTreeNode.getId());
+					informationCollector.addGraphEdgeToActivateEdges(getEdgeId(newNode));
+					informationCollector.addTreeEdgeToActivateEdges(getEdgeId(newTreeNode));
 				}
 			}
 		}

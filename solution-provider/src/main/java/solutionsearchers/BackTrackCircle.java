@@ -64,10 +64,8 @@ public class BackTrackCircle extends SolutionSearcher {
 			}
 			
 			if(isReached(actual)){
-				String operatorId = actual.getParent().getId() + "-OP" + operators.indexOf(actual.getOperator()) + "-" + actual.getId();
-				String treeOperatorId = treeActual.getParent().getId() + "-OP" + operators.indexOf(treeActual.getOperator()) + "-" + treeActual.getId();
-				informationCollector.addGraphEdgeToInactivateEdges(operatorId);
-				informationCollector.addTreeEdgeToInactivateEdges(treeOperatorId);
+				informationCollector.addGraphEdgeToInactivateEdges(getEdgeId(actual));
+				informationCollector.addTreeEdgeToInactivateEdges(getEdgeId(treeActual));
 				if(actual.getNumOfNodeStepOns() == 1){
 					informationCollector.addGraphNodeToInactivateNodes(actual);
 				} else {
@@ -113,10 +111,8 @@ public class BackTrackCircle extends SolutionSearcher {
 			
 			if (!wasOperatorUsed) {
 				if(actual.getParent() != null){
-					String operatorId = actual.getParent().getId() + "-OP" + operators.indexOf(actual.getOperator()) + "-" + actual.getId();
-					String treeOperatorId = treeActual.getParent().getId() + "-OP" + operators.indexOf(treeActual.getOperator()) + "-" + treeActual.getId();
-					informationCollector.addGraphEdgeToInactivateEdges(operatorId);
-					informationCollector.addTreeEdgeToInactivateEdges(treeOperatorId);
+					informationCollector.addGraphEdgeToInactivateEdges(getEdgeId(actual));
+					informationCollector.addTreeEdgeToInactivateEdges(getEdgeId(treeActual));
 				}
 				
 				if(actual.getNumOfNodeStepOns() == 1){
@@ -135,15 +131,13 @@ public class BackTrackCircle extends SolutionSearcher {
 					informationCollector.addTreeNodeToStepOnNodes(treeActual);
 				}
 			} else {
-				String operatorId = actual.getParent().getId() + "-OP" + operators.indexOf(actual.getOperator()) + "-" + actual.getId();
-				String treeOperatorId = treeActual.getParent().getId() + "-OP" + operators.indexOf(treeActual.getOperator()) + "-" + treeActual.getId();
 				if(informationCollector.getStepsOnStates().containsKey(actual.getState())){
 					actual.setNumOfNodeStepOns(informationCollector.getStepsOnStates().get(actual.getState()) + 1);
 					informationCollector.getStepsOnStates().put(actual.getState(), actual.getNumOfNodeStepOns());
 				}
 				
-				informationCollector.addGraphEdgeToActivateEdges(operatorId);
-				informationCollector.addTreeEdgeToActivateEdges(treeOperatorId);
+				informationCollector.addGraphEdgeToActivateEdges(getEdgeId(actual));
+				informationCollector.addTreeEdgeToActivateEdges(getEdgeId(treeActual));
 				informationCollector.addGraphNodeToActivateNodes(actual);
 				informationCollector.addTreeNodeToActivateNodes(treeActual);
 				informationCollector.addGraphNodeToStepOnNodes(actual);

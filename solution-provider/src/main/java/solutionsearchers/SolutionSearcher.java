@@ -41,4 +41,8 @@ public class SolutionSearcher {
 	public String searchFinished() {
 		return informationCollector.writeOutputSolution(getClass(), solution, treeSolution, operators);
 	}
+	
+	protected String getEdgeId(Node actual) {
+		return actual.getParent().getId() + "-OP" + operators.indexOf(actual.getOperator()) + "-" + actual.getId();
+	}
 }
