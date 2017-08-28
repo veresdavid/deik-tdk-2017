@@ -148,6 +148,24 @@ svg{
 	font-style: italic;
 }
 
+#information{
+    width: 20%;
+    margin: 30px auto 0 auto;
+    display: none;
+}
+
+#serverSideError{
+    width: 40%;
+    margin: 30px auto 0 auto;
+    display: none;
+}
+
+#success{
+    width: 40%;
+    margin: 30px auto 0 auto;
+    display: none;
+}
+
 /** REGISTRATION PAGE */
 
 #registrationHeader{

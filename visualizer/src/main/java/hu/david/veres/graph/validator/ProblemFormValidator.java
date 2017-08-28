@@ -12,11 +12,13 @@ public class ProblemFormValidator implements Validator {
     private static final String ALGORITHM_BACKTRACK_PATHLENGTHLIMITATION = "BackTrackPathLengthLimitation";
     private static final String ALGORITHM_BACKTRACK_OPTIMAL = "BackTrackOptimal";
 
+    private static final String FIELD_NAME = "name";
     private static final String FIELD_STATESPACE = "stateSpace";
     private static final String FIELD_ALGORITHMS = "algorithms";
     private static final String FIELD_BACKTRACK_PATHLENGTHLIMITATION_LIMIT = "backTrackPathLengthLimitationLimit";
     private static final String FIELD_BACKTRACK_OPTIMAL_LIMIT = "backTrackOptimalLimit";
 
+    private static final String ERROR_MESSAGE_EMPTY_NAME = "Name can't be empty!";
     private static final String ERROR_MESSAGE_EMPTY_STATE_SPACE = "State-space can't be empty!";
     private static final String ERROR_MESSAGE_NO_ALGORITHM = "You must choose at least one algorithm!";
     private static final String ERROR_MESSAGE_NO_LIMIT_BACKTRACK_PATHLENGTHLIMITATION = "You must declare the limit for the Backtrack with pathlength limitation algorithm!";
@@ -33,6 +35,9 @@ public class ProblemFormValidator implements Validator {
     public void validate(Object o, Errors errors) {
 
         ProblemForm problemForm = (ProblemForm) o;
+
+        // validate name
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, FIELD_NAME, ERROR_MESSAGE_EMPTY_NAME);
 
         // validate state-space textarea
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, FIELD_STATESPACE, ERROR_MESSAGE_EMPTY_STATE_SPACE);

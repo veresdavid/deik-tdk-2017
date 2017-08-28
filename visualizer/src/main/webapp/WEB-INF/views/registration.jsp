@@ -13,6 +13,8 @@
 	<c:url value="/resources/js/bootstrap.min.js" var="bootstrapJs" />
 	<c:url value="/resources/css/pagestyle.css" var="pageStyle" />
 	<c:url value="/resources/js/registration.js" var="registrationJs" />
+	<c:url value="/resources/css/jquery-ui.min.css" var="jQueryUICss" />
+	<c:url value="/resources/js/jquery-ui.min.js" var="jQueryUIJs" />
 
 	<link rel="stylesheet" type="text/css" href="${bootstrapCss}" />
 	<link rel="stylesheet" type="text/css" href="${pageStyle}" />
@@ -20,6 +22,8 @@
 	<script src="${bootstrapJs}"></script>
 	<script src="${registrationJs}"></script>
 	<script>var context = "${pageContext.request.contextPath}";</script>
+	<link rel="stylesheet" type="text/css" href="${jQueryUICss}" />
+	<script src="${jQueryUIJs}"></script>
 
 	<meta charset="UTF-8">
 	<title>Registration</title>
@@ -37,13 +41,35 @@
 
         <table id="registrationTable" class="table table-responsive registrationTable">
             <tr>
-                <td><input type="text" id="username" class="form-control" placeholder="Username" /><div id="usernameErrors" class="alert alert-danger fieldErrors"></div></td>
+                <td>
+                    <div class="input-group">
+                        <input type="text" id="username" class="form-control" placeholder="Username" />
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-info-sign" aria-hidden="true" title="TODO"></span></span>
+                    </div>
+                    <div id="usernameErrors" class="alert alert-danger fieldErrors"></div>
+                </td>
             </tr>
             <tr>
-                <td><input type="password" id="password" class="form-control passwordField" placeholder="Password" /><input type="password" id="confirmPassword" class="form-control" placeholder="Confirm password" /><div id="passwordErrors" class="alert alert-danger fieldErrors"></div></td>
+                <td>
+                    <div class="input-group passwordField">
+                        <input type="password" id="password" class="form-control" placeholder="Password" />
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-info-sign" aria-hidden="true" title="TODO"></span></span>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="confirmPassword" class="form-control" placeholder="Confirm password" />
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-info-sign" aria-hidden="true" title="TODO"></span></span>
+                    </div>
+                    <div id="passwordErrors" class="alert alert-danger fieldErrors"></div>
+                </td>
             </tr>
             <tr>
-                <td><input type="text" id="email" class="form-control" placeholder="E-mail" /><div id="emailErrors" class="alert alert-danger fieldErrors"></div></td>
+                <td>
+                    <div class="input-group">
+                        <input type="text" id="email" class="form-control" placeholder="E-mail" />
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-info-sign" aria-hidden="true" title="TODO"></span></span>
+                    </div>
+                    <div id="emailErrors" class="alert alert-danger fieldErrors"></div>
+                </td>
             </tr>
             <tr>
                 <td><button onclick="registration()" class="btn btn-primary registrationSubmitButton">Registration</button></td>

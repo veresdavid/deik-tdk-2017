@@ -1,3 +1,9 @@
+$(function(){
+    $(document).tooltip({
+        position: { my: "left+30 center", at: "right center" }
+    });
+});
+
 function collectFormData(){
 
 	var username = $("#username").val();
@@ -52,7 +58,7 @@ function displayErrors(errors){
 
 function clearHighlight(id){
 	var selector = "#" + id;
-	$(selector).css("border", "none");
+	$(selector).css("border", "1px solid rgb(204, 204, 204)");
 }
 
 function hideErrorDiv(id){

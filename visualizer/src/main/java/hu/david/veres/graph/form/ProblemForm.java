@@ -12,6 +12,8 @@ import java.util.List;
 @ToString
 public class ProblemForm {
 
+    private String name;
+
     private String stateSpace;
 
     private List<String> algorithms;
