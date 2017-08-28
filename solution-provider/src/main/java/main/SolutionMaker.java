@@ -49,7 +49,7 @@ public class SolutionMaker {
 		loadableClasses = new ArrayList<>();
 		operatorClasses = new ArrayList<>();
 		if(loader == null){
-			loader  = new URLClassLoader(new URL[] { classDestinationURL }, getClass().getClassLoader());
+			loader = new URLClassLoader(new URL[] { classDestinationURL }, getClass().getClassLoader());
 		}
 	}
 	
