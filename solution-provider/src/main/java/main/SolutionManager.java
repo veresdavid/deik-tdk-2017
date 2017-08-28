@@ -183,7 +183,7 @@ public class SolutionManager{
 	private List<File> loadableClasses;
 	private Class<?> solutionSearcherClass;
 	
-	public String doUserSolutionSearcher(List<URI> javaFileURIs, List<String> javaCodes) throws IOException, CompilationException, URISyntaxException, ClassNotFoundException, StateNotFoundException, OperatorNotFoundException {
+	public String doUserSolutionSearcher(List<URI> javaFileURIs, List<String> javaCodes) throws Exception {
 		File solutionSearcherFilesFolder = new File("solutionSearcherFiles");
 		
 		if(!solutionSearcherFilesFolder.exists())
@@ -210,7 +210,7 @@ public class SolutionManager{
 		
 		for(URI javaFileURI : javaFileURIs) {
 			if(!FilenameUtils.isExtension(javaFileURI.toString(), "java")) {
-				//exception WrongFileExtensionException
+				//TODO exception WrongFileExtensionException
 			}
 			
 			javaFileLocations.add(javaFileURI.getPath());
@@ -229,8 +229,26 @@ public class SolutionManager{
 		
 		loadClasses(userSolutionSearcherClassesFolder);
 		
-		//példányosítani a kereső osztályt, be kell szippantanom itt olyanokat pl, hogy heurisztikát kell e átadni, korlátot, egyéb adatot (egyéb adatnak is beviteli mezőt biztosítani)
-		//futtatni a keresőt
+		//be kell szippantanom itt olyanokat pl, hogy heurisztikát kell e átadni, korlátot, egyéb adatot (egyéb adatnak is beviteli mezőt biztosítani)
+		
+		try {
+			SolutionSearcher solutionSearcher = (SolutionSearcher) solutionSearcherClass.getConstructor().newInstance();
+			
+			solutionSearcher.setOperators(operators);
+			
+			/*if(doTree){
+				solutionSearcher.setInformationCollector(new ExtendedInformationCollector());
+			}*/
+			
+			solutionSearcher.search();
+			return solutionSearcher.searchFinished();
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		// TODO exception mert vmi baki volt a futtatással
 		return null;
 	}
 	
@@ -294,7 +312,7 @@ public class SolutionManager{
 		}
 		
 		if(!isSolutionSearcherFound){
-			//exception throw new StateNotFoundException();
+			// TODO exception throw new StateNotFoundException();
 		}
 	}
 }
