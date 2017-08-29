@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -179,17 +178,18 @@ public class SolutionManager{
 	}
 	
 	private URL userSolutionSearcherClassesFolderURL;
-	private List<String> javaFileLocations;
+	private List<String> allJavaFileLocations;
 	private List<File> loadableClasses;
 	private Class<?> solutionSearcherClass;
 	
-	public String doUserSolutionSearcher(List<URI> javaFileURIs, List<String> javaCodes) throws Exception {
+	public String doUserSolutionSearcher(List<String> javaFileLocations, List<String> javaCodes) throws Exception {
+		System.out.println("KOPASZ1");
 		File solutionSearcherFilesFolder = new File("solutionSearcherFiles");
 		
 		if(!solutionSearcherFilesFolder.exists())
 			solutionSearcherFilesFolder.mkdirs();
 		
-		javaFileLocations = new ArrayList<>();
+		allJavaFileLocations = new ArrayList<>();
 		
 		for(String javaCode : javaCodes) {
 			File javaFile = new File("solutionSearcherFiles/" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("YYYY-MM-dd-hh-mm-ss")) + UUID.randomUUID().toString() + ".java");
@@ -205,16 +205,18 @@ public class SolutionManager{
 				e.printStackTrace();
 			}
 			
-			javaFileLocations.add(javaFile.getAbsolutePath());
+			allJavaFileLocations.add(javaFile.getAbsolutePath());
 		}
 		
-		for(URI javaFileURI : javaFileURIs) {
-			if(!FilenameUtils.isExtension(javaFileURI.toString(), "java")) {
+		for(String javaFileLocation : javaFileLocations) {
+			if(!FilenameUtils.isExtension(javaFileLocation, "java")) {
 				//TODO exception WrongFileExtensionException
 			}
 			
-			javaFileLocations.add(javaFileURI.getPath());
+			allJavaFileLocations.add(javaFileLocation);
 		}
+		
+		System.out.println("KOPASZ2");
 		
 		File userSolutionSearcherClassesFolder = new File("userSolutionSearcherClasses" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("YYYY-MM-dd-hh-mm-ss")) + UUID.randomUUID().toString());
 		userSolutionSearcherClassesFolder.mkdir();
@@ -223,23 +225,29 @@ public class SolutionManager{
 		
 		compileFiles();
 		
+		System.out.println("KOPASZ3");
+		
 		loadableClasses = new ArrayList<>();
 		
 		getLoadableClassesInFolder(userSolutionSearcherClassesFolder);
 		
+		System.out.println("KOPASZ4");
+		
 		loadClasses(userSolutionSearcherClassesFolder);
+		
+		System.out.println("KOPASZ5");
 		
 		//be kell szippantanom itt olyanokat pl, hogy heurisztikát kell e átadni, korlátot, egyéb adatot (egyéb adatnak is beviteli mezőt biztosítani)
 		
 		try {
-			SolutionSearcher solutionSearcher = (SolutionSearcher) solutionSearcherClass.getConstructor().newInstance();
+			SolutionSearcher solutionSearcher = (SolutionSearcher) solutionSearcherClass.getConstructor(StateInterface.class).newInstance(state);
 			
 			solutionSearcher.setOperators(operators);
 			
 			/*if(doTree){
 				solutionSearcher.setInformationCollector(new ExtendedInformationCollector());
 			}*/
-			
+			System.out.println("KOPASZ6");
 			solutionSearcher.search();
 			return solutionSearcher.searchFinished();
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
@@ -254,7 +262,7 @@ public class SolutionManager{
 	
 	private void compileFiles() throws CompilationException, IOException, URISyntaxException{
 		List<String> processBuilderArgList = new ArrayList<>(Arrays.asList("javac", "-d", userSolutionSearcherClassesFolderURL.getPath(), "-nowarn", "-cp", getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath()));
-		processBuilderArgList.addAll(javaFileLocations);
+		processBuilderArgList.addAll(allJavaFileLocations);
 		
 		ProcessBuilder processBuilder = new ProcessBuilder(processBuilderArgList);
 		Process process = processBuilder.start();
