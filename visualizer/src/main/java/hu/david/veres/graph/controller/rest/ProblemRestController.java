@@ -48,6 +48,27 @@ public class ProblemRestController {
 	private static final String ERROR_KEY_SERVER_SIDE = "serverSide";
 	private static final String ERROR_MESSAGE_SERVER_SIDE = "Server-side error! Please try again or come back later!";
 
+	private static final String ALGORITHM_NAME_BACKTRACK_SIMPLE = "BackTrackSimple";
+	private static final String ALGORITHM_NAME_BACKTRACK_CIRCLE = "BackTrackCircle";
+	private static final String ALGORITHM_NAME_BACKTRACK_PATH_LENGTH_LIMIT = "BackTrackPathLengthLimitation";
+	private static final String ALGORITHM_NAME_BACKTRACK_OPTIMAL = "BackTrackOptimal";
+	private static final String ALGORITHM_NAME_BREADTH_FIRST = "BreadthFirst";
+	private static final String ALGORITHM_NAME_DEPTH_FIRST = "DepthFirst";
+	private static final String ALGORITHM_NAME_OPTIMAL = "Optimal";
+	private static final String ALGORITHM_NAME_BEST_FIRST = "BestFirst";
+	private static final String ALGORITHM_NAME_A = "A";
+
+	private static final String ALGORITHM_CODE_BACKTRACK_SIMPLE = "problem_algorithm_backtrack_simple";
+	private static final String ALGORITHM_CODE_BACKTRACK_CIRCLE = "problem_algorithm_backtrack_circle";
+	private static final String ALGORITHM_CODE_BACKTRACK_PATH_LENGTH_LIMIT = "problem_algorithm_backtrack_path_length_limit";
+	private static final String ALGORITHM_CODE_BACKTRACK_OPTIMAL = "problem_algorithm_backtrack_optimal";
+	private static final String ALGORITHM_CODE_BREADTH_FIRST = "problem_algorithm_breadth_first";
+	private static final String ALGORITHM_CODE_DEPTH_FIRST = "problem_algorithm_depth_first";
+	private static final String ALGORITHM_CODE_OPTIMAL = "problem_algorithm_optimal";
+	private static final String ALGORITHM_CODE_BEST_FIRST = "problem_algorithm_best_first";
+	private static final String ALGORITHM_CODE_A = "problem_algorithm_a";
+	private static final String ALGORITHM_CODE_DEFAULT = "problem_algorithm_default";
+
 	@Value("${file.generated.folder}")
 	private String generatedFolderName;
 
@@ -108,7 +129,6 @@ public class ProblemRestController {
 			stateSpaceFile = storageService.storeStateSpaceFile(problemForm.getStateSpace(), stateSpacefileName);
 		} catch (IOException e) {
 			e.printStackTrace();
-			// return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
 			return problemResponseWithSingleError(ERROR_KEY_SERVER_SIDE, ERROR_MESSAGE_SERVER_SIDE);
 		}
 
@@ -117,35 +137,27 @@ public class ProblemRestController {
 			projectRepresentation = inputReader.processInputFile(stateSpaceFile.getAbsolutePath());
 		} catch (IOException e) {
 			e.printStackTrace();
-			// return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
 			return problemResponseWithSingleError(ERROR_KEY_SERVER_SIDE, ERROR_MESSAGE_SERVER_SIDE);
 		} catch (IncorrectInputException e) {
 			e.printStackTrace();
-			// return errorModelAndView(e.getMessage());
 			return problemResponseWithSingleError(ERROR_KEY_STATE_SPACE, e.getMessage());
 		} catch (InvalidAttributeNameException e) {
 			e.printStackTrace();
-			// return errorModelAndView(e.getMessage());
 			return problemResponseWithSingleError(ERROR_KEY_STATE_SPACE, e.getMessage());
 		} catch (UnexpectedContextException e) {
 			e.printStackTrace();
-			// return errorModelAndView(e.getMessage());
 			return problemResponseWithSingleError(ERROR_KEY_STATE_SPACE, e.getMessage());
 		} catch (UnexpectedSwitchClauseException e) {
 			e.printStackTrace();
-			// return errorModelAndView(e.getMessage());
 			return problemResponseWithSingleError(ERROR_KEY_STATE_SPACE, e.getMessage());
 		} catch (VarNameAlreadyInUseException e) {
 			e.printStackTrace();
-			// return errorModelAndView(e.getMessage());
 			return problemResponseWithSingleError(ERROR_KEY_STATE_SPACE, e.getMessage());
 		} catch (WrongExpressionTypeException e) {
 			e.printStackTrace();
-			// return errorModelAndView(e.getMessage());
 			return problemResponseWithSingleError(ERROR_KEY_STATE_SPACE, e.getMessage());
 		} catch (WrongNumberOfArgumentsException e) {
 			e.printStackTrace();
-			// return errorModelAndView(e.getMessage());
 			return problemResponseWithSingleError(ERROR_KEY_STATE_SPACE, e.getMessage());
 		}
 
@@ -157,7 +169,6 @@ public class ProblemRestController {
 			classRepresentations = projectGenerator.generate(generatedFolderName, packageName, true);
 		} catch (IOException e) {
 			e.printStackTrace();
-			// return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
 			return problemResponseWithSingleError(ERROR_KEY_SERVER_SIDE, ERROR_MESSAGE_SERVER_SIDE);
 		}
 
@@ -177,51 +188,39 @@ public class ProblemRestController {
 
 		} catch (TemporaryFolderCreationException e) {
 			e.printStackTrace();
-			// return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
 			return problemResponseWithSingleError(ERROR_KEY_SERVER_SIDE, ERROR_MESSAGE_SERVER_SIDE);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
-			// return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
 			return problemResponseWithSingleError(ERROR_KEY_SERVER_SIDE, ERROR_MESSAGE_SERVER_SIDE);
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
-			// return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
 			return problemResponseWithSingleError(ERROR_KEY_SERVER_SIDE, ERROR_MESSAGE_SERVER_SIDE);
 		} catch (WrongFileExtensionException e) {
 			e.printStackTrace();
-			// return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
 			return problemResponseWithSingleError(ERROR_KEY_SERVER_SIDE, ERROR_MESSAGE_SERVER_SIDE);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
-			// return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
 			return problemResponseWithSingleError(ERROR_KEY_SERVER_SIDE, ERROR_MESSAGE_SERVER_SIDE);
 		} catch (TemporaryFolderDeletionException e) {
 			e.printStackTrace();
-			// return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
 			return problemResponseWithSingleError(ERROR_KEY_SERVER_SIDE, ERROR_MESSAGE_SERVER_SIDE);
 		} catch (CompilationException e) {
 			e.printStackTrace();
-			// return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
 			return problemResponseWithSingleError(ERROR_KEY_SERVER_SIDE, ERROR_MESSAGE_SERVER_SIDE);
 		} catch (OperatorNotFoundException e) {
 			e.printStackTrace();
-			// return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
 			return problemResponseWithSingleError(ERROR_KEY_SERVER_SIDE, ERROR_MESSAGE_SERVER_SIDE);
 		} catch (OperatorInitializationException e) {
 			e.printStackTrace();
-			// return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
 			return problemResponseWithSingleError(ERROR_KEY_SERVER_SIDE, ERROR_MESSAGE_SERVER_SIDE);
 		} catch (StateInitializationException e) {
 			e.printStackTrace();
-			// return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
 			return problemResponseWithSingleError(ERROR_KEY_SERVER_SIDE, ERROR_MESSAGE_SERVER_SIDE);
 		} catch (StateNotFoundException e) {
 			e.printStackTrace();
-			// return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
 			return problemResponseWithSingleError(ERROR_KEY_SERVER_SIDE, ERROR_MESSAGE_SERVER_SIDE);
 		} catch (IOException e) {
 			e.printStackTrace();
-			// return errorModelAndView(ERROR_MESSAGE_SERVER_SIDE);
 			return problemResponseWithSingleError(ERROR_KEY_SERVER_SIDE, ERROR_MESSAGE_SERVER_SIDE);
 		}
 
@@ -255,17 +254,10 @@ public class ProblemRestController {
 
 		}
 
-		// Create and return ModelAndView
-		/*ModelAndView modelAndView = new ModelAndView();
-		modelAndView.addObject("processIdentifiers", processIdentifiers);
-		modelAndView.addObject("algorithms", problemForm.getAlgorithms());
-		modelAndView.setViewName("visualizer");
-
-		return modelAndView;*/
-
+		// Return response
 		ProblemResponse problemResponse = new ProblemResponse();
 		problemResponse.setProcessIdentifiers(processIdentifiers);
-		problemResponse.setAlgorithms(problemForm.getAlgorithms());
+		problemResponse.setAlgorithms(algorithmNamesToCodes(problemForm.getAlgorithms()));
 
 		return problemResponse;
 
@@ -293,6 +285,52 @@ public class ProblemRestController {
 		}
 
 		return false;
+
+	}
+
+	private List<String> algorithmNamesToCodes(List<String> names) {
+
+		List<String> codes = new ArrayList<>();
+
+		for (String name : names) {
+
+			String code = ALGORITHM_CODE_DEFAULT;
+
+			switch (name) {
+				case ALGORITHM_NAME_BACKTRACK_SIMPLE:
+					code = ALGORITHM_CODE_BACKTRACK_SIMPLE;
+					break;
+				case ALGORITHM_NAME_BACKTRACK_CIRCLE:
+					code = ALGORITHM_CODE_BACKTRACK_CIRCLE;
+					break;
+				case ALGORITHM_NAME_BACKTRACK_PATH_LENGTH_LIMIT:
+					code = ALGORITHM_CODE_BACKTRACK_PATH_LENGTH_LIMIT;
+					break;
+				case ALGORITHM_NAME_BACKTRACK_OPTIMAL:
+					code = ALGORITHM_CODE_BACKTRACK_OPTIMAL;
+					break;
+				case ALGORITHM_NAME_BREADTH_FIRST:
+					code = ALGORITHM_CODE_BREADTH_FIRST;
+					break;
+				case ALGORITHM_NAME_DEPTH_FIRST:
+					code = ALGORITHM_CODE_DEPTH_FIRST;
+					break;
+				case ALGORITHM_NAME_OPTIMAL:
+					code = ALGORITHM_CODE_OPTIMAL;
+					break;
+				case ALGORITHM_NAME_BEST_FIRST:
+					code = ALGORITHM_CODE_BEST_FIRST;
+					break;
+				case ALGORITHM_NAME_A:
+					code = ALGORITHM_CODE_A;
+					break;
+			}
+
+			codes.add(code);
+
+		}
+
+		return codes;
 
 	}
 

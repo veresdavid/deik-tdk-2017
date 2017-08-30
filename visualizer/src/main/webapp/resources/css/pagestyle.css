@@ -30,6 +30,11 @@ body{
 	font-size: 40px;
 }
 
+.countryFlag{
+    width: 30px;
+    display: inline-block;
+}
+
 /** PAGE CONTAINER */
 
 .pageContainer .row{

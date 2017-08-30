@@ -18,6 +18,9 @@ import java.util.List;
 @Component
 public class AuthenticationProviderImpl implements AuthenticationProvider {
 
+	private static final String ERROR_CODE_LOGIN_FAILED = "login.error.failed";
+	private static final String ROLE_USER = "ROLE_USER";
+
 	@Autowired
 	private UserService userService;
 
@@ -33,11 +36,11 @@ public class AuthenticationProviderImpl implements AuthenticationProvider {
 		UserDTO userDTO = userService.getUserByUsername(username);
 
 		if (userDTO == null) {
-			throw new BadCredentialsException("Invalid username or password!");
+			throw new BadCredentialsException(ERROR_CODE_LOGIN_FAILED);
 		}
 
 		if (!bCryptPasswordEncoder.matches(password, userDTO.getPassword())) {
-			throw new BadCredentialsException("Invalid username or password!");
+			throw new BadCredentialsException(ERROR_CODE_LOGIN_FAILED);
 		}
 
 		return new UsernamePasswordAuthenticationToken(username, password, simpleUserAuthorities());
@@ -53,7 +56,7 @@ public class AuthenticationProviderImpl implements AuthenticationProvider {
 
 		List<SimpleGrantedAuthority> simpleGrantedAuthorities = new ArrayList<>();
 
-		simpleGrantedAuthorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+		simpleGrantedAuthorities.add(new SimpleGrantedAuthority(ROLE_USER));
 
 		return simpleGrantedAuthorities;
 

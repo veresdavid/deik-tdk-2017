@@ -12,15 +12,18 @@
 	<c:url value="/resources/js/bootstrap.min.js" var="bootstrapJs" />
 	<c:url value="/resources/css/pagestyle.css" var="pageStyle" />
 	<c:url value="/resources/js/d3.min.js" var="d3js" />
+	<c:url value="/resources/js/jquery.i18n.properties.js" var="jQueryi18n" />
 
 	<link rel="stylesheet" type="text/css" href="${bootstrapCss}" />
 	<link rel="stylesheet" type="text/css" href="${pageStyle}" />
 	<script src="${jQuery}"></script>
 	<script src="${bootstrapJs}"></script>
 	<script src="${d3js}"></script>
+	<script>var locale = "${pageContext.response.locale}";</script>
+    <script src="${jQueryi18n}"></script>
 
 	<meta charset="UTF-8">
-	<title>Graph</title>
+	<title><spring:message code="title.view" /></title>
 
 </head>
 
@@ -31,22 +34,22 @@
 <div class="container pageContainer">
 	<div class="row">
 		
-		<h1>Graph visualizer</h1>
+		<h1>${processDTO.name}</h1>
 		
 		<c:choose>
 		
 		<c:when test="${processDTO.done == false}">
-			<h3>In progress...</h3>
+			<h3><spring:message code="view.in.progress" /></h3>
 		</c:when>
 		
 		<c:when test="${processDTO.done == true && processDTO.error == false}">
 
 		<div class="graphControl">
-			<button class="btn btn-primary graphControlButton" id="stepButton">Step</button>
-			<button class="btn btn-primary graphControlButton" id="backButton">Back</button>
-			<button class="btn btn-primary graphControlButton" id="solutionButton">Solution</button>
+			<button class="btn btn-primary graphControlButton" id="stepButton"><spring:message code="view.button.step" /></button>
+			<button class="btn btn-primary graphControlButton" id="backButton"><spring:message code="view.button.back" /></button>
+			<button class="btn btn-primary graphControlButton" id="solutionButton"><spring:message code="view.button.solution" /></button>
 		</div>
-		<div class="graphControl"><h4>Step: <span id="actualStepNumber">0</span> / <span id="allStepsNumber"></span></h4><div>
+		<div class="graphControl"><h4><spring:message code="view.count.step" />: <span id="actualStepNumber">0</span> / <span id="allStepsNumber"></span></h4><div>
 
 		<svg width="960" height="600"></svg>
 
@@ -61,38 +64,38 @@
 		
 		<table class="table table-responsive informationTable">
 			<tr>
-				<td colspan="2"><h3>Informations</h3></td>
+				<td colspan="2"><h3><spring:message code="view.table.information" /></h3></td>
 			</tr>
 			<tr>
-				<td>Graph identifier:</td>
+				<td><spring:message code="view.table.graph.identifier" />:</td>
 				<td>${processDTO.processIdentifier}</td>
 			</tr>
 			<tr>
-				<td>Search algorithm:</td>
+				<td><spring:message code="view.table.algorithm" />:</td>
 				<td><span id="searchAlgorithm"></span></td>
 			</tr>
 			<tr>
-				<td>Solution found:</td>
+				<td><spring:message code="view.table.solution.found" />:</td>
 				<td><span id="solutionInformation"></span></td>
 			</tr>
 			<tr>
-				<td>Number of nodes:</td>
+				<td><spring:message code="view.table.nodes" />:</td>
 				<td><span id="numberOfNodes"></span></td>
 			</tr>
 			<tr>
-				<td>Number of edges:</td>
+				<td><spring:message code="view.table.edges" />:</td>
 				<td><span id="numberOfEdges"></span></td>
 			</tr>
 			<tr>
-				<td>Number of steps:</td>
+				<td><spring:message code="view.table.steps" />:</td>
 				<td><span id="numberOfSteps"></span></td>
 			</tr>
 			<tr>
-				<td>State-space representation:</td>
+				<td><spring:message code="view.table.statespace" />:</td>
 				<td><a href="${pageContext.request.contextPath}/file/statespace/${processDTO.stateSpaceFileName}" target="_blank">${processDTO.stateSpaceFileName}.txt</a></td>
 			</tr>
 			<tr>
-				<td>Java files:</td>
+				<td><spring:message code="view.table.java" />:</td>
 				<td>
 					<c:forEach var="javaFileName" items="${javaFileNames}">
 						<a href="${pageContext.request.contextPath}/file/java/${processDTO.javaPackageName}/${javaFileName}" target="_blank">${javaFileName}.java</a><br/>
@@ -100,11 +103,11 @@
 				</td>
 			</tr>
 			<tr>
-				<td>Solution output:</td>
+				<td><spring:message code="view.table.solution" />:</td>
 				<td><a href="${pageContext.request.contextPath}/file/solution/${processDTO.solutionFileName}" target="_blank">${processDTO.solutionFileName}.txt</a></td>
 			</tr>
 			<tr>
-				<td>JSON output:</td>
+				<td><spring:message code="view.table.json" />:</td>
 				<td><a href="${pageContext.request.contextPath}/file/json/${processDTO.processIdentifier}" target="_blank">${processDTO.processIdentifier}.json</a></td>
 			</tr>
 		</table>
@@ -113,7 +116,7 @@
 		
 		<c:when test="${processDTO.done == true && processDTO.error == true}">
 			<div class="panel panel-danger response">
-				<div class="panel-heading">Error!</div>
+				<div class="panel-heading"><spring:message code="view.error.heading" /></div>
 				<div class="panel-body">${processDTO.errorMessage}</div>
 			</div>
 		</c:when>

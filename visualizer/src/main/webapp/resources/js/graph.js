@@ -1,3 +1,49 @@
+var algorithmNames = [];
+var solutionFound = [];
+
+function loadI18n(){
+
+	jQuery.i18n.properties({
+		name: "messages",
+		path: "../../resources/i18n/",
+		mode: 'both',
+		language: locale,
+		async: false,
+		callback: function() {
+
+            // algorithm names
+            jQuery.i18n.prop("problem_algorithm_backtrack_simple");
+            jQuery.i18n.prop("problem_algorithm_backtrack_circle");
+            jQuery.i18n.prop("problem_algorithm_backtrack_path_length_limit");
+            jQuery.i18n.prop("problem_algorithm_backtrack_optimal");
+            jQuery.i18n.prop("problem_algorithm_breadth_first");
+            jQuery.i18n.prop("problem_algorithm_depth_first");
+            jQuery.i18n.prop("problem_algorithm_optimal");
+            jQuery.i18n.prop("problem_algorithm_best_first");
+            jQuery.i18n.prop("problem_algorithm_a");
+
+            algorithmNames["BackTrackSimple"] = problem_algorithm_backtrack_simple;
+            algorithmNames["BackTrackCircle"] = problem_algorithm_backtrack_circle;
+            algorithmNames["BackTrackPathLengthLimitation"] = problem_algorithm_backtrack_path_length_limit;
+            algorithmNames["BackTrackOptimal"] = problem_algorithm_backtrack_optimal;
+            algorithmNames["BreadthFirst"] = problem_algorithm_breadth_first;
+            algorithmNames["DepthFirst"] = problem_algorithm_depth_first;
+            algorithmNames["Optimal"] = problem_algorithm_optimal;
+            algorithmNames["BestFirst"] = problem_algorithm_best_first;
+            algorithmNames["A"] = problem_algorithm_a;
+
+            // solution found
+            jQuery.i18n.prop("view_table_solution_found_yes");
+            jQuery.i18n.prop("view_table_solution_found_no");
+
+            solutionFound["yes"] = view_table_solution_found_yes;
+            solutionFound["no"] = view_table_solution_found_no;
+
+		}
+	});
+
+}
+
 // width and height of the svg image
 var width = +d3.select("svg").attr("width"),
 	height = +d3.select("svg").attr("height");
@@ -38,6 +84,8 @@ var changeHistory;
 var statuses;
 
 function initGraph(jsonUrl){
+
+    loadI18n();
 
 	d3.json(jsonUrl, function(error, graph) {
 		
@@ -489,13 +537,13 @@ function fillPageWithInformations(){
 	$("#allStepsNumber").html(steps.length);
 	
 	// search algorithm
-	$("#searchAlgorithm").html(info.searchAlgorithmName);
+	$("#searchAlgorithm").html(algorithmNames[info.searchAlgorithmName]);
 	
 	// solution
 	if(solutions.length == 0){
-		$("#solutionInformation").html("No");
+		$("#solutionInformation").html(solutionFound["no"]);
 	}else{
-		$("#solutionInformation").html("Yes");
+		$("#solutionInformation").html(solutionFound["yes"]);
 	}
 	
 	// number of nodes

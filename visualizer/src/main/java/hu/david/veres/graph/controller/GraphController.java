@@ -30,7 +30,7 @@ public class GraphController {
 
         if (processIdentifier == null) {
 
-            ModelAndView modelAndView = new ModelAndView("graph");
+            ModelAndView modelAndView = new ModelAndView("redirect:./");
             return modelAndView;
 
         } else {
@@ -39,8 +39,7 @@ public class GraphController {
 
             if (processDTO == null) {
 
-                ModelAndView modelAndView = new ModelAndView("graph");
-                modelAndView.addObject("error", "Graph not found!");
+                ModelAndView modelAndView = new ModelAndView("redirect:./");
                 return modelAndView;
 
             } else {

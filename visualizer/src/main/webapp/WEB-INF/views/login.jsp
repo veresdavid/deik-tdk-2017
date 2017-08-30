@@ -8,6 +8,10 @@
 
 <head>
 
+    <spring:message code="login.placeholder.username" var="placeholderUsername" />
+    <spring:message code="login.placeholder.password" var="placeholderPassword" />
+    <spring:message code="login.error.default" var="errorDefault" />
+
 	<c:url value="/resources/js/jquery-3.1.1.min.js" var="jQuery" />
 	<c:url value="/resources/css/bootstrap.min.css" var="bootstrapCss" />
 	<c:url value="/resources/js/bootstrap.min.js" var="bootstrapJs" />
@@ -19,7 +23,7 @@
 	<script src="${bootstrapJs}"></script>
 
 	<meta charset="UTF-8">
-	<title>Login</title>
+	<title><spring:message code="title.login" /></title>
 
 </head>
 
@@ -30,18 +34,18 @@
 <div class="container pageContainer">
 	<div class="row">
 
-		<div id="loginHeader"><h1>Login</h1></div>
+		<div id="loginHeader"><h1><spring:message code="login.heading" /></h1></div>
 
         <div id="loginDiv">
 
             <c:if test="${param.error != null}">
-                <div class="alert alert-danger">${sessionScope.SPRING_SECURITY_LAST_EXCEPTION.message}</div>
+                <div class="alert alert-danger"><spring:message code="${sessionScope.SPRING_SECURITY_LAST_EXCEPTION.message}" text="${errorDefault}" /></div>
             </c:if>
 
             <form class="loginForm" method="POST">
-                <input type="text" name="username" placeholder="Username" class="form-control loginElement" />
-                <input type="password" name="password" placeholder="Password" class="form-control loginElement" />
-                <button class="btn btn-primary loginButton loginElement">Login</button>
+                <input type="text" name="username" placeholder="${placeholderUsername}" class="form-control loginElement" />
+                <input type="password" name="password" placeholder="${placeholderPassword}" class="form-control loginElement" />
+                <button class="btn btn-primary loginButton loginElement"><spring:message code="login.button" /></button>
             </form>
 
 		</div>

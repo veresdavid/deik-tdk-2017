@@ -18,7 +18,7 @@
 	<script src="${bootstrapJs}"></script>
 
 	<meta charset="UTF-8">
-	<title>Home</title>
+	<title><spring:message code="title.home" /></title>
 
 </head>
 
@@ -28,7 +28,7 @@
 
 <div class="container pageContainer">
 	<div class="row">
-		<h1>Home page</h1>
+		<h1><spring:message code="home.welcome" /></h1>
 	</div>
 </div>
 

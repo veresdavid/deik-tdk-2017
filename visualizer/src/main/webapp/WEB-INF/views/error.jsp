@@ -18,7 +18,7 @@
 	<script src="${bootstrapJs}"></script>
 
 	<meta charset="UTF-8">
-	<title>Error</title>
+	<title><spring:message code="title.error" /></title>
 
 </head>
 
@@ -29,7 +29,7 @@
 <div class="container pageContainer">
 	<div class="row">
 		
-		<h1>Error! Page not found!</h1>
+		<h1><spring:message code="error.not.found" /></h1>
 		
 	</div>
 </div>

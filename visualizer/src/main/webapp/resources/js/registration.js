@@ -1,7 +1,41 @@
+var errors = [];
+
 $(function(){
+
     $(document).tooltip({
         position: { my: "left+30 center", at: "right center" }
     });
+
+    jQuery.i18n.properties({
+        name: "messages",
+        path: "resources/i18n/",
+        mode: 'both',
+        language: locale,
+        async: true,
+        callback: function() {
+
+            // errors
+            jQuery.i18n.prop("registartion_error_username_ivalid_characters");
+            jQuery.i18n.prop("registartion_error_username_length");
+            jQuery.i18n.prop("registartion_error_username_in_use");
+            jQuery.i18n.prop("registartion_error_password_length");
+            jQuery.i18n.prop("registartion_error_password_confirm");
+            jQuery.i18n.prop("registartion_error_email_invalid");
+            jQuery.i18n.prop("registartion_error_email_length");
+            jQuery.i18n.prop("registartion_error_email_in_use");
+
+            errors["registartion_error_username_ivalid_characters"] = registartion_error_username_ivalid_characters;
+            errors["registartion_error_username_length"] = registartion_error_username_length;
+            errors["registartion_error_username_in_use"] = registartion_error_username_in_use;
+            errors["registartion_error_password_length"] = registartion_error_password_length;
+            errors["registartion_error_password_confirm"] = registartion_error_password_confirm;
+            errors["registartion_error_email_invalid"] = registartion_error_email_invalid;
+            errors["registartion_error_email_length"] = registartion_error_email_length;
+            errors["registartion_error_email_in_use"] = registartion_error_email_in_use;
+
+        }
+    });
+
 });
 
 function collectFormData(){
@@ -29,7 +63,7 @@ function highlightField(id){
 function displayErrorDiv(id, message){
 	var selector = "#" + id;
 	$(selector).css("display", "block");
-	$(selector).text(message);
+	$(selector).text(errors[message]);
 }
 
 function displayError(error){
