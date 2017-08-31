@@ -28,6 +28,9 @@
                             <a href="${pageContext.request.contextPath}"><spring:message code="header.home" /></a>
                         </li>
                         <li>
+                            <a href="${pageContext.request.contextPath}/profile"><spring:message code="header.profile" /></a>
+                        </li>
+                        <li>
                             <a href="${pageContext.request.contextPath}/problem"><spring:message code="header.problem" /></a>
                         </li>
                         <li>

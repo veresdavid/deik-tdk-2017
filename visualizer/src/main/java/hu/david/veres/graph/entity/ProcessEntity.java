@@ -46,4 +46,7 @@ public class ProcessEntity {
     @Column(name = "user_id")
     private Long userId;
 
+    @Column(name = "search_algorithm")
+    private String searchAlgorithm;
+
 }

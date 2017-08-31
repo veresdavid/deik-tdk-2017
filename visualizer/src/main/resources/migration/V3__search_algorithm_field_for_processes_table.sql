@@ -1,0 +1,1 @@
+ALTER TABLE processes ADD search_algorithm character varying;

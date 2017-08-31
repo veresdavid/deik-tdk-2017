@@ -106,7 +106,7 @@ svg{
 }
 
 .graphControlButton{
-	width: 80px;
+	width: 100px;
 }
 
 /** PROBLEM PAGE */
@@ -220,4 +220,28 @@ svg{
 
 .loginElement{
     margin: 20px auto;
+}
+
+/** PROFILE PAGE */
+
+.profileTable{
+	width: 80%;
+	margin: 50px auto;
+}
+
+.profileTable tbody tr td{
+	vertical-align: middle;
+	padding: auto;
+}
+
+.processStatus{
+    width: 10%;
+}
+
+.profileTableHeading td{
+    font-weight: bold;
+}
+
+.statusIcon{
+    font-size: 20px;
 }

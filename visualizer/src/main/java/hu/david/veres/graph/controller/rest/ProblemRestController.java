@@ -5,10 +5,12 @@ import generator.OperatorGenerator;
 import generator.ProjectGenerator;
 import generator.StateGenerator;
 import hu.david.veres.graph.dto.ProcessDTO;
+import hu.david.veres.graph.dto.UserDTO;
 import hu.david.veres.graph.form.ProblemForm;
 import hu.david.veres.graph.response.ProblemResponse;
 import hu.david.veres.graph.service.ProcessService;
 import hu.david.veres.graph.service.StorageService;
+import hu.david.veres.graph.service.UserService;
 import hu.david.veres.graph.thread.ProcessThread;
 import hu.david.veres.graph.util.ProcessUtils;
 import hu.david.veres.graph.validator.ProblemFormValidator;
@@ -36,10 +38,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 public class ProblemRestController {
@@ -69,11 +68,24 @@ public class ProblemRestController {
 	private static final String ALGORITHM_CODE_A = "problem_algorithm_a";
 	private static final String ALGORITHM_CODE_DEFAULT = "problem_algorithm_default";
 
+	private static final String ALGORITHM_CODE_2_BACKTRACK_SIMPLE = "problem.algorithm.backtrack.simple";
+	private static final String ALGORITHM_CODE_2_BACKTRACK_CIRCLE = "problem.algorithm.backtrack.circle";
+	private static final String ALGORITHM_CODE_2_BACKTRACK_PATH_LENGTH_LIMIT = "problem.algorithm.backtrack.path.length.limit";
+	private static final String ALGORITHM_CODE_2_BACKTRACK_OPTIMAL = "problem.algorithm.backtrack.optimal";
+	private static final String ALGORITHM_CODE_2_BREADTH_FIRST = "problem.algorithm.breadth.first";
+	private static final String ALGORITHM_CODE_2_DEPTH_FIRST = "problem.algorithm.depth.first";
+	private static final String ALGORITHM_CODE_2_OPTIMAL = "problem.algorithm.optimal";
+	private static final String ALGORITHM_CODE_2_BEST_FIRST = "problem.algorithm.best.first";
+	private static final String ALGORITHM_CODE_2_A = "problem.algorithm.a";
+
 	@Value("${file.generated.folder}")
 	private String generatedFolderName;
 
 	@Autowired
 	private ProcessService processService;
+
+	@Autowired
+	private UserService userService;
 
 	@Autowired
 	private ThreadPoolTaskExecutor threadPoolTaskExecutor;
@@ -226,6 +238,7 @@ public class ProblemRestController {
 
 		// START PROCESSES
 
+		UserDTO userDTO = userService.getUserByUsername(activeUsersUsername());
 
 		List<String> processIdentifiers = new ArrayList<>();
 
@@ -242,6 +255,9 @@ public class ProblemRestController {
 			processDTO.setDone(false);
 			processDTO.setJavaPackageName(packageName);
 			processDTO.setStateSpaceFileName(stateSpacefileName);
+			processDTO.setUserId(userDTO.getId());
+			processDTO.setCreationDate(new Date());
+			processDTO.setSearchAlgorithm(algorithmNameToCode2(problemForm.getAlgorithms().get(i)));
 			processService.save(processDTO);
 
 			// Start the process
@@ -333,5 +349,48 @@ public class ProblemRestController {
 		return codes;
 
 	}
+
+	private String algorithmNameToCode2(String algorithmName){
+
+		String code = "";
+
+		switch (algorithmName) {
+			case ALGORITHM_NAME_BACKTRACK_SIMPLE:
+				code = ALGORITHM_CODE_2_BACKTRACK_SIMPLE;
+				break;
+			case ALGORITHM_NAME_BACKTRACK_CIRCLE:
+				code = ALGORITHM_CODE_2_BACKTRACK_CIRCLE;
+				break;
+			case ALGORITHM_NAME_BACKTRACK_PATH_LENGTH_LIMIT:
+				code = ALGORITHM_CODE_2_BACKTRACK_PATH_LENGTH_LIMIT;
+				break;
+			case ALGORITHM_NAME_BACKTRACK_OPTIMAL:
+				code = ALGORITHM_CODE_2_BACKTRACK_OPTIMAL;
+				break;
+			case ALGORITHM_NAME_BREADTH_FIRST:
+				code = ALGORITHM_CODE_2_BREADTH_FIRST;
+				break;
+			case ALGORITHM_NAME_DEPTH_FIRST:
+				code = ALGORITHM_CODE_2_DEPTH_FIRST;
+				break;
+			case ALGORITHM_NAME_OPTIMAL:
+				code = ALGORITHM_CODE_2_OPTIMAL;
+				break;
+			case ALGORITHM_NAME_BEST_FIRST:
+				code = ALGORITHM_CODE_2_BEST_FIRST;
+				break;
+			case ALGORITHM_NAME_A:
+				code = ALGORITHM_CODE_2_A;
+				break;
+		}
+
+		return code;
+
+	}
+
+	private String activeUsersUsername() {
+		return SecurityContextHolder.getContext().getAuthentication().getName();
+	}
+
 
 }

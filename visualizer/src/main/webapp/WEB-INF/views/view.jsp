@@ -13,6 +13,7 @@
 	<c:url value="/resources/css/pagestyle.css" var="pageStyle" />
 	<c:url value="/resources/js/d3.min.js" var="d3js" />
 	<c:url value="/resources/js/jquery.i18n.properties.js" var="jQueryi18n" />
+	<c:url value="/resources/css/font-awesome.min.css" var="fontAwesome" />
 
 	<link rel="stylesheet" type="text/css" href="${bootstrapCss}" />
 	<link rel="stylesheet" type="text/css" href="${pageStyle}" />
@@ -21,6 +22,7 @@
 	<script src="${d3js}"></script>
 	<script>var locale = "${pageContext.response.locale}";</script>
     <script src="${jQueryi18n}"></script>
+    <link rel="stylesheet" type="text/css" href="${fontAwesome}" />
 
 	<meta charset="UTF-8">
 	<title><spring:message code="title.view" /></title>
@@ -39,7 +41,7 @@
 		<c:choose>
 		
 		<c:when test="${processDTO.done == false}">
-			<h3><spring:message code="view.in.progress" /></h3>
+			<h3><i class="fa fa-spinner fa-spin" style="font-size: 30px;"></i> <spring:message code="view.in.progress" /></h3>
 		</c:when>
 		
 		<c:when test="${processDTO.done == true && processDTO.error == false}">

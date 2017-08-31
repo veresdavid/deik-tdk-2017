@@ -23,5 +23,6 @@ public class ProcessDTO {
     private String name;
     private Date creationDate;
     private Long userId;
+    private String searchAlgorithm;
 
 }
