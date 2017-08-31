@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
@@ -21,14 +22,17 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.ArrayUtils;
 
 import exceptions.CompilationException;
 import exceptions.InvalidVariableException;
 import exceptions.OperatorInitializationException;
 import exceptions.OperatorNotFoundException;
+import exceptions.SolutionSearcherNotFoundException;
 import exceptions.StateInitializationException;
 import exceptions.StateNotFoundException;
 import exceptions.TypeMismatchException;
+import exceptions.WrongFileExtensionException;
 import interfaces.OperatorInterface;
 import interfaces.StateInterface;
 import solutionsearchers.A;
@@ -182,8 +186,7 @@ public class SolutionManager{
 	private List<File> loadableClasses;
 	private Class<?> solutionSearcherClass;
 	
-	public String doUserSolutionSearcher(List<String> javaFileLocations, List<String> javaCodes) throws Exception {
-		System.out.println("KOPASZ1");
+	public String doUserSolutionSearcher(List<String> javaFileLocations, List<String> javaCodes, boolean doHeuristic, String heuristicFunction, Set<String> variablesInHeuristicFunction, Object[] variables, boolean doTree) throws Exception{
 		File solutionSearcherFilesFolder = new File("solutionSearcherFiles");
 		
 		if(!solutionSearcherFilesFolder.exists())
@@ -210,13 +213,11 @@ public class SolutionManager{
 		
 		for(String javaFileLocation : javaFileLocations) {
 			if(!FilenameUtils.isExtension(javaFileLocation, "java")) {
-				//TODO exception WrongFileExtensionException
+				throw new WrongFileExtensionException();
 			}
 			
 			allJavaFileLocations.add(javaFileLocation);
 		}
-		
-		System.out.println("KOPASZ2");
 		
 		File userSolutionSearcherClassesFolder = new File("userSolutionSearcherClasses" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("YYYY-MM-dd-hh-mm-ss")) + UUID.randomUUID().toString());
 		userSolutionSearcherClassesFolder.mkdir();
@@ -225,29 +226,60 @@ public class SolutionManager{
 		
 		compileFiles();
 		
-		System.out.println("KOPASZ3");
-		
 		loadableClasses = new ArrayList<>();
 		
 		getLoadableClassesInFolder(userSolutionSearcherClassesFolder);
 		
-		System.out.println("KOPASZ4");
-		
 		loadClasses(userSolutionSearcherClassesFolder);
-		
-		System.out.println("KOPASZ5");
-		
-		//be kell szippantanom itt olyanokat pl, hogy heurisztikát kell e átadni, korlátot, egyéb adatot (egyéb adatnak is beviteli mezőt biztosítani)
-		
+				
 		try {
-			SolutionSearcher solutionSearcher = (SolutionSearcher) solutionSearcherClass.getConstructor(StateInterface.class).newInstance(state);
+			
+			// TODO van-e olyan módszer amivel nem kell megszabnom a sorrendet a konstruktor paramétereinél
+				// lekérni minden konstruktorát, megkeresni azokat amiknek a paraméterek száma megfelelő
+				// azok közül kiválasztani a megfelelőt
+				// belepakolni tömbbe megfelelő sorrendben a változókat
+				// létrehozni a tömmbel egy egyedet
+			
+			Constructor[] allConstructors = solutionSearcherClass.getDeclaredConstructors();
+			
+			SolutionSearcher solutionSearcher = null;
+			if(!doHeuristic && variables.length == 0) {
+				solutionSearcher = (SolutionSearcher) solutionSearcherClass.getConstructor(StateInterface.class).newInstance(state);
+			} else if(doHeuristic && variables.length == 0) {
+				/*for (Constructor ctor : allConstructors) {
+					Class<?>[] pType  = ctor.getParameterTypes();
+					if(pType.length == 3) {
+						checkForType(pType, StateInterface.class);
+						checkForType(pType, String.class);
+						checkForType(pType, Set.class);
+					}
+				}*/
+				solutionSearcher = (SolutionSearcher) solutionSearcherClass.getConstructor(StateInterface.class, String.class, Set.class).newInstance(state, heuristicFunction, variablesInHeuristicFunction);
+			} else if(!doHeuristic && variables.length != 0) {
+				Object[] tmp = {state};
+				Object[] params = ArrayUtils.addAll(tmp, variables);
+				for (Constructor ctor : allConstructors) {
+					Class<?>[] pType  = ctor.getParameterTypes();
+					if(pType.length == params.length) {
+						solutionSearcher = (SolutionSearcher) ctor.newInstance(params);
+					}
+				}
+			} else if(doHeuristic && variables.length != 0) {
+				Object[] tmp = {state, heuristicFunction, variablesInHeuristicFunction};
+				Object[] params = ArrayUtils.addAll(tmp, variables);
+				for (Constructor ctor : allConstructors) {
+					Class<?>[] pType  = ctor.getParameterTypes();
+					if(pType.length == params.length) {
+						solutionSearcher = (SolutionSearcher) ctor.newInstance(params);
+					}
+				}
+			}
 			
 			solutionSearcher.setOperators(operators);
 			
-			/*if(doTree){
+			if(doTree){
 				solutionSearcher.setInformationCollector(new ExtendedInformationCollector());
-			}*/
-			System.out.println("KOPASZ6");
+			}
 			solutionSearcher.search();
 			return solutionSearcher.searchFinished();
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
@@ -255,8 +287,7 @@ public class SolutionManager{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		// TODO exception mert vmi baki volt a futtatással
+		// TODO ez okés?
 		return null;
 	}
 	
@@ -295,7 +326,7 @@ public class SolutionManager{
 		}
 	}
 	
-	private void loadClasses(File userSolutionSearcherClassesFolder) throws ClassNotFoundException, IOException, StateNotFoundException, OperatorNotFoundException{
+	private void loadClasses(File userSolutionSearcherClassesFolder) throws ClassNotFoundException, IOException, StateNotFoundException, OperatorNotFoundException, SolutionSearcherNotFoundException{
 		boolean isSolutionSearcherFound = false;
 		URLClassLoader loader = new URLClassLoader(new URL[] { userSolutionSearcherClassesFolderURL }, getClass().getClassLoader());;
 		
@@ -320,7 +351,13 @@ public class SolutionManager{
 		}
 		
 		if(!isSolutionSearcherFound){
-			// TODO exception throw new StateNotFoundException();
+			throw new SolutionSearcherNotFoundException();
 		}
 	}
+	
+	/*private int checkForType(Class<?>[] pType, Object obj) {
+		for (int i = 0; i < pType.length; i++) {
+		    if()
+		}
+	}*/
 }
