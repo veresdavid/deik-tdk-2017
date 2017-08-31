@@ -81,6 +81,8 @@ function collectFormData(){
 	var name = $("#name").val();
 	var stateSpace = $("#stateSpace").val();
 	var algorithms = collectAlgorithms();
+	var backTrackPathLengthLimitationLimit = $("#backTrackPathLengthLimitationLimit").val();
+	var backTrackOptimalLimit = $("#backTrackOptimalLimit").val();
 	var doTree = collectDoTreeValue();
 	var heuristic = $("#heuristic").val();
 	var variablesInHeuristicFunction = $("#variablesInHeuristicFunction").val();
@@ -89,6 +91,8 @@ function collectFormData(){
 	data["name"] = name;
 	data["stateSpace"] = stateSpace;
 	data["algorithms"] = algorithms;
+	data["backTrackPathLengthLimitationLimit"] = backTrackPathLengthLimitationLimit;
+	data["backTrackOptimalLimit"] = backTrackOptimalLimit;
 	data["doTree"] = doTree;
 	data["heuristic"] = heuristic;
 	data["variablesInHeuristicFunction"] = variablesInHeuristicFunction;
