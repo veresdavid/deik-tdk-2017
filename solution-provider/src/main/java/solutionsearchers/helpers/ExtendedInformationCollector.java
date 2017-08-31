@@ -56,11 +56,11 @@ public class ExtendedInformationCollector extends InformationCollector{
 	
 	@Override
 	public String writeOutputSolution(Class<?> clazz, Node solution, Node treeSolution, List<OperatorInterface> OPERATORS){
-		return SolutionHelper.writeOutput(clazz, listForGraph, listForTree, Arrays.asList(solution, treeSolution), steps.toString(), OPERATORS);
+		return SolutionHelper.writeOutput(clazz, listForGraph, listForTree, Arrays.asList(solution, treeSolution), OPERATORS, OUTPUTFOLDERNAME, outputFileName);
 	}
 	
 	@Override
 	public String writeOutputNoSolution(Class<?> clazz, List<OperatorInterface> OPERATORS){
-		return SolutionHelper.writeOutput(clazz, listForGraph, listForTree, Arrays.asList(), steps.toString(), OPERATORS);
+		return SolutionHelper.writeOutput(clazz, listForGraph, listForTree, Arrays.asList(), OPERATORS, OUTPUTFOLDERNAME, outputFileName);
 	}
 }

@@ -1,10 +1,13 @@
 package solutionsearchers.helpers;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import interfaces.OperatorInterface;
 import interfaces.StateInterface;
@@ -23,6 +26,8 @@ public class InformationCollector {
 	private List<String> closeNodes;
 	private List<String> activateEdges;
 	private List<String> inactivateEdges;
+	protected String outputFileName;
+	protected static String OUTPUTFOLDERNAME = "solutionOutputs";
 
 	public InformationCollector() {
 		stepsOnStates = new HashMap<>();
@@ -35,6 +40,7 @@ public class InformationCollector {
 		closeNodes = new ArrayList<>();
 		activateEdges = new ArrayList<>();
 		inactivateEdges = new ArrayList<>();
+		outputFileName = LocalDateTime.now().format(DateTimeFormatter.ofPattern("YYYY-MM-dd-hh-mm-ss")) + UUID.randomUUID().toString() + ".txt";
 	}
 
 	public Map<StateInterface, Integer> getStepsOnStates() {
@@ -76,7 +82,7 @@ public class InformationCollector {
 		this.steps = steps;
 	}
 
-	public void appendSteps(){
+	public void appendSteps() {
 		steps.append("Activated nodes: " + activateNodes);
 		activateNodes.clear();
 		steps.append(" Inactivated nodes: " + inactivateNodes);
@@ -89,6 +95,8 @@ public class InformationCollector {
 		activateEdges.clear();
 		steps.append(" Inactivated edges: " + inactivateEdges + "\n");
 		inactivateEdges.clear();
+		SolutionHelper.writeSteps(steps.toString(), OUTPUTFOLDERNAME, outputFileName);
+		steps = new StringBuilder();
 	}
 	
 	/*ActivateNodes*/
@@ -164,10 +172,10 @@ public class InformationCollector {
 	}
 	
 	public String writeOutputSolution(Class<?> clazz, Node solution, Node treeSolution, List<OperatorInterface> OPERATORS){
-		return SolutionHelper.writeOutput(clazz, listForGraph, new ArrayList<>(), Arrays.asList(solution), steps.toString(), OPERATORS);
+		return SolutionHelper.writeOutput(clazz, listForGraph, new ArrayList<>(), Arrays.asList(solution), OPERATORS, OUTPUTFOLDERNAME, outputFileName);
 	}
 	
 	public String writeOutputNoSolution(Class<?> clazz, List<OperatorInterface> OPERATORS){
-		return SolutionHelper.writeOutput(clazz, listForGraph, new ArrayList<>(), Arrays.asList(), steps.toString(), OPERATORS);
+		return SolutionHelper.writeOutput(clazz, listForGraph, new ArrayList<>(), Arrays.asList(), OPERATORS, OUTPUTFOLDERNAME, outputFileName);
 	}
 }

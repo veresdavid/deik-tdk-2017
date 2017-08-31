@@ -1,16 +1,16 @@
 package solutionsearchers.helpers;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 import interfaces.OperatorInterface;
 import interfaces.StateInterface;
@@ -41,9 +41,26 @@ public class SolutionHelper {
 		return builder.toString();
 	}
 	
-	public static String writeOutput(Class<?> solutionSearcher, List<Node> nodes, List<Node> treeNodes, List<Node> solutions, String steps, List<OperatorInterface> operators){
-		File outputFolder = new File("solutionOutputs");
-		File output = new File("solutionOutputs/" + solutionSearcher.getSimpleName() + LocalDateTime.now().format(DateTimeFormatter.ofPattern("YYYY-MM-dd-hh-mm-ss")) + UUID.randomUUID().toString() + ".txt");
+	public static void writeSteps(String steps, String outputFolderName, String outputFileName) {
+		File outputFolder = new File(outputFolderName);
+		File output = new File("solutionOutputs/" + "tmp" + outputFileName);
+		if(!outputFolder.exists())
+			outputFolder.mkdirs();
+		
+		FileWriter fw = null;
+		try {
+			fw = new FileWriter(output.getAbsolutePath(), true);
+		    fw.write(steps);
+		    fw.close();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+	
+	public static String writeOutput(Class<?> solutionSearcher, List<Node> nodes, List<Node> treeNodes, List<Node> solutions, List<OperatorInterface> operators, String outputFolderName, String outputFileName){
+		File outputFolder = new File(outputFolderName);
+		File output = new File("solutionOutputs/" + solutionSearcher.getSimpleName() + outputFileName);
 		if(!outputFolder.exists())
 			outputFolder.mkdirs();
 			
@@ -151,7 +168,12 @@ public class SolutionHelper {
 			}
 			
 			writer.write("steps\n");
-			writer.write(steps);
+			//writer.write(steps);
+			BufferedReader reader = Files.newBufferedReader(Paths.get(new File("solutionOutputs/" + "tmp" + outputFileName).getAbsolutePath()));
+			String line;
+			while ((line = reader.readLine()) != null) {
+			  writer.write(line + "\n");
+			}
 			
 			writer.write("solutions");
 			String solution = writeSolutions(solutions, operators);
