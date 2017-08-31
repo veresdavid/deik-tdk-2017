@@ -39,7 +39,11 @@ public class SolutionSearcher {
 	}
 	
 	public String searchFinished() {
-		return informationCollector.writeOutputSolution(getClass(), solution, treeSolution, operators);
+		if(solution != null) {
+			return informationCollector.writeOutputSolution(getClass(), solution, treeSolution, operators);
+		} else {
+			return informationCollector.writeOutputNoSolution(getClass(), operators);
+		}
 	}
 	
 	protected String getEdgeId(Node actual) {
