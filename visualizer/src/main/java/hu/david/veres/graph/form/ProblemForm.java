@@ -28,4 +28,6 @@ public class ProblemForm {
 
     private String variablesInHeuristicFunction;
 
+    private List<CustomSearchAlgorithmData> customSearchAlgorithms;
+
 }

@@ -2,6 +2,7 @@ package hu.david.veres.graph.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hu.david.veres.graph.model.Result;
+import hu.david.veres.graph.util.ProcessUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Service
 public class StorageServiceImpl implements StorageService {
@@ -30,6 +34,9 @@ public class StorageServiceImpl implements StorageService {
 
     @Value("${file.solution.outputs.folder}")
     private String solutionOutputsFolderName;
+
+    @Value("${file.uploaded.search.algorithm.files.folder}")
+    private String uploadedSearchAlgorithmFilesFolderName;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -109,6 +116,23 @@ public class StorageServiceImpl implements StorageService {
         }
 
         return file;
+
+    }
+
+    @Override
+    public File storeUploadedSearchAlgorithmFile(MultipartFile multipartFile) throws IOException {
+
+        if(multipartFile==null || multipartFile.isEmpty()){
+            return null;
+        }
+
+        String newFileName = ProcessUtils.generateUploadedSearchAlgorithmFileName() + EXTENSION_JAVA;
+
+        Path path = Paths.get(uploadedSearchAlgorithmFilesFolderName);
+
+        Files.copy(multipartFile.getInputStream(), path.resolve(newFileName));
+
+        return new File(uploadedSearchAlgorithmFilesFolderName + File.separator + newFileName);
 
     }
 }

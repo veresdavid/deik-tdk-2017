@@ -43,7 +43,10 @@ public class ProblemFormValidator implements Validator {
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, FIELD_STATESPACE, ERROR_MESSAGE_EMPTY_STATE_SPACE);
 
 		// validate search algorithms
-		ValidationUtils.rejectIfEmpty(errors, FIELD_ALGORITHMS, ERROR_MESSAGE_NO_ALGORITHM);
+		// ValidationUtils.rejectIfEmpty(errors, FIELD_ALGORITHMS, ERROR_MESSAGE_NO_ALGORITHM);
+		if(problemForm.getAlgorithms().size()==0 && problemForm.getCustomSearchAlgorithms().size()==0){
+			errors.rejectValue(FIELD_ALGORITHMS, ERROR_MESSAGE_NO_ALGORITHM);
+		}
 
 		// validate limits
 		if (problemForm.getAlgorithms().contains(ALGORITHM_BACKTRACK_PATHLENGTHLIMITATION)) {

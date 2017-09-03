@@ -21,4 +21,6 @@ public interface StorageService {
 
     File getJavaFile(String packageName, String fileName) throws FileNotFoundException;
 
+    File storeUploadedSearchAlgorithmFile(MultipartFile multipartFile) throws IOException;
+
 }

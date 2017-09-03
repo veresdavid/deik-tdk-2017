@@ -171,6 +171,39 @@ svg{
     display: none;
 }
 
+#customSearchAlgorithms{
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.customSearchAlgorithmsHeading{
+    margin-top: 20px;
+}
+
+#newCustomSearchAlgorithm{
+    font-size: 25px;
+    margin-bottom: 20px;
+}
+
+#newCustomSearchAlgorithm:hover{
+    color: green;
+}
+
+.removeCustomSearchAlgorithm{
+    font-size: 20px;
+}
+
+.removeCustomSearchAlgorithm:hover{
+    color: red;
+}
+
+.customSearchAlgorithmDiv{
+    border-bottom: 1px solid gray;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+}
+
 /** REGISTRATION PAGE */
 
 #registrationHeader{

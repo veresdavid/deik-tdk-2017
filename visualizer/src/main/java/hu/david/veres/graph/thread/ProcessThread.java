@@ -4,6 +4,7 @@ import exceptions.InvalidVariableException;
 import exceptions.TypeMismatchException;
 import hu.david.veres.graph.dto.ProcessDTO;
 import hu.david.veres.graph.form.ProblemForm;
+import hu.david.veres.graph.form.VariableData;
 import hu.david.veres.graph.generator.ResultGenerator;
 import hu.david.veres.graph.model.Result;
 import hu.david.veres.graph.service.ProcessService;
@@ -13,14 +14,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import main.SolutionManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -30,12 +30,16 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class ProcessThread implements Runnable {
 
+    @Value("${file.uploaded.search.algorithm.files.folder}")
+    private String uploadedSearchAlgorithmFilesFolderName;
+
     private static final String ERROR_MESSAGE_SERVER_SIDE = "Server-side error! Please try again!";
 
     private String processIdentifier;
     private SolutionManager solutionManager;
     private ProblemForm problemForm;
     private int algorithmIndex;
+    private boolean custom;
 
     @Autowired
     private ProcessService processService;
@@ -50,86 +54,103 @@ public class ProcessThread implements Runnable {
 
         // Generate and get solution output file name
         String absoluteFileName = "";
-        switch (problemForm.getAlgorithms().get(algorithmIndex)) {
-            case "BackTrackSimple":
-                absoluteFileName = solutionManager.doBackTrackSimple(problemForm.isDoTree());
-                break;
-            case "BackTrackCircle":
-                absoluteFileName = solutionManager.doBackTrackCircle(problemForm.isDoTree());
-                break;
-            case "BackTrackPathLengthLimitation":
-                absoluteFileName = solutionManager.doBackTrackPathLengthLimitation(problemForm.isDoTree(), problemForm.getBackTrackPathLengthLimitationLimit());
-                break;
-            case "BackTrackOptimal":
-                absoluteFileName = solutionManager.doBackTrackOptimal(problemForm.isDoTree(), problemForm.getBackTrackOptimalLimit());
-                break;
-            case "BreadthFirst":
-                absoluteFileName = solutionManager.doBreadthFirst(problemForm.isDoTree());
-                break;
-            case "DepthFirst":
-                absoluteFileName = solutionManager.doDepthFirst(problemForm.isDoTree());
-                break;
-            case "Optimal":
-                absoluteFileName = solutionManager.doOptimal(problemForm.isDoTree());
-                break;
-            case "BestFirst":
-                try {
-                    absoluteFileName = solutionManager.doBestFirst(problemForm.getHeuristic(), convertInputToSet(problemForm.getVariablesInHeuristicFunction()), problemForm.isDoTree());
-                } catch (ClassNotFoundException e) {
-                    finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
-                    e.printStackTrace();
-                    return;
-                } catch (NoSuchFieldException e) {
-                    finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
-                    e.printStackTrace();
-                    return;
-                } catch (IllegalAccessException e) {
-                    finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
-                    e.printStackTrace();
-                    return;
-                } catch (InstantiationException e) {
-                    finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
-                    e.printStackTrace();
-                    return;
-                } catch (InvalidVariableException e) {
-                    finishAndUpdateProcess(processIdentifier, true, e.getMessage(), null);
-                    e.printStackTrace();
-                    return;
-                } catch (TypeMismatchException e) {
-                    finishAndUpdateProcess(processIdentifier, true, e.getMessage(), null);
-                    e.printStackTrace();
-                    return;
-                }
-                break;
-            case "A":
-                try {
-                    absoluteFileName = solutionManager.doA(problemForm.getHeuristic(), convertInputToSet(problemForm.getVariablesInHeuristicFunction()), problemForm.isDoTree());
-                } catch (ClassNotFoundException e) {
-                    finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
-                    e.printStackTrace();
-                    return;
-                } catch (NoSuchFieldException e) {
-                    finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
-                    e.printStackTrace();
-                    return;
-                } catch (IllegalAccessException e) {
-                    finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
-                    e.printStackTrace();
-                    return;
-                } catch (InstantiationException e) {
-                    finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
-                    e.printStackTrace();
-                    return;
-                } catch (InvalidVariableException e) {
-                    finishAndUpdateProcess(processIdentifier, true, e.getMessage(), null);
-                    e.printStackTrace();
-                    return;
-                } catch (TypeMismatchException e) {
-                    finishAndUpdateProcess(processIdentifier, true, e.getMessage(), null);
-                    e.printStackTrace();
-                    return;
-                }
-                break;
+
+        if(custom){
+
+            try {
+
+                absoluteFileName = solutionManager.doUserSolutionSearcher(getJavaFileLocations(problemForm.getCustomSearchAlgorithms().get(algorithmIndex).getFiles()), Collections.emptyList(), problemForm.getCustomSearchAlgorithms().get(algorithmIndex).isUsesHeuristic(), problemForm.getHeuristic(), convertInputToSet(problemForm.getVariablesInHeuristicFunction()), generateVariablesArray(problemForm.getCustomSearchAlgorithms().get(algorithmIndex).getVariables()), problemForm.isDoTree());
+
+            } catch (Exception e) {
+                finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
+                e.printStackTrace();
+                return;
+            }
+
+        }else {
+
+            switch (problemForm.getAlgorithms().get(algorithmIndex)) {
+                case "BackTrackSimple":
+                    absoluteFileName = solutionManager.doBackTrackSimple(problemForm.isDoTree());
+                    break;
+                case "BackTrackCircle":
+                    absoluteFileName = solutionManager.doBackTrackCircle(problemForm.isDoTree());
+                    break;
+                case "BackTrackPathLengthLimitation":
+                    absoluteFileName = solutionManager.doBackTrackPathLengthLimitation(problemForm.isDoTree(), problemForm.getBackTrackPathLengthLimitationLimit());
+                    break;
+                case "BackTrackOptimal":
+                    absoluteFileName = solutionManager.doBackTrackOptimal(problemForm.isDoTree(), problemForm.getBackTrackOptimalLimit());
+                    break;
+                case "BreadthFirst":
+                    absoluteFileName = solutionManager.doBreadthFirst(problemForm.isDoTree());
+                    break;
+                case "DepthFirst":
+                    absoluteFileName = solutionManager.doDepthFirst(problemForm.isDoTree());
+                    break;
+                case "Optimal":
+                    absoluteFileName = solutionManager.doOptimal(problemForm.isDoTree());
+                    break;
+                case "BestFirst":
+                    try {
+                        absoluteFileName = solutionManager.doBestFirst(problemForm.getHeuristic(), convertInputToSet(problemForm.getVariablesInHeuristicFunction()), problemForm.isDoTree());
+                    } catch (ClassNotFoundException e) {
+                        finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
+                        e.printStackTrace();
+                        return;
+                    } catch (NoSuchFieldException e) {
+                        finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
+                        e.printStackTrace();
+                        return;
+                    } catch (IllegalAccessException e) {
+                        finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
+                        e.printStackTrace();
+                        return;
+                    } catch (InstantiationException e) {
+                        finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
+                        e.printStackTrace();
+                        return;
+                    } catch (InvalidVariableException e) {
+                        finishAndUpdateProcess(processIdentifier, true, e.getMessage(), null);
+                        e.printStackTrace();
+                        return;
+                    } catch (TypeMismatchException e) {
+                        finishAndUpdateProcess(processIdentifier, true, e.getMessage(), null);
+                        e.printStackTrace();
+                        return;
+                    }
+                    break;
+                case "A":
+                    try {
+                        absoluteFileName = solutionManager.doA(problemForm.getHeuristic(), convertInputToSet(problemForm.getVariablesInHeuristicFunction()), problemForm.isDoTree());
+                    } catch (ClassNotFoundException e) {
+                        finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
+                        e.printStackTrace();
+                        return;
+                    } catch (NoSuchFieldException e) {
+                        finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
+                        e.printStackTrace();
+                        return;
+                    } catch (IllegalAccessException e) {
+                        finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
+                        e.printStackTrace();
+                        return;
+                    } catch (InstantiationException e) {
+                        finishAndUpdateProcess(processIdentifier, true, ERROR_MESSAGE_SERVER_SIDE, null);
+                        e.printStackTrace();
+                        return;
+                    } catch (InvalidVariableException e) {
+                        finishAndUpdateProcess(processIdentifier, true, e.getMessage(), null);
+                        e.printStackTrace();
+                        return;
+                    } catch (TypeMismatchException e) {
+                        finishAndUpdateProcess(processIdentifier, true, e.getMessage(), null);
+                        e.printStackTrace();
+                        return;
+                    }
+                    break;
+            }
+
         }
 
         // GENERATE JSON
@@ -187,6 +208,37 @@ public class ProcessThread implements Runnable {
         String[] parts = input.split(", ");
 
         return Arrays.stream(parts).collect(Collectors.toSet());
+
+    }
+
+    private List<String> getJavaFileLocations(List<String> fileNames){
+
+        List<String> javaFileLocations = new ArrayList<>();
+
+        for(String fileName : fileNames){
+            javaFileLocations.add(uploadedSearchAlgorithmFilesFolderName + File.separator + fileName + ".java");
+        }
+
+        return javaFileLocations;
+
+    }
+
+    private Object[] generateVariablesArray(List<VariableData> variableDatas){
+
+        Object[] variables = new Object[variableDatas.size()];
+
+        for(int i=0; i<variableDatas.size(); i++){
+
+            switch (variableDatas.get(i).getType()){
+                case "int": variables[i] = Integer.parseInt(variableDatas.get(i).getValue()); break;
+                case "double": variables[i] = Double.parseDouble(variableDatas.get(i).getValue()); break;
+                case "string": variables[i] = variableDatas.get(i).getValue(); break;
+                case "boolean": variables[i] = Boolean.parseBoolean(variableDatas.get(i).getValue()); break;
+            }
+
+        }
+
+        return variables;
 
     }
 

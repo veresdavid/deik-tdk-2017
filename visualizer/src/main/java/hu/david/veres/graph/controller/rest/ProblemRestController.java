@@ -7,6 +7,7 @@ import generator.StateGenerator;
 import hu.david.veres.graph.dto.ProcessDTO;
 import hu.david.veres.graph.dto.UserDTO;
 import hu.david.veres.graph.form.ProblemForm;
+import hu.david.veres.graph.response.FileUploadResponse;
 import hu.david.veres.graph.response.ProblemResponse;
 import hu.david.veres.graph.service.ProcessService;
 import hu.david.veres.graph.service.StorageService;
@@ -27,10 +28,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import representation.ClassRepresentation;
 import representation.ProjectRepresentation;
 
@@ -270,12 +269,64 @@ public class ProblemRestController {
 
 		}
 
+		// custom algorithms
+		for(int i=0; i<problemForm.getCustomSearchAlgorithms().size(); i++){
+
+			// Generate identifier for process
+			String processIdentifier = ProcessUtils.generateProcessIdentifier();
+			processIdentifiers.add(processIdentifier);
+
+			// Create and store new process in database
+			ProcessDTO processDTO = new ProcessDTO();
+			processDTO.setName(problemForm.getName());
+			processDTO.setProcessIdentifier(processIdentifier);
+			processDTO.setDone(false);
+			processDTO.setJavaPackageName(packageName);
+			processDTO.setStateSpaceFileName(stateSpacefileName);
+			processDTO.setUserId(userDTO.getId());
+			processDTO.setCreationDate(new Date());
+			// TODO
+			// processDTO.setSearchAlgorithm(algorithmNameToCode2(problemForm.getAlgorithms().get(i)));
+			processService.save(processDTO);
+
+			// Start the process
+			ProcessThread processThread = applicationContext.getBean(ProcessThread.class);
+			processThread.setProcessIdentifier(processIdentifier);
+			processThread.setSolutionManager(solutionManager);
+			processThread.setProblemForm(problemForm);
+			processThread.setAlgorithmIndex(i);
+			processThread.setCustom(true);
+			threadPoolTaskExecutor.execute(processThread);
+
+		}
+
 		// Return response
 		ProblemResponse problemResponse = new ProblemResponse();
 		problemResponse.setProcessIdentifiers(processIdentifiers);
 		problemResponse.setAlgorithms(algorithmNamesToCodes(problemForm.getAlgorithms()));
 
 		return problemResponse;
+
+	}
+
+	@RequestMapping(path = "/uploadAlgorithm", method = RequestMethod.POST)
+	public FileUploadResponse uploadTest(@RequestParam(name = "file", required = true) MultipartFile multipartFile, @RequestParam(name = "index", required = true) int index){
+
+		System.out.println(multipartFile);
+
+		System.out.println("index : " + index);
+
+		System.out.println(multipartFile.getOriginalFilename());
+
+		File storedFile = null;
+
+		try {
+			storedFile = storageService.storeUploadedSearchAlgorithmFile(multipartFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return new FileUploadResponse(index, storedFile.getName().substring(0, storedFile.getName().lastIndexOf(".")));
 
 	}
 

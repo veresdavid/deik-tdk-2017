@@ -95,6 +95,10 @@
 					<input type="checkbox" class="algorithmCheckbox" value="Optimal" /><spring:message code="problem.algorithm.optimal" /><br/>
 					<input type="checkbox" class="algorithmCheckbox" value="BestFirst" /><spring:message code="problem.algorithm.best.first" /><br/>
 					<input type="checkbox" class="algorithmCheckbox" value="A" /><spring:message code="problem.algorithm.a" /><br/>
+					<h4 class="customSearchAlgorithmsHeading">Custom search algorithms</h4>
+					<div id="customSearchAlgorithms">
+					</div>
+					<span id="newCustomSearchAlgorithm" onclick="addNewCustomSearchAlgorithm()" class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
 					<div id="algorithmErrors" class="alert alert-danger fieldErrors"></div>
 				</td>
 			</tr>
@@ -114,7 +118,7 @@
 				<td colspan="2" class="formInformation"><spring:message code="problem.form.required" /></td>
 			</tr>
 			<tr>
-			    <td colspan="2"><button id="problemSubmitButton" onclick="newProblem()" class="btn btn-primary problemSubmitButton"><spring:message code="problem.form.submit" /></button></td>
+			    <td colspan="2"><button id="problemSubmitButton" onclick="postForm()" class="btn btn-primary problemSubmitButton"><spring:message code="problem.form.submit" /></button></td>
 			</tr>
 		</table>
 		

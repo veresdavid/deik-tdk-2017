@@ -224,9 +224,10 @@ function removeForm(){
 	});
 }
 
-function newProblem(){
+function newProblem(customSearchAlgorithms){
 
 	var data = collectFormData();
+	data["customSearchAlgorithms"] = customSearchAlgorithms;
 
 	disableSubmitButton();
 	displayInformationDiv();
@@ -264,5 +265,296 @@ function newProblem(){
 			enableSubmitButton();
 		}
 	});
+
+}
+
+function removeNewCustomSearchAlgorithmButton(){
+    $("#newCustomSearchAlgorithm").remove();
+}
+
+function addNewCustomSearchAlgorithmButton(){
+    $("#customSearchAlgorithms").append("<span id=\"newCustomSearchAlgorithm\" onclick=\"addNewCustomSearchAlgorithm()\" class=\"glyphicon glyphicon-plus-sign\" aria-hidden=\"true\"></span>");
+}
+
+function removeParentCustomSearchAlgorithmDiv(element){
+    // $(element).parent().remove();
+    $(element).parent().slideUp("slow", function(){
+        $(this).remove();
+    });
+}
+
+function addNewCustomSearchAlgorithmFileButton(element){
+
+    $("<span onclick=\"addNewCustomSearchAlgorithmFile(this)\" class=\"glyphicon glyphicon-plus-sign\" aria-hidden=\"true\"></span>").appendTo(element);
+
+}
+
+function removeParentCustomSearchAlgorithmFileDiv(element){
+    $(element).parent().remove();
+}
+
+function addNewCustomSearchAlgorithmFile(element){
+
+    var filesDiv = $(element).siblings(".customSearchAlgorithmFilesDiv");
+
+    // add new div with file input and delete button
+    var fileDiv = $("<div>").appendTo(filesDiv);
+    $("<input type=\"file\" class=\"customSearchAlgorithmFile\" />").appendTo(fileDiv);
+    $("<span onclick=\"removeParentCustomSearchAlgorithmFileDiv(this)\" class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"></span>").appendTo(fileDiv);
+
+}
+
+function removeCustomSearchAlgorithmFile(){
+}
+
+function removeParentDiv(element){
+    $(element).parent().slideUp("slow", function(){
+        $(this).remove();
+    });
+}
+
+function addNewCustomSearchAlgorithmVariable(element){
+
+    var variablesDiv = $(element).siblings(".customSearchAlgorithmVariablesDiv");
+    var newVariableDiv = $("<div>").appendTo(variablesDiv);
+    $(newVariableDiv).css("display", "none");
+    var typeSelect = $("<select>").appendTo(newVariableDiv);
+    $("<option value=\"int\">int</option>").appendTo(typeSelect);
+    $("<option value=\"double\">double</option>").appendTo(typeSelect);
+    $("<option value=\"string\">string</option>").appendTo(typeSelect);
+    $("<option value=\"boolean\">boolean</option>").appendTo(typeSelect);
+    $("<input type=\"text\" />").appendTo(newVariableDiv);
+    $("<span onclick=\"removeParentDiv(this)\" class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"></span>").appendTo(newVariableDiv);
+
+    $(newVariableDiv).slideDown("slow");
+
+}
+
+function addNewCustomSearchAlgorithmDiv(){
+
+    // new div
+    var customSearchAlgorithmDiv = $("<div class=\"customSearchAlgorithmDiv\">").appendTo("#customSearchAlgorithms");
+    $(customSearchAlgorithmDiv).css("display", "none");
+
+    // remove button
+    $("<span onclick=\"removeParentCustomSearchAlgorithmDiv(this)\" class=\"glyphicon glyphicon-remove removeCustomSearchAlgorithm\" aria-hidden=\"true\"></span>").appendTo(customSearchAlgorithmDiv);
+
+    // inner div for files
+    var customSearchAlgorithmFilesDiv = $("<div class=\"customSearchAlgorithmFilesDiv\">").appendTo(customSearchAlgorithmDiv);
+    $("<input type=\"file\" class=\"customSearchAlgorithmFile\" />").appendTo(customSearchAlgorithmFilesDiv);
+    $("<span onclick=\"addNewCustomSearchAlgorithmFile(this)\" class=\"glyphicon glyphicon-plus-sign\" aria-hidden=\"true\"></span>").appendTo(customSearchAlgorithmDiv);
+
+    // inner div for checkbox
+    var usesHeuristicDiv = $("<div class=\"usesHeuristic\">").appendTo(customSearchAlgorithmDiv);
+    $("<input type=\"checkbox\" />").appendTo(usesHeuristicDiv);
+    $("<span>Uses heuristic</span>").appendTo(usesHeuristicDiv);
+
+    // inner div for variable
+    var customSearchAlgorithmVariablesDiv = $("<div class=\"customSearchAlgorithmVariablesDiv\">").appendTo(customSearchAlgorithmDiv);
+    $("<span onclick=\"addNewCustomSearchAlgorithmVariable(this)\" class=\"glyphicon glyphicon-plus-sign\" aria-hidden=\"true\"></span>").appendTo(customSearchAlgorithmDiv);
+
+    // animation
+    $(customSearchAlgorithmDiv).slideDown("slow");
+
+}
+
+function addNewCustomSearchAlgorithm(){
+
+    // new div
+    addNewCustomSearchAlgorithmDiv();
+
+}
+
+function collectCustomSearchAlgorithmData(){
+
+    var customSearchAlgorithms = [];
+
+    var customSearchAlgorithmElements = document.getElementsByClassName("customSearchAlgorithmDiv");
+
+    var files = [];
+    var usesHeuristics = [];
+    var variables = [];
+
+    for(var i=0; i<customSearchAlgorithmElements.length; i++){
+
+        for(var j=0; j<customSearchAlgorithmElements[i].childNodes.length; j++){
+
+            var childClassName = customSearchAlgorithmElements[i].childNodes[j].className;
+
+            if(childClassName == "customSearchAlgorithmFilesDiv"){
+
+                var nthFiles = [];
+
+                var customSearchAlgorithmFilesDiv = customSearchAlgorithmElements[i].childNodes[j];
+
+                nthFiles.push(customSearchAlgorithmFilesDiv.childNodes[0].files[0]);
+
+                for(var k=1; k<customSearchAlgorithmFilesDiv.childNodes.length; k++){
+                    nthFiles.push(customSearchAlgorithmFilesDiv.childNodes[k].childNodes[0].files[0]);
+                }
+
+                files.push(nthFiles);
+
+            }else if(childClassName == "usesHeuristic"){
+
+                usesHeuristics.push(customSearchAlgorithmElements[i].childNodes[j].childNodes[0].checked);
+
+            }else if(childClassName == "customSearchAlgorithmVariablesDiv"){
+
+                var nthVariables = [];
+
+                var customSearchAlgorithmVariablesDiv = customSearchAlgorithmElements[i].childNodes[j];
+
+                for(var k=0; k<customSearchAlgorithmVariablesDiv.childNodes.length; k++){
+
+                    var variable = {};
+                    variable["type"] = customSearchAlgorithmVariablesDiv.childNodes[k].childNodes[0].value;
+                    variable["value"] = customSearchAlgorithmVariablesDiv.childNodes[k].childNodes[1].value;
+
+                    nthVariables.push(variable);
+
+                }
+
+                variables.push(nthVariables);
+
+            }
+
+        }
+
+    }
+
+    for(var i=0; i<files.length; i++){
+
+        var customSearchAlgorithm = {};
+
+        customSearchAlgorithm["files"] = files[i];
+        customSearchAlgorithm["usesHeuristic"] = usesHeuristics[i];
+        customSearchAlgorithm["variables"] = variables[i];
+
+        customSearchAlgorithms.push(customSearchAlgorithm);
+
+    }
+
+    return customSearchAlgorithms;
+
+}
+
+function newProblemWithCustomSearchAlgorithms(){
+
+    var customSearchAlgorithms = collectCustomSearchAlgorithmData();
+
+    var numberOfFiles = 0;
+    var numberOfReadyFiles = 0;
+
+    var serverFileNames = [];
+    for(var i=0; i<customSearchAlgorithms.length; i++){
+        serverFileNames[i] = [];
+        numberOfFiles += customSearchAlgorithms[i].files.length;
+    }
+
+    for(var i=0; i<customSearchAlgorithms.length; i++){
+
+        for(var j=0; j<customSearchAlgorithms[i].files.length; j++){
+
+            var formData = new FormData();
+
+            formData.append("index", i);
+            formData.append("file", customSearchAlgorithms[i].files[j]);
+
+            $.ajax({
+                type: "POST",
+                enctype: 'multipart/form-data',
+                url: context + "/uploadAlgorithm",
+                data: formData,
+                processData: false,
+                contentType: false,
+                cache: false,
+                timeout: 600000,
+                success: function (data) {
+
+                    serverFileNames[data.index].push(data.name);
+
+                    numberOfReadyFiles++;
+
+                    if(numberOfReadyFiles==numberOfFiles){
+
+                        for(var k=0; k<customSearchAlgorithms.length; k++){
+                            customSearchAlgorithms[k].files = serverFileNames[k];
+                        }
+
+                        newProblem(customSearchAlgorithms);
+
+                    }
+
+                },
+                error: function (e) {
+
+                    console.log("ERROR : ", e);
+
+                }
+            });
+
+        }
+
+    }
+
+}
+
+function postForm(){
+
+    if(document.getElementsByClassName("customSearchAlgorithmDiv").length==0){
+
+        var emptyArray = [];
+
+        newProblem(emptyArray);
+
+    }else{
+
+        newProblemWithCustomSearchAlgorithms();
+
+    }
+
+}
+
+function testFileShit(){
+
+    var formData = new FormData();
+
+    var file = $("#testFile");
+
+    if(document.getElementById("testFile").files.length==0){
+        formData.append("file", null);
+    }else{
+        formData.append("file", document.getElementById("testFile").files[0]);
+    }
+
+    console.log(document.getElementById("testFile").files.length);
+
+    console.log(formData.get("file"));
+
+    // AJAX MADAFAKAAAAAA
+
+    $.ajax({
+        type: "POST",
+        enctype: 'multipart/form-data',
+        url: context + "/uploadAlgorithm",
+        data: formData,
+        //http://api.jquery.com/jQuery.ajax/
+        //https://developer.mozilla.org/en-US/docs/Web/API/FormData/Using_FormData_Objects
+        processData: false, //prevent jQuery from automatically transforming the data into a query string
+        contentType: false,
+        cache: false,
+        timeout: 600000,
+        success: function (data) {
+
+            console.log("SUCCESS : ", data);
+
+        },
+        error: function (e) {
+
+            console.log("ERROR : ", e);
+
+        }
+    });
 
 }

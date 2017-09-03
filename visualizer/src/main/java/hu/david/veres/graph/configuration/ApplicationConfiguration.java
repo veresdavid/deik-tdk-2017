@@ -24,10 +24,14 @@ public class ApplicationConfiguration {
     @Value("${file.state.space.folder}")
     private String stateSpaceFolderName;
 
+    @Value("${file.uploaded.search.algorithm.files.folder}")
+    private String uploadedSearchAlgorithmFilesFolderName;
+
     @PostConstruct
     private void init() {
         createJsonFolder();
         createStateSpaceFolder();
+        createUploadedSearchAlgorithmFilesFolder();
     }
 
     private void createJsonFolder() {
@@ -39,6 +43,13 @@ public class ApplicationConfiguration {
 
     private void createStateSpaceFolder() {
         File fileUploadFolder = new File(stateSpaceFolderName);
+        if (!fileUploadFolder.exists()) {
+            fileUploadFolder.mkdir();
+        }
+    }
+
+    private void createUploadedSearchAlgorithmFilesFolder(){
+        File fileUploadFolder = new File(uploadedSearchAlgorithmFilesFolderName);
         if (!fileUploadFolder.exists()) {
             fileUploadFolder.mkdir();
         }
