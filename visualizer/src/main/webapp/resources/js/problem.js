@@ -1,5 +1,6 @@
 var algorithmNames = [];
 var errors = [];
+var customSearchAlgorithmTexts = [];
 
 $(document).ready(function(){
 
@@ -21,6 +22,7 @@ $(document).ready(function(){
 		    jQuery.i18n.prop("problem_algorithm_optimal");
 		    jQuery.i18n.prop("problem_algorithm_best_first");
 		    jQuery.i18n.prop("problem_algorithm_a");
+		    jQuery.i18n.prop("problem_algorithm_custom");
 
 		    algorithmNames["problem_algorithm_backtrack_simple"] = problem_algorithm_backtrack_simple;
 		    algorithmNames["problem_algorithm_backtrack_circle"] = problem_algorithm_backtrack_circle;
@@ -31,6 +33,7 @@ $(document).ready(function(){
 		    algorithmNames["problem_algorithm_optimal"] = problem_algorithm_optimal;
 		    algorithmNames["problem_algorithm_best_first"] = problem_algorithm_best_first;
 		    algorithmNames["problem_algorithm_a"] = problem_algorithm_a;
+		    algorithmNames["problem_algorithm_custom"] = problem_algorithm_custom;
 
 		    // errors
 		    jQuery.i18n.prop("problem_error_name_empty");
@@ -48,6 +51,17 @@ $(document).ready(function(){
             errors["problem_error_backtrack_pathlengthlimit_limit_invalid"] = problem_error_backtrack_pathlengthlimit_limit_invalid;
             errors["problem_error_backtrack_optimal_limit_empty"] = problem_error_backtrack_optimal_limit_empty;
             errors["problem_error_backtrack_optimal_limit_invalid"] = problem_error_backtrack_optimal_limit_invalid;
+
+            // custom search algorithm texts
+            jQuery.i18n.prop("problem_custom_algorithm_files");
+            jQuery.i18n.prop("problem_custom_algorithm_heuristic");
+            jQuery.i18n.prop("problem_custom_algorithm_uses_heuristic");
+            jQuery.i18n.prop("problem_custom_algorithm_variables");
+
+            customSearchAlgorithmTexts["problem_custom_algorithm_files"] = problem_custom_algorithm_files;
+            customSearchAlgorithmTexts["problem_custom_algorithm_heuristic"] = problem_custom_algorithm_heuristic;
+            customSearchAlgorithmTexts["problem_custom_algorithm_uses_heuristic"] = problem_custom_algorithm_uses_heuristic;
+            customSearchAlgorithmTexts["problem_custom_algorithm_variables"] = problem_custom_algorithm_variables;
 
 		}
 	});
@@ -299,12 +313,12 @@ function addNewCustomSearchAlgorithmFile(element){
 
     // add new div with file input and delete button
     var fileDiv = $("<div>").appendTo(filesDiv);
-    $("<input type=\"file\" class=\"customSearchAlgorithmFile\" />").appendTo(fileDiv);
-    $("<span onclick=\"removeParentCustomSearchAlgorithmFileDiv(this)\" class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"></span>").appendTo(fileDiv);
+    $(fileDiv).css("display", "none");
+    $("<input type=\"file\" class=\"form-control customSearchAlgorithmFile\" />").appendTo(fileDiv);
+    $("<span onclick=\"removeParentDiv(this)\" class=\"glyphicon glyphicon-remove removeCustomSearchAlgorithmFileButton\" aria-hidden=\"true\"></span>").appendTo(fileDiv);
 
-}
+    $(fileDiv).slideDown("slow");
 
-function removeCustomSearchAlgorithmFile(){
 }
 
 function removeParentDiv(element){
@@ -316,15 +330,15 @@ function removeParentDiv(element){
 function addNewCustomSearchAlgorithmVariable(element){
 
     var variablesDiv = $(element).siblings(".customSearchAlgorithmVariablesDiv");
-    var newVariableDiv = $("<div>").appendTo(variablesDiv);
+    var newVariableDiv = $("<div class=\"customSearchAlgorithmVariableDiv\">").appendTo(variablesDiv);
     $(newVariableDiv).css("display", "none");
-    var typeSelect = $("<select>").appendTo(newVariableDiv);
+    var typeSelect = $("<select class=\"form-control variableInput\">").appendTo(newVariableDiv);
     $("<option value=\"int\">int</option>").appendTo(typeSelect);
     $("<option value=\"double\">double</option>").appendTo(typeSelect);
     $("<option value=\"string\">string</option>").appendTo(typeSelect);
     $("<option value=\"boolean\">boolean</option>").appendTo(typeSelect);
-    $("<input type=\"text\" />").appendTo(newVariableDiv);
-    $("<span onclick=\"removeParentDiv(this)\" class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"></span>").appendTo(newVariableDiv);
+    $("<input type=\"text\" class=\"form-control variableInput\" />").appendTo(newVariableDiv);
+    $("<span onclick=\"removeParentDiv(this)\" class=\"glyphicon glyphicon-remove removeCustomSearchAlgorithmVariableButton\" aria-hidden=\"true\"></span>").appendTo(newVariableDiv);
 
     $(newVariableDiv).slideDown("slow");
 
@@ -340,18 +354,21 @@ function addNewCustomSearchAlgorithmDiv(){
     $("<span onclick=\"removeParentCustomSearchAlgorithmDiv(this)\" class=\"glyphicon glyphicon-remove removeCustomSearchAlgorithm\" aria-hidden=\"true\"></span>").appendTo(customSearchAlgorithmDiv);
 
     // inner div for files
+    $("<span class=\"customSearchAlgorithmDivHeading\">" + customSearchAlgorithmTexts["problem_custom_algorithm_files"] + "</span>").appendTo(customSearchAlgorithmDiv);
     var customSearchAlgorithmFilesDiv = $("<div class=\"customSearchAlgorithmFilesDiv\">").appendTo(customSearchAlgorithmDiv);
-    $("<input type=\"file\" class=\"customSearchAlgorithmFile\" />").appendTo(customSearchAlgorithmFilesDiv);
-    $("<span onclick=\"addNewCustomSearchAlgorithmFile(this)\" class=\"glyphicon glyphicon-plus-sign\" aria-hidden=\"true\"></span>").appendTo(customSearchAlgorithmDiv);
+    $("<input type=\"file\" class=\"customSearchAlgorithmFile form-control\" />").appendTo(customSearchAlgorithmFilesDiv);
+    $("<span onclick=\"addNewCustomSearchAlgorithmFile(this)\" class=\"glyphicon glyphicon-plus-sign newCustomSearchAlgorithmFileButton\" aria-hidden=\"true\"></span>").appendTo(customSearchAlgorithmDiv);
 
     // inner div for checkbox
+    $("<span class=\"customSearchAlgorithmDivHeading\">" + customSearchAlgorithmTexts["problem_custom_algorithm_heuristic"] + "</span>").appendTo(customSearchAlgorithmDiv);
     var usesHeuristicDiv = $("<div class=\"usesHeuristic\">").appendTo(customSearchAlgorithmDiv);
     $("<input type=\"checkbox\" />").appendTo(usesHeuristicDiv);
-    $("<span>Uses heuristic</span>").appendTo(usesHeuristicDiv);
+    $("<span>" + customSearchAlgorithmTexts["problem_custom_algorithm_uses_heuristic"] + "</span>").appendTo(usesHeuristicDiv);
 
     // inner div for variable
+    $("<span class=\"customSearchAlgorithmDivHeading\">" + customSearchAlgorithmTexts["problem_custom_algorithm_variables"] + "</span>").appendTo(customSearchAlgorithmDiv);
     var customSearchAlgorithmVariablesDiv = $("<div class=\"customSearchAlgorithmVariablesDiv\">").appendTo(customSearchAlgorithmDiv);
-    $("<span onclick=\"addNewCustomSearchAlgorithmVariable(this)\" class=\"glyphicon glyphicon-plus-sign\" aria-hidden=\"true\"></span>").appendTo(customSearchAlgorithmDiv);
+    $("<span onclick=\"addNewCustomSearchAlgorithmVariable(this)\" class=\"glyphicon glyphicon-plus-sign newCustomSearchAlgorithmVariableButton\" aria-hidden=\"true\"></span>").appendTo(customSearchAlgorithmDiv);
 
     // animation
     $(customSearchAlgorithmDiv).slideDown("slow");

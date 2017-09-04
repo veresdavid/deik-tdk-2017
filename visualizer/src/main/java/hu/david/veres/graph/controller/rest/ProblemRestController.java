@@ -66,6 +66,7 @@ public class ProblemRestController {
 	private static final String ALGORITHM_CODE_BEST_FIRST = "problem_algorithm_best_first";
 	private static final String ALGORITHM_CODE_A = "problem_algorithm_a";
 	private static final String ALGORITHM_CODE_DEFAULT = "problem_algorithm_default";
+	private static final String ALGORITHM_CODE_CUSTOM = "problem_algorithm_custom";
 
 	private static final String ALGORITHM_CODE_2_BACKTRACK_SIMPLE = "problem.algorithm.backtrack.simple";
 	private static final String ALGORITHM_CODE_2_BACKTRACK_CIRCLE = "problem.algorithm.backtrack.circle";
@@ -76,9 +77,13 @@ public class ProblemRestController {
 	private static final String ALGORITHM_CODE_2_OPTIMAL = "problem.algorithm.optimal";
 	private static final String ALGORITHM_CODE_2_BEST_FIRST = "problem.algorithm.best.first";
 	private static final String ALGORITHM_CODE_2_A = "problem.algorithm.a";
+	private static final String ALGORITHM_CODE_2_CUSTOM = "problem.algorithm.custom";
 
 	@Value("${file.generated.folder}")
 	private String generatedFolderName;
+
+	@Value("${file.uploaded.search.algorithm.files.folder}")
+	private String uploadedSearchAlgorithmFilesFolderName;
 
 	@Autowired
 	private ProcessService processService;
@@ -240,6 +245,7 @@ public class ProblemRestController {
 		UserDTO userDTO = userService.getUserByUsername(activeUsersUsername());
 
 		List<String> processIdentifiers = new ArrayList<>();
+		List<String> algorithmCodes = new ArrayList<>();
 
 		for (int i = 0; i < problemForm.getAlgorithms().size(); i++) {
 
@@ -269,6 +275,8 @@ public class ProblemRestController {
 
 		}
 
+		algorithmCodes.addAll(algorithmNamesToCodes(problemForm.getAlgorithms()));
+
 		// custom algorithms
 		for(int i=0; i<problemForm.getCustomSearchAlgorithms().size(); i++){
 
@@ -285,8 +293,7 @@ public class ProblemRestController {
 			processDTO.setStateSpaceFileName(stateSpacefileName);
 			processDTO.setUserId(userDTO.getId());
 			processDTO.setCreationDate(new Date());
-			// TODO
-			// processDTO.setSearchAlgorithm(algorithmNameToCode2(problemForm.getAlgorithms().get(i)));
+			processDTO.setSearchAlgorithm(ALGORITHM_CODE_2_CUSTOM);
 			processService.save(processDTO);
 
 			// Start the process
@@ -298,12 +305,15 @@ public class ProblemRestController {
 			processThread.setCustom(true);
 			threadPoolTaskExecutor.execute(processThread);
 
+			algorithmCodes.add(ALGORITHM_CODE_CUSTOM);
+
 		}
 
 		// Return response
 		ProblemResponse problemResponse = new ProblemResponse();
 		problemResponse.setProcessIdentifiers(processIdentifiers);
-		problemResponse.setAlgorithms(algorithmNamesToCodes(problemForm.getAlgorithms()));
+		// problemResponse.setAlgorithms(algorithmNamesToCodes(problemForm.getAlgorithms()));
+		problemResponse.setAlgorithms(algorithmCodes);
 
 		return problemResponse;
 
@@ -312,21 +322,17 @@ public class ProblemRestController {
 	@RequestMapping(path = "/uploadAlgorithm", method = RequestMethod.POST)
 	public FileUploadResponse uploadTest(@RequestParam(name = "file", required = true) MultipartFile multipartFile, @RequestParam(name = "index", required = true) int index){
 
-		System.out.println(multipartFile);
-
-		System.out.println("index : " + index);
-
-		System.out.println(multipartFile.getOriginalFilename());
+		String folderName = ProcessUtils.generateUploadedSearchAlgorithmFileName();
 
 		File storedFile = null;
 
 		try {
-			storedFile = storageService.storeUploadedSearchAlgorithmFile(multipartFile);
+			storedFile = storageService.storeUploadedSearchAlgorithmFile(folderName, multipartFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		return new FileUploadResponse(index, storedFile.getName().substring(0, storedFile.getName().lastIndexOf(".")));
+		return new FileUploadResponse(index, folderName + File.separator + multipartFile.getOriginalFilename());
 
 	}
 

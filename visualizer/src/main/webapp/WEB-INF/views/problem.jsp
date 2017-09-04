@@ -95,7 +95,7 @@
 					<input type="checkbox" class="algorithmCheckbox" value="Optimal" /><spring:message code="problem.algorithm.optimal" /><br/>
 					<input type="checkbox" class="algorithmCheckbox" value="BestFirst" /><spring:message code="problem.algorithm.best.first" /><br/>
 					<input type="checkbox" class="algorithmCheckbox" value="A" /><spring:message code="problem.algorithm.a" /><br/>
-					<h4 class="customSearchAlgorithmsHeading">Custom search algorithms</h4>
+					<h4 class="customSearchAlgorithmsHeading"><spring:message code="problem.form.custom.search.algorithm" /></h4>
 					<div id="customSearchAlgorithms">
 					</div>
 					<span id="newCustomSearchAlgorithm" onclick="addNewCustomSearchAlgorithm()" class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>

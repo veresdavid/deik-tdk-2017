@@ -216,7 +216,7 @@ public class ProcessThread implements Runnable {
         List<String> javaFileLocations = new ArrayList<>();
 
         for(String fileName : fileNames){
-            javaFileLocations.add(uploadedSearchAlgorithmFilesFolderName + File.separator + fileName + ".java");
+            javaFileLocations.add(uploadedSearchAlgorithmFilesFolderName + File.separator + fileName);
         }
 
         return javaFileLocations;

@@ -120,19 +120,24 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
-    public File storeUploadedSearchAlgorithmFile(MultipartFile multipartFile) throws IOException {
+    public File storeUploadedSearchAlgorithmFile(String folderName, MultipartFile multipartFile) throws IOException {
 
         if(multipartFile==null || multipartFile.isEmpty()){
             return null;
         }
 
-        String newFileName = ProcessUtils.generateUploadedSearchAlgorithmFileName() + EXTENSION_JAVA;
+        File fileUploadFolder = new File(uploadedSearchAlgorithmFilesFolderName + File.separator + folderName);
+        if (!fileUploadFolder.exists()) {
+            fileUploadFolder.mkdir();
+        }
 
-        Path path = Paths.get(uploadedSearchAlgorithmFilesFolderName);
+        String fileName = multipartFile.getOriginalFilename();
 
-        Files.copy(multipartFile.getInputStream(), path.resolve(newFileName));
+        Path path = Paths.get(uploadedSearchAlgorithmFilesFolderName + File.separator + folderName);
 
-        return new File(uploadedSearchAlgorithmFilesFolderName + File.separator + newFileName);
+        Files.copy(multipartFile.getInputStream(), path.resolve(fileName));
+
+        return new File(uploadedSearchAlgorithmFilesFolderName + File.separator + folderName + File.separator + fileName);
 
     }
 }

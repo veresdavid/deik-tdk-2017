@@ -191,6 +191,7 @@ svg{
 
 .removeCustomSearchAlgorithm{
     font-size: 20px;
+    margin-bottom: 10px;
 }
 
 .removeCustomSearchAlgorithm:hover{
@@ -202,6 +203,68 @@ svg{
     margin-top: 20px;
     margin-bottom: 20px;
     padding-bottom: 10px;
+}
+
+.customSearchAlgorithmDivHeading{
+    display: block;
+    font-size: 20px;
+}
+
+.newCustomSearchAlgorithmFileButton{
+    margin-bottom: 20px;
+}
+
+.newCustomSearchAlgorithmFileButton:hover{
+    color: green;
+}
+
+.customSearchAlgorithmFilesDiv{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.customSearchAlgorithmFile{
+    display: inline-block;
+    width: 300px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.removeCustomSearchAlgorithmFileButton{
+    display: inline-block;
+}
+
+.removeCustomSearchAlgorithmFileButton:hover{
+    color: red;
+}
+
+.usesHeuristic{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.customSearchAlgorithmVariablesDiv{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.customSearchAlgorithmVariableDiv{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.variableInput{
+    width: 100px;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.removeCustomSearchAlgorithmVariableButton:hover{
+    color: red;
+}
+
+.newCustomSearchAlgorithmVariableButton:hover{
+    color: green;
 }
 
 /** REGISTRATION PAGE */

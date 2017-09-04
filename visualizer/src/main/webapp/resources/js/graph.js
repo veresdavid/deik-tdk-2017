@@ -21,6 +21,7 @@ function loadI18n(){
             jQuery.i18n.prop("problem_algorithm_optimal");
             jQuery.i18n.prop("problem_algorithm_best_first");
             jQuery.i18n.prop("problem_algorithm_a");
+            jQuery.i18n.prop("problem_algorithm_custom");
 
             algorithmNames["BackTrackSimple"] = problem_algorithm_backtrack_simple;
             algorithmNames["BackTrackCircle"] = problem_algorithm_backtrack_circle;
@@ -31,6 +32,7 @@ function loadI18n(){
             algorithmNames["Optimal"] = problem_algorithm_optimal;
             algorithmNames["BestFirst"] = problem_algorithm_best_first;
             algorithmNames["A"] = problem_algorithm_a;
+            algorithmNames["problem_algorithm_custom"] = problem_algorithm_custom;
 
             // solution found
             jQuery.i18n.prop("view_table_solution_found_yes");
@@ -537,7 +539,11 @@ function fillPageWithInformations(){
 	$("#allStepsNumber").html(steps.length);
 	
 	// search algorithm
-	$("#searchAlgorithm").html(algorithmNames[info.searchAlgorithmName]);
+	if(algorithmNames[info.searchAlgorithmName]==null){
+	    $("#searchAlgorithm").html(algorithmNames["problem_algorithm_custom"] + " - " + info.searchAlgorithmName);
+	}else{
+	    $("#searchAlgorithm").html(algorithmNames[info.searchAlgorithmName]);
+	}
 	
 	// solution
 	if(solutions.length == 0){
