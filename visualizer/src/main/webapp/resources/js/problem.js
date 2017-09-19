@@ -148,6 +148,12 @@ function displayErrorDiv(id, message){
 	$(selector).append(errors[message] + "<br/>");
 }
 
+function displayStateSpaceErrorDiv(message){
+	var selector = "#stateSpaceErrors";
+	$(selector).css("display", "block");
+	$(selector).append(message + "<br/>");
+}
+
 function displayServerSideError(message){
 	$("#serverSideError .panel-body").text(message);
 	$("#serverSideError").css("display", "block");
@@ -165,7 +171,7 @@ function displayError(key, message){
 		displayErrorDiv("nameErrors", message);
 	}else if(key=="stateSpace"){
 		highlightField("stateSpace");
-		displayErrorDiv("stateSpaceErrors", message);
+		displayStateSpaceErrorDiv(message);
 	}else if(key=="algorithms"){
 		displayErrorDiv("algorithmErrors", message);
 	}else if(key=="backTrackPathLengthLimitationLimit"){
