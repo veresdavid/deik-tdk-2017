@@ -151,7 +151,11 @@ function displayErrorDiv(id, message){
 function displayStateSpaceErrorDiv(message){
 	var selector = "#stateSpaceErrors";
 	$(selector).css("display", "block");
-	$(selector).append(message + "<br/>");
+	if(message=="problem_error_statespace_empty"){
+	    $(selector).append(errors[message] + "<br/>");
+	}else{
+	    $(selector).append(message + "<br/>");
+	}
 }
 
 function displayServerSideError(message){
