@@ -63,6 +63,15 @@ $(document).ready(function(){
             customSearchAlgorithmTexts["problem_custom_algorithm_uses_heuristic"] = problem_custom_algorithm_uses_heuristic;
             customSearchAlgorithmTexts["problem_custom_algorithm_variables"] = problem_custom_algorithm_variables;
 
+            // file upload errors
+            jQuery.i18n.prop("file_error_empty");
+            jQuery.i18n.prop("file_error_extension");
+            jQuery.i18n.prop("file_error_size");
+
+            errors["file_error_empty"] = file_error_empty;
+            errors["file_error_extension"] = file_error_extension;
+            errors["file_error_size"] = file_error_size;
+
 		}
 	});
 
@@ -186,6 +195,8 @@ function displayError(key, message){
 		displayErrorDiv("algorithmErrors", message);
 	}else if(key=="serverSide"){
 		displayServerSideError(message);
+	}else if(key=="algorithmFile"){
+	    displayErrorDiv("algorithmErrors", message);
 	}
 
 }
@@ -468,6 +479,11 @@ function collectCustomSearchAlgorithmData(){
 
 function newProblemWithCustomSearchAlgorithms(){
 
+    disableSubmitButton();
+    displayInformationDiv();
+    clearHighlights();
+    hideErrorDivs();
+
     var customSearchAlgorithms = collectCustomSearchAlgorithmData();
 
     var numberOfFiles = 0;
@@ -499,6 +515,25 @@ function newProblemWithCustomSearchAlgorithms(){
                 timeout: 600000,
                 success: function (data) {
 
+                    if(data.error){
+
+                        // display error
+                        displayErrors(data.errors);
+
+                        // reset variables
+                        numberOfFiles = 0;
+                        numberOfReadyFiles = 0;
+                        serverFileNames = [];
+
+                        // ui
+                        hideInformationDiv();
+                        enableSubmitButton();
+
+                        // end function
+                        return;
+
+                    }
+
                     serverFileNames[data.index].push(data.name);
 
                     numberOfReadyFiles++;
@@ -512,6 +547,9 @@ function newProblemWithCustomSearchAlgorithms(){
                         newProblem(customSearchAlgorithms);
 
                     }
+
+                    hideInformationDiv();
+                    enableSubmitButton();
 
                 },
                 error: function (e) {
@@ -540,48 +578,5 @@ function postForm(){
         newProblemWithCustomSearchAlgorithms();
 
     }
-
-}
-
-function testFileShit(){
-
-    var formData = new FormData();
-
-    var file = $("#testFile");
-
-    if(document.getElementById("testFile").files.length==0){
-        formData.append("file", null);
-    }else{
-        formData.append("file", document.getElementById("testFile").files[0]);
-    }
-
-    console.log(document.getElementById("testFile").files.length);
-
-    console.log(formData.get("file"));
-
-    // AJAX MADAFAKAAAAAA
-
-    $.ajax({
-        type: "POST",
-        enctype: 'multipart/form-data',
-        url: context + "/uploadAlgorithm",
-        data: formData,
-        //http://api.jquery.com/jQuery.ajax/
-        //https://developer.mozilla.org/en-US/docs/Web/API/FormData/Using_FormData_Objects
-        processData: false, //prevent jQuery from automatically transforming the data into a query string
-        contentType: false,
-        cache: false,
-        timeout: 600000,
-        success: function (data) {
-
-            console.log("SUCCESS : ", data);
-
-        },
-        error: function (e) {
-
-            console.log("ERROR : ", e);
-
-        }
-    });
 
 }

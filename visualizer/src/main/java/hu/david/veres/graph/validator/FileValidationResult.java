@@ -1,4 +1,4 @@
-package hu.david.veres.graph.response;
+package hu.david.veres.graph.validator;
 
 import lombok.*;
 
@@ -10,11 +10,9 @@ import java.util.Map;
 @Setter
 @EqualsAndHashCode
 @ToString
-public class FileUploadResponse {
+public class FileValidationResult {
 
 	private boolean error;
 	private Map<String, String> errors;
-	private int index;
-	private String name;
 
 }
