@@ -28,7 +28,34 @@
 
 <div class="container pageContainer">
 	<div class="row">
+
 		<h1><spring:message code="home.welcome" /></h1>
+
+		<div id="pageDescription">
+
+		    <h2><spring:message code="home.desc.header.general" /></h2>
+		    <p><spring:message code="home.desc.p.general" /><p>
+
+		    <h2><spring:message code="home.desc.header.reglog" /></h2>
+            <p><spring:message code="home.desc.p.reglog" /><p>
+
+		    <h2><spring:message code="home.desc.header.profile" /></h2>
+            <p><spring:message code="home.desc.p.profile" /><p>
+
+		    <h2><spring:message code="home.desc.header.problem" /></h2>
+            <p><spring:message code="home.desc.p.problem" /><p>
+
+		    <h2><spring:message code="home.desc.header.graph" /></h2>
+            <p><spring:message code="home.desc.p.graph" /><p>
+
+		    <h2><spring:message code="home.desc.header.github" /></h2>
+            <p><spring:message code="home.desc.p.github" /><p>
+
+            <h2><spring:message code="home.desc.header.lang" /></h2>
+            <p><spring:message code="home.desc.p.lang" /><p>
+
+		</div>
+
 	</div>
 </div>
 

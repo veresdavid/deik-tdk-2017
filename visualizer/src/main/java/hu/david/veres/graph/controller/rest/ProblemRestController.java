@@ -14,6 +14,9 @@ import hu.david.veres.graph.service.StorageService;
 import hu.david.veres.graph.service.UserService;
 import hu.david.veres.graph.thread.ProcessThread;
 import hu.david.veres.graph.util.ProcessUtils;
+import hu.david.veres.graph.validator.AlgorithmFileValidator;
+import hu.david.veres.graph.validator.FileValidationModel;
+import hu.david.veres.graph.validator.FileValidationResult;
 import hu.david.veres.graph.validator.ProblemFormValidator;
 import main.SolutionMaker;
 import main.SolutionManager;
@@ -44,6 +47,7 @@ public class ProblemRestController {
 
 	private static final String ERROR_KEY_STATE_SPACE = "stateSpace";
 	private static final String ERROR_KEY_SERVER_SIDE = "serverSide";
+	private static final String ERROR_KEY_ALGORITHM_FILE = "algorithmFile";
 	private static final String ERROR_MESSAGE_SERVER_SIDE = "Server-side error! Please try again or come back later!";
 
 	private static final String ALGORITHM_NAME_BACKTRACK_SIMPLE = "BackTrackSimple";
@@ -102,6 +106,9 @@ public class ProblemRestController {
 
 	@Autowired
 	private ProblemFormValidator problemFormValidator;
+
+	@Autowired
+	private AlgorithmFileValidator algorithmFileValidator;
 
 	@RequestMapping(path = "/problem", method = RequestMethod.POST)
 	public ProblemResponse newProblem(@RequestBody ProblemForm problemForm, BindingResult bindingResult) {
@@ -278,7 +285,7 @@ public class ProblemRestController {
 		algorithmCodes.addAll(algorithmNamesToCodes(problemForm.getAlgorithms()));
 
 		// custom algorithms
-		for(int i=0; i<problemForm.getCustomSearchAlgorithms().size(); i++){
+		for (int i = 0; i < problemForm.getCustomSearchAlgorithms().size(); i++) {
 
 			// Generate identifier for process
 			String processIdentifier = ProcessUtils.generateProcessIdentifier();
@@ -320,8 +327,34 @@ public class ProblemRestController {
 	}
 
 	@RequestMapping(path = "/uploadAlgorithm", method = RequestMethod.POST)
-	public FileUploadResponse uploadTest(@RequestParam(name = "file", required = true) MultipartFile multipartFile, @RequestParam(name = "index", required = true) int index){
+	public FileUploadResponse uploadTest(@RequestParam(name = "file", required = true) MultipartFile multipartFile, @RequestParam(name = "index", required = true) int index) {
 
+		// validation
+		FileValidationModel fileValidationModel = new FileValidationModel(multipartFile);
+
+		FileValidationResult fileValidationResult = algorithmFileValidator.validate(fileValidationModel);
+
+		if (fileValidationResult.isError()) {
+
+			FileUploadResponse fileUploadResponse = new FileUploadResponse();
+
+			fileUploadResponse.setError(true);
+
+			Map<String, String> errors = new HashMap<>();
+			for (String key : fileValidationResult.getErrors().keySet()) {
+				errors.put(ERROR_KEY_ALGORITHM_FILE, fileValidationResult.getErrors().get(key));
+			}
+			fileUploadResponse.setErrors(errors);
+
+			fileUploadResponse.setIndex(-1);
+
+			fileUploadResponse.setName(null);
+
+			return fileUploadResponse;
+
+		}
+
+		// storing the file
 		String folderName = ProcessUtils.generateUploadedSearchAlgorithmFileName();
 
 		File storedFile = null;
@@ -332,7 +365,7 @@ public class ProblemRestController {
 			e.printStackTrace();
 		}
 
-		return new FileUploadResponse(index, folderName + File.separator + multipartFile.getOriginalFilename());
+		return new FileUploadResponse(false, null, index, folderName + File.separator + multipartFile.getOriginalFilename());
 
 	}
 
@@ -407,7 +440,7 @@ public class ProblemRestController {
 
 	}
 
-	private String algorithmNameToCode2(String algorithmName){
+	private String algorithmNameToCode2(String algorithmName) {
 
 		String code = "";
 

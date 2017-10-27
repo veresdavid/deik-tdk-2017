@@ -45,6 +45,22 @@ body{
 	/*border: 2px solid black;*/
 }
 
+/** HOME PAGE */
+
+#pageDescription{
+    margin-top: 50px;
+}
+
+#pageDescription h2{
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#pageDescription p{
+    text-align: justify;
+    margin-bottom: 40px;
+}
+
 /** GRAPH PAGE */
 
 .response{
