@@ -80,6 +80,8 @@ public class ResultGenerator {
         return result;
 
     }
+	
+	// Ez itt semmi
 
     private void processLine(String line) {
 
