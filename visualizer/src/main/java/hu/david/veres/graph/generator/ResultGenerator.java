@@ -12,6 +12,7 @@ import java.util.List;
 
 public class ResultGenerator {
 
+	private static final String TEST = "TEST";
     private static final String DELIMITER_PIPE = "\\|";
     private static final String DELIMITER_SPACE = " ";
     private static final String DELIMITER_CLOSE_SQUARE_BRACKET = "\\]";
