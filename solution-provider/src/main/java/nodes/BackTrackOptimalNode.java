@@ -7,9 +7,25 @@ import interfaces.StateInterface;
 
 public class BackTrackOptimalNode extends Node{
 	
+	/**
+	 * A csomópontra már alkalmazott operátorok listája.
+	 */
 	private List<OperatorInterface> tried;
+	
+	/**
+	 * A csomópont mélységét jelző mező.
+	 */
 	private int depth;
 
+	/**
+	 * A csomópont konstruktora.
+	 * @param state A csomópont állapotát tároló változó
+	 * @param parent A csomópont szülőcsomópontja
+	 * @param operator A csomópontot a szülőcsomópontból létrehozó operátor
+	 * @param id A csomópont id-je, amely a kimenet létrehozásakor szükséges, hogy egyszerűen megkülönböztethetők legyenek a különböző csomópontok
+	 * @param tried A csomópontra már alkalmazott operátorok listája
+	 * @param depth A csomópont mélységét adja meg
+	 */
 	public BackTrackOptimalNode(StateInterface state, BackTrackOptimalNode parent, OperatorInterface operator, int id, List<OperatorInterface> tried, int depth) {
 		this.state = state;
 		this.parent = parent;

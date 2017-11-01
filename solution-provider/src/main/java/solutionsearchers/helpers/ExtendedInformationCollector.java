@@ -7,6 +7,11 @@ import java.util.List;
 import interfaces.OperatorInterface;
 import nodes.Node;
 
+/**
+ * Az alap információgyűjtő osztály kiegészítése a fához szükséges információgyűjtőkkel.
+ * @author vecsi
+ *
+ */
 public class ExtendedInformationCollector extends InformationCollector{
 
 	public ExtendedInformationCollector() {

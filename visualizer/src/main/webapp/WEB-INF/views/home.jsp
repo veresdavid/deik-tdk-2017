@@ -44,6 +44,12 @@
 
 		    <h2><spring:message code="home.desc.header.problem" /></h2>
             <p><spring:message code="home.desc.p.problem" /><p>
+            
+            <h2><spring:message code="home.desc.header.searcher" /></h2>
+            <p><spring:message code="home.desc.p.searcher" /><p>
+            
+            <h2><spring:message code="home.desc.header.heuristic" /></h2>
+            <p><spring:message code="home.desc.p.heuristic" /><p>
 
 		    <h2><spring:message code="home.desc.header.graph" /></h2>
             <p><spring:message code="home.desc.p.graph" /><p>

@@ -1,13 +1,11 @@
 ## Heuristic
 
-To parse the heuristic function, the component uses an external API called JEP (Java Expression Parser), you can check it here(link).
+To parse the heuristic function, the component uses an external API called JEP (Java Expression Parser), you can check it [here](http://sens.cse.msu.edu/Software/jep-2.23/doc/website/index.html).
 
-The standard supported functions and operators are listed below.
+The supported functions and operators are listed below.
 
 #### Operators
-All common arithmetic operators are supported. Boolean operators are also fully supported. Boolean expressions are evaluated to be either 1 or 0 (true or false respectively).
-
-A tick indicates that the operator can be used with the specific type of variable. Refer to the grammar for detailed information about operator precedence.
+All common arithmetic operators are supported. Boolean operators are also fully supported. Boolean expressions are evaluated to be either 1 or 0 (true or false respectively). A tick indicates that the operator can be used with the specific type of variable. Refer to the grammar for detailed information about operator precedence.
 
 |                              |        | Double   | Complex  | String            | Vector   |
 | ---------------------------- | ------ | :------: | :------: | :---------------: | :------: |
@@ -29,28 +27,28 @@ A tick indicates that the operator can be used with the specific type of variabl
 #### Standard functions
 Each of the following functions can be applied to objects of the types indicated.
 
-|                                 |         | Double   | Complex  | String | Vector |
-| ------------------------------- | ------- | :------: | :------: | :----: | :----: |
-| Sine                            | sin()   | &#10004; | &#10004; |        |        |
-| Cosine                          | cos()   | &#10004; | &#10004; |        |        |
-| Tangent                         | tan()   | &#10004; | &#10004; |        |        |
-| Arc Sine                        | asin()  | &#10004; | &#10004; |        |        |
-| Arc Cosine                      | acos()  | &#10004; | &#10004; |        |        |
-| Arc Tangent                     | atan()  | &#10004; | &#10004; |        |        |
-| Hyperbolic Sine                 | sinh()  | &#10004; | &#10004; |        |        |
-| Hyperbolic Cosine               | cosh()  | &#10004; | &#10004; |        |        |
-| Hyperbolic Tangent              | tanh()  | &#10004; | &#10004; |        |        |
-| Inverse Hyperbolic Sine         | asinh() | &#10004; | &#10004; |        |        |
-| Inverse Hyperbolic Cosine       | acosh() | &#10004; | &#10004; |        |        |
-| Inverse Hyperbolic Tangent      | atanh() | &#10004; | &#10004; |        |        |
-| Natural Logarithm               | ln()    | &#10004; | &#10004; |        |        |
-| Logarithm base 10               | log()   | &#10004; | &#10004; |        |        |
-| Angle                           | angle() | &#10004; |          |        |        |
-| Absolute Value / Magnitude      | abs()   | &#10004; | &#10004; |        |        |
-| Random number (between 0 and 1) | rand()  |          |          |        |        |
-| Modulus                         | mod()   | &#10004; |          |        |        |
-| Square Root                     | sqrt()  | &#10004; | &#10004; |        |        |
-| Sum                             | sum()   | &#10004; |          |        |        |
+|                                 |         | Double   | Complex  | String | Vector   |
+| ------------------------------- | ------- | :------: | :------: | :----: | :------: |
+| Sine                            | sin()   | &#10004; | &#10004; |        |          |
+| Cosine                          | cos()   | &#10004; | &#10004; |        |          |
+| Tangent                         | tan()   | &#10004; | &#10004; |        |          |
+| Arc Sine                        | asin()  | &#10004; | &#10004; |        |          |
+| Arc Cosine                      | acos()  | &#10004; | &#10004; |        |          |
+| Arc Tangent                     | atan()  | &#10004; | &#10004; |        |          |
+| Hyperbolic Sine                 | sinh()  | &#10004; | &#10004; |        |          |
+| Hyperbolic Cosine               | cosh()  | &#10004; | &#10004; |        |          |
+| Hyperbolic Tangent              | tanh()  | &#10004; | &#10004; |        |          |
+| Inverse Hyperbolic Sine         | asinh() | &#10004; | &#10004; |        |          |
+| Inverse Hyperbolic Cosine       | acosh() | &#10004; | &#10004; |        |          |
+| Inverse Hyperbolic Tangent      | atanh() | &#10004; | &#10004; |        |          |
+| Natural Logarithm               | ln()    | &#10004; | &#10004; |        |          |
+| Logarithm base 10               | log()   | &#10004; | &#10004; |        |          |
+| Angle                           | angle() | &#10004; |          |        |          |
+| Absolute Value / Magnitude      | abs()   | &#10004; | &#10004; |        |          |
+| Random number (between 0 and 1) | rand()  |          |          |        |          |
+| Modulus                         | mod()   | &#10004; |          |        |          |
+| Square Root                     | sqrt()  | &#10004; | &#10004; |        |          |
+| Sum                             | sum()   | &#10004; |          |        | &#10004; |
 
 #### Extra functions
 

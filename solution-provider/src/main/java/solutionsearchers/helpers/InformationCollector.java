@@ -13,20 +13,77 @@ import interfaces.OperatorInterface;
 import interfaces.StateInterface;
 import nodes.Node;
 
+/**
+ * A komponens kiemenetéért felelős osztály.
+ * @author vecsi
+ *
+ */
 public class InformationCollector {
 
+	/**
+	 * A csomópontokra lépések számát tárolja.
+	 */
 	private Map<StateInterface, Integer> stepsOnStates;
+	
+	/**
+	 * Az élekre lépések számát tárolja.
+	 */
 	private Map<String, Integer> stepsOnEdges;
+	
+	/**
+	 * Az állapottérgráf feltárt csomópontjai.
+	 */
 	protected List<Node> listForGraph;
+	
+	/**
+	 * A fává alakított állapottérgráf feltárt csomópontjai.
+	 */
 	protected List<Node> listForTree;
+	
+	/**
+	 * A kereső által eddig megtett lépések.
+	 */
 	protected StringBuilder steps;
+	
+	/**
+	 * A kereső adott lépésében aktívvá vált csomópontok listája.
+	 */
 	private List<String> activateNodes;
+	
+	/**
+	 * A kereső adott lépésében inaktívvá vált csomópontok listája.
+	 */
 	private List<String> inactivateNodes;
+	
+	/**
+	 * A kereső adott lépésében azon csomópontok listája, amelyekre ráléptünk.
+	 */
 	private List<String> stepOnNodes;
+	
+	/**
+	 * A kereső adott lépésében azok csomópontok listája, amiről visszaléptünk és már nincs benne az aktuális
+	 * csomóponthoz vezető útban.
+	 */
 	private List<String> closeNodes;
+	
+	/**
+	 * A kereső adott lépésében aktívvá vált élek listája.
+	 */
 	private List<String> activateEdges;
+	
+	/**
+	 * A kereső adott lépésében inaktívvá vált élek listája.
+	 */
 	private List<String> inactivateEdges;
+	
+	/**
+	 * A kimeneti fájl neve.
+	 */
 	protected String outputFileName;
+	
+	/**
+	 * A kimeneti fájl mappája.
+	 */
 	protected static String OUTPUTFOLDERNAME = "solutionOutputs";
 
 	public InformationCollector() {
