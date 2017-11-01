@@ -15,6 +15,8 @@ import nodes.Node;
 
 /**
  * A komponens kiemenetéért felelős osztály.
+ * /
+ * This class responsible for the output of the component.
  * @author vecsi
  *
  */
@@ -22,67 +24,93 @@ public class InformationCollector {
 
 	/**
 	 * A csomópontokra lépések számát tárolja.
+	 * /
+	 * Counts the steps on nodes.
 	 */
 	private Map<StateInterface, Integer> stepsOnStates;
 	
 	/**
 	 * Az élekre lépések számát tárolja.
+	 * /
+	 * Counts the steps on edges
 	 */
 	private Map<String, Integer> stepsOnEdges;
 	
 	/**
-	 * Az állapottérgráf feltárt csomópontjai.
+	 * Az állapottér gráf feltárt csomópontjai.
+	 * /
+	 * The revealed nodes of the state space graph.
 	 */
 	protected List<Node> listForGraph;
 	
 	/**
-	 * A fává alakított állapottérgráf feltárt csomópontjai.
+	 * A fává alakított állapottér gráf feltárt csomópontjai.
+	 * /
+	 * The revealed nodes of the tree formed state space graph .
 	 */
 	protected List<Node> listForTree;
 	
 	/**
 	 * A kereső által eddig megtett lépések.
+	 * /
+	 * The steps of the solution searcher.
 	 */
 	protected StringBuilder steps;
 	
 	/**
 	 * A kereső adott lépésében aktívvá vált csomópontok listája.
+	 * /
+	 * The list of the activated nodes in the current step of the solution searcher.
 	 */
 	private List<String> activateNodes;
 	
 	/**
 	 * A kereső adott lépésében inaktívvá vált csomópontok listája.
+	 * /
+	 * The list of the inactivated nodes in the current step of the solution searcher.
 	 */
 	private List<String> inactivateNodes;
 	
 	/**
 	 * A kereső adott lépésében azon csomópontok listája, amelyekre ráléptünk.
+	 * /
+	 * The list of the nodes that the solution searcher stepped on in the current step.
 	 */
 	private List<String> stepOnNodes;
 	
 	/**
 	 * A kereső adott lépésében azok csomópontok listája, amiről visszaléptünk és már nincs benne az aktuális
 	 * csomóponthoz vezető útban.
+	 * /
+	 * The list of the nodes that the solution searcher stepped back from in the current step.
 	 */
 	private List<String> closeNodes;
 	
 	/**
 	 * A kereső adott lépésében aktívvá vált élek listája.
+	 * /
+	 * The list of the activated edges in the current step of the solution searcher.
 	 */
 	private List<String> activateEdges;
 	
 	/**
 	 * A kereső adott lépésében inaktívvá vált élek listája.
+	 * /
+	 * The list of the inactivated edges in the current step of the solution searcher.
 	 */
 	private List<String> inactivateEdges;
 	
 	/**
 	 * A kimeneti fájl neve.
+	 * /
+	 * The name of the output file.
 	 */
 	protected String outputFileName;
 	
 	/**
 	 * A kimeneti fájl mappája.
+	 * /
+	 * The name of the output folder.
 	 */
 	protected static String OUTPUTFOLDERNAME = "solutionOutputs";
 

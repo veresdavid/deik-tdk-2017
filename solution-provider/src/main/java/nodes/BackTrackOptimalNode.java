@@ -9,16 +9,23 @@ public class BackTrackOptimalNode extends Node{
 	
 	/**
 	 * A csomópontra már alkalmazott operátorok listája.
+	 * /
+	 * The list of operators that are applied on this node.
 	 */
 	private List<OperatorInterface> tried;
 	
 	/**
 	 * A csomópont mélységét jelző mező.
+	 * /
+	 * The depth of the node.
 	 */
 	private int depth;
 
 	/**
 	 * A csomópont konstruktora.
+	 * /
+	 * The constructor of the node.
+	 * The params are easy to understand in english because of their name ;)
 	 * @param state A csomópont állapotát tároló változó
 	 * @param parent A csomópont szülőcsomópontja
 	 * @param operator A csomópontot a szülőcsomópontból létrehozó operátor

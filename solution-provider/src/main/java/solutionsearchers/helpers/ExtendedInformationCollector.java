@@ -9,6 +9,8 @@ import nodes.Node;
 
 /**
  * Az alap információgyűjtő osztály kiegészítése a fához szükséges információgyűjtőkkel.
+ * /
+ * The standard informationcollector extended with the collectors for tree.
  * @author vecsi
  *
  */
