@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -87,6 +88,21 @@ public class ProcessServiceImpl implements ProcessService {
 		ProcessEntity processEntity = modelMapper.map(processDTO, ProcessEntity.class);
 
 		processRepository.delete(processEntity);
+
+	}
+
+	@Override
+	public List<ProcessDTO> getWaitingProcesses() {
+
+		List<ProcessEntity> processEntities = processRepository.findByStatus("waiting");
+
+		List<ProcessDTO> processDTOS = new ArrayList<>();
+
+		for (ProcessEntity processEntity : processEntities) {
+			processDTOS.add(modelMapper.map(processEntity, ProcessDTO.class));
+		}
+
+		return processDTOS;
 
 	}
 

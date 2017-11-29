@@ -20,6 +20,7 @@ public class AuthenticationProviderImpl implements AuthenticationProvider {
 
 	private static final String ERROR_CODE_LOGIN_FAILED = "login.error.failed";
 	private static final String ROLE_USER = "ROLE_USER";
+	private static final String ROLE_ADMIN = "ROLE_ADMIN";
 
 	@Autowired
 	private UserService userService;
@@ -43,7 +44,14 @@ public class AuthenticationProviderImpl implements AuthenticationProvider {
 			throw new BadCredentialsException(ERROR_CODE_LOGIN_FAILED);
 		}
 
-		return new UsernamePasswordAuthenticationToken(username, password, simpleUserAuthorities());
+		List<SimpleGrantedAuthority> authorities;
+		if (userDTO.getRole().equals("user")) {
+			authorities = simpleUserAuthorities();
+		} else {
+			authorities = adminUserAuthorities();
+		}
+
+		return new UsernamePasswordAuthenticationToken(username, password, authorities);
 
 	}
 
@@ -57,6 +65,18 @@ public class AuthenticationProviderImpl implements AuthenticationProvider {
 		List<SimpleGrantedAuthority> simpleGrantedAuthorities = new ArrayList<>();
 
 		simpleGrantedAuthorities.add(new SimpleGrantedAuthority(ROLE_USER));
+
+		return simpleGrantedAuthorities;
+
+	}
+
+	private List<SimpleGrantedAuthority> adminUserAuthorities() {
+
+
+		List<SimpleGrantedAuthority> simpleGrantedAuthorities = new ArrayList<>();
+
+		simpleGrantedAuthorities.add(new SimpleGrantedAuthority(ROLE_USER));
+		simpleGrantedAuthorities.add(new SimpleGrantedAuthority(ROLE_ADMIN));
 
 		return simpleGrantedAuthorities;
 

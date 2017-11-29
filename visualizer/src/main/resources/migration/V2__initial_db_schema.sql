@@ -5,6 +5,7 @@ CREATE TABLE public.users
     username character varying COLLATE pg_catalog."default",
     email character varying COLLATE pg_catalog."default",
     password character varying COLLATE pg_catalog."default",
+    role character varying COLLATE pg_catalog."default",
     CONSTRAINT user_pkey PRIMARY KEY (id)
 )
 WITH (
@@ -26,6 +27,12 @@ CREATE TABLE public.processes
     name character varying COLLATE pg_catalog."default",
     creation_date date,
     user_id bigint,
+    status character varying COLLATE pg_catalog."default",
+    custom_files character varying COLLATE pg_catalog."default",
+    heuristic character varying COLLATE pg_catalog."default",
+    variables_in_heuristic_function character varying COLLATE pg_catalog."default",
+    uses_heuristic boolean,
+    variable_data character varying COLLATE pg_catalog."default",
     CONSTRAINT process_pkey PRIMARY KEY (id),
     CONSTRAINT user_id_to_process FOREIGN KEY (user_id)
         REFERENCES public.users (id) MATCH SIMPLE

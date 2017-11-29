@@ -7,6 +7,7 @@ import generator.StateGenerator;
 import hu.david.veres.graph.dto.ProcessDTO;
 import hu.david.veres.graph.dto.UserDTO;
 import hu.david.veres.graph.form.ProblemForm;
+import hu.david.veres.graph.form.VariableData;
 import hu.david.veres.graph.response.FileUploadResponse;
 import hu.david.veres.graph.response.ProblemResponse;
 import hu.david.veres.graph.service.ProcessService;
@@ -270,6 +271,7 @@ public class ProblemRestController {
 			processDTO.setUserId(userDTO.getId());
 			processDTO.setCreationDate(new Date());
 			processDTO.setSearchAlgorithm(algorithmNameToCode2(problemForm.getAlgorithms().get(i)));
+			processDTO.setStatus("accepted");
 			processService.save(processDTO);
 
 			// Start the process
@@ -301,16 +303,22 @@ public class ProblemRestController {
 			processDTO.setUserId(userDTO.getId());
 			processDTO.setCreationDate(new Date());
 			processDTO.setSearchAlgorithm(ALGORITHM_CODE_2_CUSTOM);
+			processDTO.setStatus("waiting");
+			processDTO.setCustomFiles(String.join(";", problemForm.getCustomSearchAlgorithms().get(i).getFiles()));
+			processDTO.setHeuristic(problemForm.getHeuristic());
+			processDTO.setVariablesInHeuristicFunction(problemForm.getVariablesInHeuristicFunction());
+			processDTO.setUsesHeuristic(problemForm.getCustomSearchAlgorithms().get(i).isUsesHeuristic());
+			processDTO.setVariableData(getVariableDataAsString(problemForm.getCustomSearchAlgorithms().get(i).getVariables()));
 			processService.save(processDTO);
 
 			// Start the process
-			ProcessThread processThread = applicationContext.getBean(ProcessThread.class);
+			/*ProcessThread processThread = applicationContext.getBean(ProcessThread.class);
 			processThread.setProcessIdentifier(processIdentifier);
 			processThread.setSolutionManager(solutionManager);
 			processThread.setProblemForm(problemForm);
 			processThread.setAlgorithmIndex(i);
 			processThread.setCustom(true);
-			threadPoolTaskExecutor.execute(processThread);
+			threadPoolTaskExecutor.execute(processThread);*/
 
 			algorithmCodes.add(ALGORITHM_CODE_CUSTOM);
 
@@ -480,6 +488,18 @@ public class ProblemRestController {
 
 	private String activeUsersUsername() {
 		return SecurityContextHolder.getContext().getAuthentication().getName();
+	}
+
+	private String getVariableDataAsString(List<VariableData> variableDataList){
+
+		List<String> partList = new ArrayList<>();
+
+		for(VariableData variableData : variableDataList){
+			partList.add(variableData.getType() + ":" + variableData.getValue());
+		}
+
+		return String.join(";", partList);
+
 	}
 
 

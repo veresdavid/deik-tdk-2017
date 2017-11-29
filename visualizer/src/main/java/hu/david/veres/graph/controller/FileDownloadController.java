@@ -118,4 +118,29 @@ public class FileDownloadController {
 
     }
 
+    @RequestMapping(path = "/custom/{folderName}/{fileName}", method = RequestMethod.GET)
+    public void downloadCustomFile(HttpServletResponse response, @PathVariable("folderName") String folderName, @PathVariable("fileName") String fileName) {
+
+        try {
+
+            File file = storageService.getCustomFile(folderName, fileName);
+
+            response.setContentType("text/plain");
+
+            response.setHeader("Content-Disposition", String.format("inline; filename=\"" + file.getName() + "\""));
+
+            response.setContentLength((int) file.length());
+
+            InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+
+            FileCopyUtils.copy(inputStream, response.getOutputStream());
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 }

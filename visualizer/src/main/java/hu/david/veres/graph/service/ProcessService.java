@@ -14,4 +14,6 @@ public interface ProcessService {
 
     void delete(ProcessDTO processDTO);
 
+    List<ProcessDTO> getWaitingProcesses();
+
 }

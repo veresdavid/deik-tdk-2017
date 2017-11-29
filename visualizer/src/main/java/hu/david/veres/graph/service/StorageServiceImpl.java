@@ -140,4 +140,17 @@ public class StorageServiceImpl implements StorageService {
         return new File(uploadedSearchAlgorithmFilesFolderName + File.separator + folderName + File.separator + fileName);
 
     }
+
+    @Override
+    public File getCustomFile(String folderName, String fileName) throws FileNotFoundException {
+
+        File file = new File(uploadedSearchAlgorithmFilesFolderName + File.separator + folderName + File.separator + fileName + EXTENSION_JAVA);
+
+        if(!file.exists()){
+            throw new FileNotFoundException();
+        }
+
+        return file;
+
+    }
 }

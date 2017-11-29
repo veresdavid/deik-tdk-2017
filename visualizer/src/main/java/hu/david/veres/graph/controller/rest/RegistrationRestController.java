@@ -67,6 +67,7 @@ public class RegistrationRestController {
 		userDTO.setUsername(registrationForm.getUsername());
 		userDTO.setPassword(bCryptPasswordEncoder.encode(registrationForm.getPassword()));
 		userDTO.setEmail(registrationForm.getEmail());
+		userDTO.setRole("user");
 
 		UserDTO savedUserDTO = userService.save(userDTO);
 

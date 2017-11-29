@@ -3,6 +3,7 @@ package hu.david.veres.graph.dto;
 import lombok.*;
 
 import java.util.Date;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,5 +25,11 @@ public class ProcessDTO {
     private Date creationDate;
     private Long userId;
     private String searchAlgorithm;
+    private String status;
+    private String customFiles;
+    private String heuristic;
+    private String variablesInHeuristicFunction;
+    private boolean usesHeuristic;
+    private String variableData;
 
 }

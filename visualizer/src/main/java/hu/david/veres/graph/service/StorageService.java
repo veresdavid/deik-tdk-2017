@@ -23,4 +23,6 @@ public interface StorageService {
 
     File storeUploadedSearchAlgorithmFile(String folderName, MultipartFile multipartFile) throws IOException;
 
+    File getCustomFile(String folderName, String fileName) throws FileNotFoundException;
+
 }

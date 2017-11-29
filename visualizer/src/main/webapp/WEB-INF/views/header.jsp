@@ -33,6 +33,11 @@
                         <li>
                             <a href="${pageContext.request.contextPath}/problem"><spring:message code="header.problem" /></a>
                         </li>
+                        <sec:authorize access="hasRole('ADMIN')">
+                            <li>
+                                <a href="${pageContext.request.contextPath}/admin"><spring:message code="header.admin" /></a>
+                            </li>
+                        </sec:authorize>
                         <li>
                             <a href="${pageContext.request.contextPath}/logout"><spring:message code="header.logout" /></a>
                         </li>

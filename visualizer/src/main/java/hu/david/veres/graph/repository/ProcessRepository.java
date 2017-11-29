@@ -11,4 +11,6 @@ public interface ProcessRepository extends JpaRepository<ProcessEntity, Long> {
 
     List<ProcessEntity> findByUserId(Long id);
 
+    List<ProcessEntity> findByStatus(String status);
+
 }
