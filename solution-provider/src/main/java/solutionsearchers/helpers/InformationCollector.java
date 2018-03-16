@@ -112,7 +112,7 @@ public class InformationCollector {
 	 * /
 	 * The name of the output folder.
 	 */
-	protected static String OUTPUTFOLDERNAME = "solutionOutputs";
+	protected static String OUTPUTFOLDERNAME = "/srv/tomcat-persistent/graph/solutionOutputs";
 
 	public InformationCollector() {
 		stepsOnStates = new HashMap<>();

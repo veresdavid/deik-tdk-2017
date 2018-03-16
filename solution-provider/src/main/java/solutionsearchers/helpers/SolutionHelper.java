@@ -43,7 +43,7 @@ public class SolutionHelper {
 	
 	public static void writeSteps(String steps, String outputFolderName, String outputFileName) {
 		File outputFolder = new File(outputFolderName);
-		File output = new File("solutionOutputs/" + "tmp" + outputFileName);
+		File output = new File("/srv/tomcat-persistent/graph/solutionOutputs/" + "tmp" + outputFileName);
 		if(!outputFolder.exists())
 			outputFolder.mkdirs();
 		
@@ -60,7 +60,7 @@ public class SolutionHelper {
 	
 	public static String writeOutput(Class<?> solutionSearcher, List<Node> nodes, List<Node> treeNodes, List<Node> solutions, List<OperatorInterface> operators, String outputFolderName, String outputFileName){
 		File outputFolder = new File(outputFolderName);
-		File output = new File("solutionOutputs/" + solutionSearcher.getSimpleName() + outputFileName);
+		File output = new File("/srv/tomcat-persistent/graph/solutionOutputs/" + solutionSearcher.getSimpleName() + outputFileName);
 		if(!outputFolder.exists())
 			outputFolder.mkdirs();
 			
@@ -169,7 +169,7 @@ public class SolutionHelper {
 			
 			writer.write("steps\n");
 			//writer.write(steps);
-			BufferedReader reader = Files.newBufferedReader(Paths.get(new File("solutionOutputs/" + "tmp" + outputFileName).getAbsolutePath()));
+			BufferedReader reader = Files.newBufferedReader(Paths.get(new File("/srv/tomcat-persistent/graph/solutionOutputs/" + "tmp" + outputFileName).getAbsolutePath()));
 			String line;
 			while ((line = reader.readLine()) != null) {
 			  writer.write(line + "\n");
