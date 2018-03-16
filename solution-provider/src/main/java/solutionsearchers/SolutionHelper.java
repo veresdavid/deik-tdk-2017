@@ -35,15 +35,17 @@ public class SolutionHelper {
 		builder.setLength(builder.length() - 1);
 		return builder.toString();
 	}
-	
+
 	public static String writeOutputForGraphic(Class<?> solutionSearcher, List<Node> nodes, List<Node> treeNodes, List<Node> solutions, String steps, List<OperatorInterface> operators){
 		File outputFolder = new File("/srv/tomcat-persistent/graph/solutionOutputs");
 		File output = new File("/srv/tomcat-persistent/graph/solutionOutputs/" + solutionSearcher.getSimpleName() + LocalDateTime.now().format(DateTimeFormatter.ofPattern("YYYY-MM-dd-hh-mm-ss")) + UUID.randomUUID().toString() + ".txt");
 		if(!outputFolder.exists())
 			outputFolder.mkdirs();
-			
+
 		BufferedWriter writer = null;
 		try {
+			if(!output.exists())
+				output.createNewFile();
 			writer = new BufferedWriter(new FileWriter(output.getAbsolutePath()));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
