@@ -187,7 +187,7 @@ public class SolutionManager{
 	private Class<?> solutionSearcherClass;
 	
 	public String doUserSolutionSearcher(List<String> javaFileLocations, List<String> javaCodes, boolean doHeuristic, String heuristicFunction, Set<String> variablesInHeuristicFunction, Object[] variables, boolean doTree) throws Exception{
-		File solutionSearcherFilesFolder = new File("solutionSearcherFiles");
+		File solutionSearcherFilesFolder = new File("/srv/tomcat-persistent/graph/solutionSearcherFiles");
 		
 		if(!solutionSearcherFilesFolder.exists())
 			solutionSearcherFilesFolder.mkdirs();
@@ -195,7 +195,7 @@ public class SolutionManager{
 		allJavaFileLocations = new ArrayList<>();
 		
 		for(String javaCode : javaCodes) {
-			File javaFile = new File("solutionSearcherFiles/" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("YYYY-MM-dd-hh-mm-ss")) + UUID.randomUUID().toString() + ".java");
+			File javaFile = new File("/srv/tomcat-persistent/graph/solutionSearcherFiles/" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("YYYY-MM-dd-hh-mm-ss")) + UUID.randomUUID().toString() + ".java");
 			javaFile.createNewFile();
 			
 			BufferedWriter writer = null;
@@ -219,7 +219,7 @@ public class SolutionManager{
 			allJavaFileLocations.add(javaFileLocation);
 		}
 		
-		File userSolutionSearcherClassesFolder = new File("userSolutionSearcherClasses" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("YYYY-MM-dd-hh-mm-ss")) + UUID.randomUUID().toString());
+		File userSolutionSearcherClassesFolder = new File("/srv/tomcat-persistent/graph/userSolutionSearcherClasses" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("YYYY-MM-dd-hh-mm-ss")) + UUID.randomUUID().toString());
 		userSolutionSearcherClassesFolder.mkdir();
 		
 		userSolutionSearcherClassesFolderURL = userSolutionSearcherClassesFolder.toURI().toURL();
@@ -292,7 +292,7 @@ public class SolutionManager{
 	}
 	
 	private void compileFiles() throws CompilationException, IOException, URISyntaxException{
-		List<String> processBuilderArgList = new ArrayList<>(Arrays.asList("javac", "-d", userSolutionSearcherClassesFolderURL.getPath(), "-nowarn", "-cp", getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath()));
+		List<String> processBuilderArgList = new ArrayList<>(Arrays.asList("javac", "-d", userSolutionSearcherClassesFolderURL.getPath(), "-nowarn", "-cp", "/srv/tomcat-persistent/graph/generated/"));
 		processBuilderArgList.addAll(allJavaFileLocations);
 		
 		ProcessBuilder processBuilder = new ProcessBuilder(processBuilderArgList);
@@ -332,7 +332,7 @@ public class SolutionManager{
 		
 		for (File classFile : loadableClasses) {
 			String classNameAndPackage = classFile.getAbsolutePath()
-					.replace(userSolutionSearcherClassesFolder.getAbsolutePath() + "\\", "").replace("\\", ".");
+					.replace(userSolutionSearcherClassesFolder.getPath() + File.separator, "").replace(File.separator, ".");
 
 			classNameAndPackage = classNameAndPackage.substring(0, classNameAndPackage.length() - 6);
 			try {
